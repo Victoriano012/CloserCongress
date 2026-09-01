@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import stats from "../../../data/electorate-stats.json";
+import { ArticleHeader, Section, Toc } from "@/components/article";
 import { PARTIES, PARTY_BY_SLUG } from "@/lib/parties";
 import {
   AXES,
@@ -20,7 +21,7 @@ const SECTIONS = [
   { id: "bills", label: "Where the bills come from" },
   { id: "votes", label: "How a party votes" },
   { id: "electorate", label: "Building the electorate" },
-  { id: "axes", label: "The 19 issue axes" },
+  { id: "axes", label: `The ${AXES.length} issue axes` },
   { id: "typology", label: "The nine groups" },
   { id: "privacy", label: "What we store about you" },
   { id: "limits", label: "Limitations" },
@@ -54,31 +55,6 @@ const ESTIMATED_SPLIT = AXES.filter((a) => a.source.estimated).length;
 
 /* ---------------------------------------------------------------- primitives */
 
-function Section({
-  id,
-  eyebrow,
-  title,
-  children,
-}: {
-  id: string;
-  eyebrow: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section id={id} className="scroll-mt-24">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-muted)]">
-        {eyebrow}
-      </p>
-      <h2 className="mt-2 font-serif text-2xl font-semibold sm:text-[1.75rem]">{title}</h2>
-      <div className="bd-rule mt-4" />
-      <div className="mt-6 space-y-5 text-[1.0625rem] leading-8 text-[var(--bd-ink)]">
-        {children}
-      </div>
-    </section>
-  );
-}
-
 function H3({ children }: { children: React.ReactNode }) {
   return (
     <h3 className="pt-3 font-serif text-lg font-semibold text-[var(--bd-navy)]">{children}</h3>
@@ -111,36 +87,16 @@ export default function MethodologyPage() {
     <div className="bd-container py-14 sm:py-20">
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-14">
         <article className="max-w-[68ch]">
-          <header>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-blue)]">
-              Methodology
-            </p>
-            <h1 className="mt-3 font-serif text-4xl font-semibold leading-[1.15] sm:text-5xl">
-              Every number on this site, and where it came from.
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-[var(--bd-muted)]">
-              Data sources, the model that casts each party&rsquo;s vote, the synthetic
-              electorate, and where the simulation is wrong. Numbers with no published source
-              are flagged <Estimated />.
-            </p>
-            <div className="bd-rule mt-8" />
-          </header>
+          <ArticleHeader
+            kicker="Methodology"
+            title="Every number on this site, and where it came from."
+          >
+            Data sources, the model that casts each party&rsquo;s vote, the synthetic
+            electorate, and where the simulation is wrong. Numbers with no published source
+            are flagged <Estimated />.
+          </ArticleHeader>
 
-          <nav aria-label="On this page" className="bd-card mt-10 px-5 py-4 lg:hidden">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-muted)]">
-              On this page
-            </p>
-            <ol className="mt-3 space-y-1.5 text-sm">
-              {SECTIONS.map((s, i) => (
-                <li key={s.id} className="flex gap-2">
-                  <span className="tabular-nums text-[var(--bd-muted)]">{i + 1}.</span>
-                  <a className="bd-link" href={`#${s.id}`}>
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
+          <Toc sections={SECTIONS} />
 
           <div className="mt-14 space-y-16">
             {/* ------------------------------------------------------------ bills */}
@@ -252,7 +208,7 @@ export default function MethodologyPage() {
                   value={pct(stats.blankOnlyShare, 1)}
                   label="hold the blank vote alone"
                 />
-                <Figure value="19" label="issue axes" />
+                <Figure value={String(AXES.length)} label="issue axes" />
               </div>
 
               <H3>Layer 1 — who people are</H3>
@@ -336,7 +292,7 @@ export default function MethodologyPage() {
             </Section>
 
             {/* ------------------------------------------------------------- axes */}
-            <Section id="axes" eyebrow="4" title="The 19 issue axes">
+            <Section id="axes" eyebrow="4" title={`The ${AXES.length} issue axes`}>
               <p>
                 {TWO_SIDED} axes are two-sided; the other {ONE_SIDED} have no opposing party,
                 so there is no split to calibrate.
@@ -566,7 +522,7 @@ export default function MethodologyPage() {
                     Calibration fixes each issue&rsquo;s split, not how opinions{" "}
                     <em>combine</em>. Within a group every issue is drawn independently, so
                     correlations beyond group membership are lost. The population is right on
-                    19 separate questions and only approximately right about anyone in
+                    {AXES.length} separate questions and only approximately right about anyone in
                     particular.
                   </p>
                 </div>
@@ -632,27 +588,7 @@ export default function MethodologyPage() {
           </div>
         </article>
 
-        <nav aria-label="On this page" className="hidden lg:block">
-          <div className="sticky top-24">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-muted)]">
-              On this page
-            </p>
-            <div className="bd-rule mt-3" />
-            <ol className="mt-4 space-y-2.5 text-sm">
-              {SECTIONS.map((s, i) => (
-                <li key={s.id} className="flex gap-2.5">
-                  <span className="tabular-nums text-[var(--bd-muted)]">{i + 1}</span>
-                  <a
-                    href={`#${s.id}`}
-                    className="text-[var(--bd-muted)] transition-colors hover:text-[var(--bd-blue-deep)]"
-                  >
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </nav>
+        <Toc sections={SECTIONS} sticky />
       </div>
     </div>
   );

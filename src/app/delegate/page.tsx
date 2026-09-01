@@ -23,8 +23,8 @@ function SignedOut() {
         <div className="bd-rule mt-3" />
         <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)]">
           An ordered list of single-issue parties. A bill walks down it until it reaches
-          one with an opinion, and that party casts your vote. Order is the point: swapping
-          two parties changes your vote on everything they disagree about.
+          one with an opinion, and that party casts your vote. Swapping two parties changes
+          your vote on everything they disagree about.
         </p>
       </div>
 
@@ -32,8 +32,7 @@ function SignedOut() {
         <SignInButton />
         <p className="max-w-2xl text-sm leading-relaxed text-[var(--bd-muted)]">
           Your list is encrypted under a key derived from your Google account id, which is
-          never stored. A database dump reveals neither whose row it is nor what it says.
-          Not end-to-end: this server reads your list to show it to you.
+          never stored. Not end-to-end: this server reads your list to show it to you.
         </p>
       </div>
     </div>

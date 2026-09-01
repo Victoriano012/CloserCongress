@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { billLabel, getBill, type BillRow, type PartyVote } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
 import { loadDelegation } from "@/lib/delegation";
-import { PARTY_BY_SLUG, BLANK_PARTY_SLUG, VOTING_PARTIES } from "@/lib/parties";
+import { PARTY_BY_SLUG, BLANK_PARTY_SLUG, SAMPLE_LIST, VOTING_PARTIES } from "@/lib/parties";
 import { resolveForDelegation, type Vote } from "@/lib/tally";
 import { PartyChip } from "@/components/party-chip";
 import { PartyBreakdownBar, sortContributions, VoteBar } from "@/components/vote-bar";
@@ -24,9 +24,6 @@ export async function generateMetadata({ params }: Props) {
 }
 
 const pct = (n: number, d: number) => (d > 0 ? (n / d) * 100 : 0);
-
-/** The list used in every worked example on the site, for readers without one. */
-const SAMPLE_DELEGATION = ["animal-welfare", "catholic-values", "equal-rights"];
 
 function Section({
   title, note, children,
@@ -99,8 +96,7 @@ function RealResult({ bill }: { bill: BillRow }) {
         </div>
       ) : (
         <p className="mt-5 text-sm text-[var(--bd-muted)]">
-          No roll-call vote. Most bills pass by voice, by unanimous consent, or never reach
-          the floor.
+          No roll-call vote. Most bills pass by voice or never reach the floor.
         </p>
       )}
     </div>
@@ -129,7 +125,7 @@ export default async function BillPage({ params }: Props) {
   // signed-out visitor gets the same walk over the sample list instead: this is
   // the only place on the site where the fall-through happens on a real bill.
   const delegation = await loadDelegation();
-  const list = delegation ?? SAMPLE_DELEGATION;
+  const list = delegation ?? SAMPLE_LIST;
   const mine = votes.length ? resolveForDelegation(list, voteMap) : null;
   const skipped = mine ? list.slice(0, Math.max(list.indexOf(mine.party), 0)) : [];
 
@@ -177,8 +173,8 @@ export default async function BillPage({ params }: Props) {
                 </ul>
               )}
               <p className="mt-4 text-xs text-[var(--bd-muted)]">
-                Summarised by Claude <span className="capitalize">{ai.model}</span>. It can be
-                wrong; the official text is the authority.
+                Summarised by Claude <span className="capitalize">{ai.model}</span>; the
+                official text is the authority.
               </p>
             </>
           ) : bill.official_summary ? (
@@ -257,7 +253,7 @@ export default async function BillPage({ params }: Props) {
                 </p>
                 <p className="mt-1 text-sm text-[var(--bd-muted)]">
                   {result.cast === 0
-                    ? `No delegate claimed it: all ${result.total.toLocaleString()} lists ran off the end.`
+                    ? `All ${result.total.toLocaleString()} lists ran off the end.`
                     : `${pct(result.yes, result.cast).toFixed(1)}% of the votes cast were in favour`}
                 </p>
 
@@ -384,7 +380,7 @@ export default async function BillPage({ params }: Props) {
           title="What the delegates said"
           note={
             spoke.length > 0
-              ? `${spoke.length} of ${VOTING_PARTIES.length} delegates had an opinion. The rest abstained, as usual.`
+              ? `${spoke.length} of ${VOTING_PARTIES.length} delegates had an opinion.`
               : `None of the ${VOTING_PARTIES.length} delegates had an opinion.`
           }
         >
@@ -412,8 +408,7 @@ export default async function BillPage({ params }: Props) {
           ) : (
             <p className="bd-card p-6 text-[var(--bd-muted)]">
               Every delegate stayed silent, so every list ran off its end and the whole
-              electorate voted blank. Silence is not a no — it passes the vote down the list,
-              and here there was no next name.
+              electorate voted blank. Silence is not a no.
             </p>
           )}
         </Section>

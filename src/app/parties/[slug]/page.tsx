@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { billLabel } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
 import { query } from "@/lib/db";
-import { PARTY_BY_SLUG } from "@/lib/parties";
+import { PARTIES, PARTY_BY_SLUG } from "@/lib/parties";
+import { VoteTag } from "@/components/vote-tag";
+import type { Vote } from "@/lib/tally";
 
 // A static roster plus one daily-changing aggregate; no session, no search params.
 export const revalidate = 300;
@@ -14,7 +16,7 @@ type Props = { params: Promise<{ slug: string }> };
 type Counts = { yes: number; no: number; abstain: number };
 
 type RecordRow = {
-  vote: string;
+  vote: Vote;
   reason: string | null;
   id: string;
   title: string;
@@ -22,6 +24,10 @@ type RecordRow = {
   number: number;
   latest_action_date: string | null;
 };
+
+export function generateStaticParams() {
+  return PARTIES.map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -68,19 +74,6 @@ async function loadRecord(
   } catch {
     return { counts: null, rows: [] };
   }
-}
-
-function VoteTag({ vote }: { vote: string }) {
-  const tone =
-    vote === "yes" ? "var(--bd-yes)" : vote === "no" ? "var(--bd-no)" : "var(--bd-blank)";
-  return (
-    <span
-      className="inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide"
-      style={{ borderColor: tone, color: tone, background: `${tone}12` }}
-    >
-      {vote}
-    </span>
-  );
 }
 
 /** The record as a sentence: abstentions need their denominator beside them. */
@@ -158,7 +151,7 @@ export default async function PartyPage({ params }: Props) {
       <p className="mt-4 text-sm text-[var(--bd-muted)]">
         {party.isBlank
           ? "This party is never shown a bill; its abstention is hardcoded."
-          : "Those two paragraphs are the literal instruction the AI delegate is handed for every bill — nothing else."}
+          : "Those two paragraphs are the AI delegate's entire instruction, for every bill."}
       </p>
 
       <section className="mt-12">

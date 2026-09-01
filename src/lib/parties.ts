@@ -397,6 +397,9 @@ export const PARTY_BY_SLUG: Record<string, Party> = Object.assign(
 /** Parties a citizen can actually delegate to, in roster order. */
 export const VOTING_PARTIES = PARTIES.filter((p) => !p.isBlank);
 
+/** The three-name list every worked example on the site walks. */
+export const SAMPLE_LIST = ["animal-welfare", "catholic-values", "equal-rights"];
+
 export const AXIS_LABELS: Record<PartyAxis, string> = {
   "reproductive-rights": "Reproductive rights",
   guns: "Guns",

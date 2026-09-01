@@ -160,14 +160,14 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
                   <span className="text-xs text-[var(--bd-muted)]">
                     {bill.yes_weight + bill.no_weight === 0 ? (
                       // Nobody voted: no percentage, and no rejection either.
-                      <>No delegate claimed it — all blank</>
+                      <>All blank</>
                     ) : (
                       <>
                         {bill.passed ? "Would pass" : "Would fail"} ·{" "}
                         {Math.round(
                           (bill.yes_weight / (bill.yes_weight + bill.no_weight)) * 100,
                         )}
-                        % of votes cast in favour
+                        % in favour
                       </>
                     )}
                   </span>

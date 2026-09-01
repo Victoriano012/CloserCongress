@@ -4,11 +4,12 @@ import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import { PartyChip } from "@/components/party-chip";
+import { VoteTag } from "@/components/vote-tag";
 import { billLabel } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
 import { query } from "@/lib/db";
 import { loadDelegation } from "@/lib/delegation";
-import { BLANK_PARTY_SLUG, PARTY_BY_SLUG } from "@/lib/parties";
+import { BLANK_PARTY_SLUG, PARTY_BY_SLUG, SAMPLE_LIST } from "@/lib/parties";
 import { resolveForDelegation, type Vote } from "@/lib/tally";
 
 export const dynamic = "force-dynamic";
@@ -20,9 +21,6 @@ export const metadata: Metadata = {
 };
 
 const RECENT_LIMIT = 25;
-
-/** Shown to a signed-out reader: the same trio the rest of the site uses. */
-const SAMPLE_LIST = ["animal-welfare", "catholic-values", "equal-rights"];
 
 type BillRow = {
   id: string;
@@ -95,23 +93,6 @@ function OrderedChips({ slugs }: { slugs: string[] }) {
         </li>
       ))}
     </ol>
-  );
-}
-
-function VoteBadge({ vote }: { vote: Vote }) {
-  const style =
-    vote === "yes"
-      ? "border-[var(--bd-yes)] text-[var(--bd-yes)]"
-      : vote === "no"
-        ? "border-[var(--bd-no)] text-[var(--bd-no)]"
-        : "border-[var(--bd-blank)] text-[var(--bd-blank)]";
-  const label = vote === "yes" ? "Yes" : vote === "no" ? "No" : "Blank";
-  return (
-    <span
-      className={`rounded-full border px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${style}`}
-    >
-      {label}
-    </span>
   );
 }
 
@@ -292,7 +273,7 @@ export default async function MePage() {
                       <div className="mt-3 flex flex-col gap-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <PartyChip slug={entry.party} />
-                          <VoteBadge vote={entry.vote} />
+                          <VoteTag vote={entry.vote} />
                           <span className="text-xs text-[var(--bd-muted)]">
                             {entry.vote === "abstain"
                               ? `all ${entry.silentAbove} delegates silent`

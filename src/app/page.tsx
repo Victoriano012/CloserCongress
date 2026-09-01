@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 
 import { billLabel, listBills } from "@/lib/bills";
 import { query } from "@/lib/db";
-import { PARTY_BY_SLUG, VOTING_PARTIES } from "@/lib/parties";
+import { SAMPLE_LIST, VOTING_PARTIES } from "@/lib/parties";
 // From the 4KB stats file, not @/lib/tally: that module imports the whole
 // 200KB electorate to read one integer.
 import electorateStats from "../../data/electorate-stats.json";
 import { shortDate } from "@/lib/dates";
+import { DelegationDiagram } from "@/components/delegation-diagram";
 import { VoteBar } from "@/components/vote-bar";
 
 export const metadata: Metadata = {
@@ -18,28 +19,6 @@ export const metadata: Metadata = {
 
 /** Nothing here reads the session or the request, so the page can be cached. */
 export const revalidate = 300;
-
-/** The worked example. Silent = asked, nothing to say; unreached = never asked. */
-const EXAMPLE = [
-  {
-    slug: "animal-welfare",
-    state: "silent",
-    badge: "silent",
-    note: "Not its subject. Your vote falls past it.",
-  },
-  {
-    slug: "catholic-values",
-    state: "voted",
-    badge: "votes",
-    note: "Its subject. It votes yes and the walk stops.",
-  },
-  {
-    slug: "equal-rights",
-    state: "unreached",
-    badge: "not reached",
-    note: "Never asked. Someone above it spoke.",
-  },
-] as const;
 
 async function stats() {
   try {
@@ -93,74 +72,24 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="bd-card self-start overflow-hidden">
-            <div className="border-b border-[var(--bd-line)] bg-[var(--bd-paper)] px-5 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--bd-muted)]">
-                Your list, walked from the top
-              </p>
-              <p className="mt-1 font-serif text-base font-semibold text-[var(--bd-navy)]">
-                A bill recognising a religious holiday
-              </p>
-            </div>
-            <ol className="divide-y divide-[var(--bd-line)]">
-              {EXAMPLE.map((row, i) => {
-                const party = PARTY_BY_SLUG[row.slug];
-                const voted = row.state === "voted";
-                const unreached = row.state === "unreached";
-                return (
-                  <li
-                    key={row.slug}
-                    className={`flex items-start gap-3 px-5 py-3.5 ${
-                      voted ? "bg-blue-50/70" : ""
-                    } ${unreached ? "opacity-45" : ""}`}
-                  >
-                    <span
-                      aria-hidden
-                      className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md text-[11px] font-bold ${
-                        voted
-                          ? "bg-[var(--bd-blue)] text-white"
-                          : "bg-[var(--bd-line)] text-[var(--bd-muted)]"
-                      }`}
-                    >
-                      {i + 1}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex flex-wrap items-baseline gap-x-2">
-                        <span
-                          className={`text-[0.95rem] font-medium ${
-                            voted ? "text-[var(--bd-navy)]" : "text-[var(--bd-ink)]"
-                          } ${unreached ? "line-through decoration-[var(--bd-muted)]/50" : ""}`}
-                        >
-                          <span aria-hidden className="mr-1.5">
-                            {party?.emoji}
-                          </span>
-                          {party?.name}
-                        </span>
-                        <span
-                          className={`rounded px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${
-                            voted
-                              ? "bg-[var(--bd-blue)] text-white"
-                              : "border border-[var(--bd-line)] text-[var(--bd-muted)]"
-                          }`}
-                        >
-                          {row.badge}
-                        </span>
-                      </span>
-                      <span className="mt-1 block text-sm leading-6 text-[var(--bd-muted)]">
-                        {row.note}
-                      </span>
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
-            <div className="border-t border-[var(--bd-line)] px-5 py-3 text-sm">
-              <span className="font-semibold text-[var(--bd-navy)]">Result: </span>
-              yes, cast by your second delegate.{" "}
-              <Link href="/how-it-works" className="bd-link">
-                How it works
-              </Link>
-            </div>
+          <div className="self-start">
+            <DelegationDiagram
+              caption="Your list, walked from the top"
+              bill="A bill recognising a religious holiday"
+              steps={[
+                { slug: SAMPLE_LIST[0], state: "silent", note: "Not its subject. Your vote falls past it." },
+                { slug: SAMPLE_LIST[1], state: "votes", note: "Its subject. It votes yes and the walk stops." },
+                { slug: SAMPLE_LIST[2], state: "unreached", note: "Never asked. Someone above it spoke." },
+              ]}
+              outcome={
+                <>
+                  yes, cast by your second delegate.{" "}
+                  <Link href="/how-it-works" className="bd-link">
+                    How it works
+                  </Link>
+                </>
+              }
+            />
           </div>
         </div>
       </section>

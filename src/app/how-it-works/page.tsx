@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PARTIES } from "@/lib/parties";
+import { ArticleHeader, Section, Toc } from "@/components/article";
+import { DelegationDiagram } from "@/components/delegation-diagram";
+import { SAMPLE_LIST, VOTING_PARTIES } from "@/lib/parties";
 
 export const metadata: Metadata = {
   title: "How it works",
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
 
 const SECTIONS = [
   { id: "problem", label: "The problem" },
-  { id: "three-ways", label: "Two ways to lend a vote" },
+  { id: "two-ways", label: "Two ways to lend a vote" },
   { id: "fall-through", label: "The list, worked through" },
   { id: "sharp-edge", label: "The sharp edge" },
   { id: "blank-vote", label: "The blank vote" },
@@ -19,149 +21,6 @@ const SECTIONS = [
   { id: "start", label: "Where to start" },
 ];
 
-/* --------------------------------------------------------------- primitives */
-
-function Section({
-  id,
-  eyebrow,
-  title,
-  children,
-}: {
-  id: string;
-  eyebrow: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section id={id} className="scroll-mt-24">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-muted)]">
-        {eyebrow}
-      </p>
-      <h2 className="mt-2 font-serif text-2xl font-semibold sm:text-[1.75rem]">{title}</h2>
-      <div className="bd-rule mt-4" />
-      <div className="mt-6 space-y-5 text-[1.0625rem] leading-8 text-[var(--bd-ink)]">
-        {children}
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------- fall-through diagram */
-
-type StepState = "votes" | "silent" | "unreached";
-
-type Step = {
-  rank: number;
-  emoji: string;
-  name: string;
-  state: StepState;
-  note: string;
-};
-
-/* Three states: a silent delegate was asked and had nothing to say; an
-   unreached one never got the question. */
-const STEP_STYLE: Record<
-  StepState,
-  { label: string; row: string; num: string; badge: string; name: string; arrow: string }
-> = {
-  votes: {
-    label: "votes",
-    row: "bg-blue-50/70",
-    num: "bg-[var(--bd-blue)] text-white",
-    badge: "bg-[var(--bd-blue)] text-white",
-    name: "text-[var(--bd-navy)]",
-    arrow: "←",
-  },
-  silent: {
-    label: "silent",
-    row: "",
-    num: "bg-[var(--bd-line)] text-[var(--bd-muted)]",
-    badge: "border border-[var(--bd-line)] text-[var(--bd-muted)]",
-    name: "text-[var(--bd-ink)]",
-    arrow: "↓",
-  },
-  unreached: {
-    label: "not reached",
-    row: "opacity-45",
-    num: "bg-[var(--bd-line)] text-[var(--bd-muted)]",
-    badge: "border border-[var(--bd-line)] text-[var(--bd-muted)]",
-    name: "text-[var(--bd-muted)] line-through decoration-[var(--bd-muted)]/50",
-    arrow: "",
-  },
-};
-
-function DelegationDiagram({
-  caption,
-  bill,
-  steps,
-  outcome,
-}: {
-  caption: string;
-  bill: string;
-  steps: Step[];
-  outcome: string;
-}) {
-  return (
-    <figure className="bd-card overflow-hidden">
-      <div className="border-b border-[var(--bd-line)] bg-[var(--bd-paper)] px-5 py-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-muted)]">
-          {caption}
-        </p>
-        <p className="mt-1 font-serif text-base font-semibold text-[var(--bd-navy)]">{bill}</p>
-      </div>
-
-      <ol className="divide-y divide-[var(--bd-line)]">
-        {steps.map((step) => {
-          const style = STEP_STYLE[step.state];
-          return (
-            <li key={step.rank} className={`flex items-start gap-3 px-5 py-3.5 ${style.row}`}>
-              <span
-                aria-hidden
-                className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md text-[11px] font-bold ${style.num}`}
-              >
-                {step.rank}
-              </span>
-
-              <span className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-baseline gap-x-2">
-                  <span className={`text-[0.95rem] font-medium ${style.name}`}>
-                    <span aria-hidden className="mr-1.5">
-                      {step.emoji}
-                    </span>
-                    {step.name}
-                  </span>
-                  <span
-                    className={`rounded px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${style.badge}`}
-                  >
-                    {style.label}
-                  </span>
-                </span>
-                <span className="mt-1 block text-sm leading-6 text-[var(--bd-muted)]">
-                  {step.note}
-                </span>
-              </span>
-
-              <span
-                aria-hidden
-                className={`mt-0.5 shrink-0 text-lg leading-6 ${
-                  step.state === "votes" ? "text-[var(--bd-blue)]" : "text-[var(--bd-muted)]"
-                }`}
-              >
-                {style.arrow}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
-
-      <figcaption className="border-t border-[var(--bd-line)] bg-white px-5 py-3 text-sm text-[var(--bd-ink)]">
-        <span className="font-semibold text-[var(--bd-navy)]">Result: </span>
-        {outcome}
-      </figcaption>
-    </figure>
-  );
-}
-
 /* ---------------------------------------------------------------------- page */
 
 export default function HowItWorksPage() {
@@ -169,40 +28,16 @@ export default function HowItWorksPage() {
     <div className="bd-container py-14 sm:py-20">
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-14">
         <article className="max-w-[68ch]">
-          <header>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-blue)]">
-              How it works
-            </p>
-            <h1 className="mt-3 font-serif text-4xl font-semibold leading-[1.15] sm:text-5xl">
-              You should not have to buy a whole ideology to get one thing you care about.
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-[var(--bd-muted)]">
-              Real bills from Congress, run past a population where everyone keeps an ordered
-              list of single-issue delegates. Each bill is decided by the first delegate on
-              the list with an opinion about it.
-            </p>
-            <div className="bd-rule mt-8" />
-          </header>
-
-          {/* Table of contents — inline on small screens */}
-          <nav
-            aria-label="On this page"
-            className="bd-card mt-10 px-5 py-4 lg:hidden"
+          <ArticleHeader
+            kicker="How it works"
+            title="You should not have to buy a whole ideology to get one thing you care about."
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-muted)]">
-              On this page
-            </p>
-            <ol className="mt-3 space-y-1.5 text-sm">
-              {SECTIONS.map((s, i) => (
-                <li key={s.id} className="flex gap-2">
-                  <span className="tabular-nums text-[var(--bd-muted)]">{i + 1}.</span>
-                  <a className="bd-link" href={`#${s.id}`}>
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
+            Real bills from Congress, run past a population where everyone keeps an ordered
+            list of single-issue delegates. Each bill is decided by the first delegate on the
+            list with an opinion about it.
+          </ArticleHeader>
+
+          <Toc sections={SECTIONS} />
 
           <div className="mt-14 space-y-16">
             <Section id="problem" eyebrow="1" title="Two bad options">
@@ -220,7 +55,7 @@ export default function HowItWorksPage() {
               </p>
             </Section>
 
-            <Section id="three-ways" eyebrow="2" title="Two ways to lend your vote">
+            <Section id="two-ways" eyebrow="2" title="Two ways to lend your vote">
               <ol className="space-y-4 border-l-2 border-[var(--bd-line)] pl-5">
                 <li>
                   <span className="font-semibold text-[var(--bd-navy)]">Name a delegate.</span>{" "}
@@ -251,27 +86,9 @@ export default function HowItWorksPage() {
                 caption="Bill one"
                 bill="A bill restricting cosmetic testing on animals"
                 steps={[
-                  {
-                    rank: 1,
-                    emoji: "🐾",
-                    name: "Pets and Animal Welfare Party",
-                    state: "votes",
-                    note: "Its subject. It votes yes and the walk stops.",
-                  },
-                  {
-                    rank: 2,
-                    emoji: "✝️",
-                    name: "Catholic Values Party",
-                    state: "unreached",
-                    note: "Never consulted.",
-                  },
-                  {
-                    rank: 3,
-                    emoji: "🤝",
-                    name: "Equal Rights Party",
-                    state: "unreached",
-                    note: "Never consulted.",
-                  },
+                  { slug: SAMPLE_LIST[0], state: "votes", note: "Its subject. It votes yes and the walk stops." },
+                  { slug: SAMPLE_LIST[1], state: "unreached", note: "Never consulted." },
+                  { slug: SAMPLE_LIST[2], state: "unreached", note: "Never consulted." },
                 ]}
                 outcome="Yes, cast by the animal welfare party."
               />
@@ -280,27 +97,9 @@ export default function HowItWorksPage() {
                 caption="Bill two"
                 bill="A bill recognising a religious holiday"
                 steps={[
-                  {
-                    rank: 1,
-                    emoji: "🐾",
-                    name: "Pets and Animal Welfare Party",
-                    state: "silent",
-                    note: "Not its subject. Your vote falls past it.",
-                  },
-                  {
-                    rank: 2,
-                    emoji: "✝️",
-                    name: "Catholic Values Party",
-                    state: "votes",
-                    note: "Its subject. It votes and the walk stops.",
-                  },
-                  {
-                    rank: 3,
-                    emoji: "🤝",
-                    name: "Equal Rights Party",
-                    state: "unreached",
-                    note: "Never consulted.",
-                  },
+                  { slug: SAMPLE_LIST[0], state: "silent", note: "Not its subject. Your vote falls past it." },
+                  { slug: SAMPLE_LIST[1], state: "votes", note: "Its subject. It votes and the walk stops." },
+                  { slug: SAMPLE_LIST[2], state: "unreached", note: "Never consulted." },
                 ]}
                 outcome="Cast by your second delegate, because your first stayed silent."
               />
@@ -379,7 +178,7 @@ export default function HowItWorksPage() {
                   />
                   <span>
                     <span className="font-semibold text-[var(--bd-navy)]">Not real: </span>
-                    the parties. All {PARTIES.filter((p) => !p.isBlank).length} delegates and
+                    the parties. All {VOTING_PARTIES.length} delegates and
                     the blank vote are invented, and none stands in for a real organisation.
                   </span>
                 </li>
@@ -450,31 +249,7 @@ export default function HowItWorksPage() {
           </div>
         </article>
 
-        {/* Sticky table of contents — large screens */}
-        <nav
-          aria-label="On this page"
-          className="hidden lg:block"
-        >
-          <div className="sticky top-24">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-muted)]">
-              On this page
-            </p>
-            <div className="bd-rule mt-3" />
-            <ol className="mt-4 space-y-2.5 text-sm">
-              {SECTIONS.map((s, i) => (
-                <li key={s.id} className="flex gap-2.5">
-                  <span className="tabular-nums text-[var(--bd-muted)]">{i + 1}</span>
-                  <a
-                    href={`#${s.id}`}
-                    className="text-[var(--bd-muted)] transition-colors hover:text-[var(--bd-blue-deep)]"
-                  >
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </nav>
+        <Toc sections={SECTIONS} sticky />
       </div>
     </div>
   );
