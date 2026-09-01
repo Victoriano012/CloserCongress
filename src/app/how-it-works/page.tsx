@@ -74,6 +74,11 @@ export default function HowItWorksPage() {
                 A list of five is not five ideologies fighting for control. It is a set of
                 narrow experts, and which one speaks depends on what the bill is about.
               </p>
+              <p className="rounded-lg border-l-4 border-[var(--bd-blue)] bg-white px-5 py-4">
+                <strong className="text-[var(--bd-navy)]">Change your vote anytime.</strong>{" "}
+                Reorder or replace delegates whenever you like. Once saved, the new list
+                replaces the old one, so only your latest list is used on each bill.
+              </p>
             </Section>
 
             <Section id="fall-through" eyebrow="3" title="What a list actually does">

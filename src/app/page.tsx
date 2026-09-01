@@ -56,7 +56,14 @@ export default async function Home() {
               Rank single-issue delegates. Each is silent outside its subject, so the first
               with an opinion on a bill casts your vote.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <p className="mt-8 max-w-xl border-l-4 border-[var(--bd-blue)] bg-blue-50 px-4 py-3 leading-relaxed text-[var(--bd-blue-deep)]">
+              <strong className="block font-serif text-lg">Your vote is never locked in.</strong>
+              <span className="text-sm">
+                Change your list whenever you like. Your latest saved list replaces the
+                previous one.
+              </span>
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
               <Link
                 href="/delegate"
                 className="rounded-md bg-blue-700 px-5 py-3 font-medium text-white hover:bg-blue-800"
