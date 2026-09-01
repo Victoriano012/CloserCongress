@@ -221,7 +221,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
         <section aria-labelledby="your-list-heading" className="flex flex-col gap-4">
           <div>
             <h2 id="your-list-heading" className="font-serif text-xl font-semibold">
-              Your list, in order
+              Your list
             </h2>
             <div className="bd-rule mt-2" />
             <p className="mt-3 text-sm text-[var(--bd-muted)]">

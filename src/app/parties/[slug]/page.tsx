@@ -99,7 +99,7 @@ function Record({ counts, isBlank }: { counts: Counts; isBlank: boolean }) {
   if (spoke === 0) {
     return (
       <p className="mt-6 max-w-2xl text-[15px] leading-relaxed">
-        Silent on all {seen} bills so far: none has fallen inside its subject.
+        Silent on all {seen} bills so far.
       </p>
     );
   }
@@ -109,7 +109,7 @@ function Record({ counts, isBlank }: { counts: Counts; isBlank: boolean }) {
       Spoke on {spoke} of {seen} bills:{" "}
       <strong className="font-semibold text-[var(--bd-yes)]">{counts.yes} yes</strong>,{" "}
       <strong className="font-semibold text-[var(--bd-no)]">{counts.no} no</strong>. Silent
-      on the other {counts.abstain}, passing those votes down the list.
+      on the other {counts.abstain}.
     </p>
   );
 }

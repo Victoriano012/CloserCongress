@@ -19,13 +19,7 @@ export const metadata: Metadata = {
 /** Nothing here reads the session or the request, so the page can be cached. */
 export const revalidate = 300;
 
-/**
- * The worked example that explains the whole idea in six seconds.
- *
- * Three states, and the difference between the last two is the point: a
- * delegate that was asked and had nothing to say lets the vote fall through;
- * one that was never reached got no say because someone above it spoke.
- */
+/** The worked example. Silent = asked, nothing to say; unreached = never asked. */
 const EXAMPLE = [
   {
     slug: "animal-welfare",
@@ -80,9 +74,8 @@ export default async function Home() {
               Pick an order.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--bd-muted)]">
-              Rank several single-issue delegates. Each is silent outside its own subject,
-              so on every bill the first one with an opinion casts your vote — and the rest
-              are never asked.
+              Rank single-issue delegates. Each is silent outside its subject, so the first
+              with an opinion on a bill casts your vote.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -100,7 +93,6 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* The mechanism, walked through. Visible to everyone, signed in or not. */}
           <div className="bd-card self-start overflow-hidden">
             <div className="border-b border-[var(--bd-line)] bg-[var(--bd-paper)] px-5 py-3">
               <p className="text-xs font-semibold uppercase tracking-wider text-[var(--bd-muted)]">
@@ -176,7 +168,7 @@ export default async function Home() {
       <section className="bd-container py-14">
         <dl className="grid gap-6 sm:grid-cols-4">
           {[
-            { n: bills.toLocaleString(), l: "real bills tracked" },
+            { n: bills.toLocaleString(), l: "real bills" },
             { n: judged.toLocaleString(), l: "put to the delegates" },
             { n: VOTING_PARTIES.length.toString(), l: "single-issue delegates" },
             { n: electorateStats.size.toLocaleString(), l: "simulated citizens" },
@@ -197,7 +189,7 @@ export default async function Home() {
       {recent.items.length > 0 && (
         <section className="bd-container pb-20">
           <div className="flex items-baseline justify-between">
-            <h2 className="font-serif text-2xl font-semibold">Latest before Congress</h2>
+            <h2 className="font-serif text-2xl font-semibold">Latest bills</h2>
             <Link href="/bills" className="bd-link text-sm">
               All bills →
             </Link>

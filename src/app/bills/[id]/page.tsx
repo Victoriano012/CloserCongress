@@ -93,7 +93,7 @@ function RealResult({ bill }: { bill: BillRow }) {
 
           {bill.real_vote_url && (
             <a href={bill.real_vote_url} className="bd-link mt-3 inline-block text-sm">
-              The official roll call
+              Official roll call
             </a>
           )}
         </div>
@@ -205,7 +205,7 @@ export default async function BillPage({ params }: Props) {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 rounded-md bg-[var(--bd-navy)] px-4 py-3 text-sm font-medium text-white hover:bg-[var(--bd-blue-deep)]"
             >
-              <span aria-hidden>📄</span> Read the bill (PDF)
+              <span aria-hidden>📄</span> Bill text (PDF)
             </a>
           )}
           {bill.text_url && (
@@ -240,7 +240,7 @@ export default async function BillPage({ params }: Props) {
       {/* 2. Them versus us. */}
       <Section
         title="The result"
-        note="What Congress did, and what ten thousand delegated citizens would have done."
+        note="Congress versus ten thousand delegated citizens."
       >
         <div className="grid gap-5 md:grid-cols-2">
           <RealResult bill={bill} />
@@ -257,7 +257,7 @@ export default async function BillPage({ params }: Props) {
                 </p>
                 <p className="mt-1 text-sm text-[var(--bd-muted)]">
                   {result.cast === 0
-                    ? `No delegate claimed it: all ${result.total.toLocaleString()} lists ran off the end. Not a rejection — nobody's business.`
+                    ? `No delegate claimed it: all ${result.total.toLocaleString()} lists ran off the end.`
                     : `${pct(result.yes, result.cast).toFixed(1)}% of the votes cast were in favour`}
                 </p>
 

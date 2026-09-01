@@ -72,8 +72,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
         <div className="bd-rule mb-5" />
         <h1 className="font-serif text-4xl font-semibold">Bills before Congress</h1>
         <p className="mt-3 text-[var(--bd-muted)]">
-          Real legislation, updated daily, put to ten thousand simulated citizens and their
-          delegates.
+          Real legislation, updated daily, put to ten thousand simulated citizens.
         </p>
       </header>
 

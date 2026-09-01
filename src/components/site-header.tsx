@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileMenu } from "@/components/mobile-menu";
 
 const NAV = [
   { href: "/bills", label: "Bills" },
@@ -39,12 +40,7 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        {/*
-          Narrow viewports get a disclosure menu. <details> keeps this a server
-          component with no client JavaScript: the summary is focusable and
-          toggles on click and on Enter/Space, and the same press closes it.
-        */}
-        <details className="bd-menu ml-auto lg:hidden">
+        <MobileMenu className="bd-menu ml-auto lg:hidden">
           <summary className="grid h-10 w-10 cursor-pointer list-none place-items-center rounded-md border border-[var(--bd-line)] text-[var(--bd-navy)]">
             <svg
               aria-hidden
@@ -70,7 +66,7 @@ export function SiteHeader() {
               Your list
             </Link>
           </nav>
-        </details>
+        </MobileMenu>
       </div>
     </header>
   );

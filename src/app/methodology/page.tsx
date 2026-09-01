@@ -246,13 +246,13 @@ export default function MethodologyPage() {
               <div className="grid gap-3 sm:grid-cols-3">
                 <Figure
                   value={String(stats.averageDelegates)}
-                  label="delegates per citizen on average, counting the terminal blank vote"
+                  label="delegates per citizen, including the blank vote"
                 />
                 <Figure
                   value={pct(stats.blankOnlyShare, 1)}
-                  label="hold the blank vote and nothing else"
+                  label="hold the blank vote alone"
                 />
-                <Figure value="19" label="issue axes; at most 9 delegates plus the blank" />
+                <Figure value="19" label="issue axes" />
               </div>
 
               <H3>Layer 1 — who people are</H3>

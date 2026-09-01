@@ -105,9 +105,8 @@ export default async function PartiesPage() {
         <h1 className="font-serif text-4xl font-semibold">The parties</h1>
         <div className="bd-rule mt-4" />
         <p className="mt-6 text-[15px] leading-relaxed text-[var(--bd-muted)]">
-          Each party is a single-issue delegate: it votes only on bills inside its subject
-          and abstains on the rest, handing your vote to the next name on your list. That is
-          what lets you combine several without adopting anyone&rsquo;s whole ideology.
+          Each party votes only on bills inside its subject and abstains on the rest, handing
+          your vote to the next name on your list.
         </p>
       </header>
 
