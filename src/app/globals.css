@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/*
+  BetterDemocracy 3 — a deliberately institutional palette. Government blue,
+  paper-white ground, ink-dark text, and a single warm accent for "the real
+  world said otherwise".
+*/
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif-display), ui-serif, Georgia, serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --bd-navy: #0b2545;
+  --bd-blue: #1d4ed8;
+  --bd-blue-deep: #14346b;
+  --bd-paper: #f7f9fc;
+  --bd-line: #dbe4f0;
+  --bd-ink: #0f1b2d;
+  --bd-muted: #5a6b83;
+  --bd-yes: #1a7f5a;
+  --bd-no: #b4344a;
+  /* Readable as text: 4.76:1 on white, 4.51:1 on paper. */
+  --bd-blank: #64748b;
+  /* The lighter tone stays available for fills, where contrast does not apply. */
+  --bd-blank-fill: #94a3b8;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bd-paper);
+    color: var(--bd-ink);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background: #bfdbfe;
+    color: var(--bd-navy);
+  }
+
+  h1, h2, h3 {
+    color: var(--bd-navy);
+    letter-spacing: -0.015em;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .bd-container {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .bd-card {
+    background: #fff;
+    border: 1px solid var(--bd-line);
+    border-radius: 0.75rem;
+  }
+
+  /* The thin blue rule that runs under section headings, like a letterhead. */
+  .bd-rule {
+    border-top: 3px solid var(--bd-blue);
+    width: 2.5rem;
+  }
+
+  .bd-link {
+    color: var(--bd-blue);
+    text-decoration-line: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: #bfdbfe;
+  }
+  .bd-link:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* The narrow-viewport header menu; Safari needs its own marker suppressed. */
+  .bd-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+/*
+  One focus ring for the whole site. Deliberately unlayered so it outranks the
+  `outline-none` utility wherever a component has removed the browser default;
+  :where() keeps its specificity at zero so a component can still restyle it.
+*/
+:where(a[href], button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--bd-blue);
+  outline-offset: 2px;
 }

@@ -1,0 +1,255 @@
+{
+  "hash": "6b3e027d92e81f90",
+  "size": 10000,
+  "averageDelegates": 5.8,
+  "blankOnlyShare": 0.2076,
+  "blankFromAbstainers": 0.2048,
+  "blankFromIndifference": 0.0028,
+  "calibration": [
+    {
+      "axis": "reproductive-rights",
+      "target": 0.6,
+      "achieved": 0.5938,
+      "population": 0.6449
+    },
+    {
+      "axis": "guns",
+      "target": 0.56,
+      "achieved": 0.5624,
+      "population": 0.6063
+    },
+    {
+      "axis": "climate",
+      "target": 0.57,
+      "achieved": 0.5773,
+      "population": 0.6099
+    },
+    {
+      "axis": "immigration",
+      "target": 0.58,
+      "achieved": 0.5907,
+      "population": 0.6118
+    },
+    {
+      "axis": "healthcare",
+      "target": 0.64,
+      "achieved": 0.6539,
+      "population": 0.6899
+    },
+    {
+      "axis": "taxes",
+      "target": 0.58,
+      "achieved": 0.5657,
+      "population": 0.6263
+    },
+    {
+      "axis": "equality",
+      "target": 0.65,
+      "achieved": 0.6688,
+      "population": 0.6904
+    },
+    {
+      "axis": "religion",
+      "target": 0.71,
+      "achieved": 0.7262,
+      "population": 0.7526
+    },
+    {
+      "axis": "labor",
+      "target": 0.68,
+      "achieved": 0.6856,
+      "population": 0.7216
+    },
+    {
+      "axis": "criminal-justice",
+      "target": 0.67,
+      "achieved": 0.6883,
+      "population": 0.7013
+    },
+    {
+      "axis": "foreign-policy",
+      "target": 0.36,
+      "achieved": 0.3674,
+      "population": 0.3977
+    },
+    {
+      "axis": "education",
+      "target": 0.52,
+      "achieved": 0.5287,
+      "population": 0.5544
+    },
+    {
+      "axis": "fiscal",
+      "target": 0.54,
+      "achieved": 0.5401,
+      "population": 0.5136
+    }
+  ],
+  "partyShare": [
+    {
+      "slug": "blank-vote",
+      "inList": 1,
+      "firstChoice": 0.2076
+    },
+    {
+      "slug": "anti-corruption",
+      "inList": 0.4328,
+      "firstChoice": 0.096
+    },
+    {
+      "slug": "housing-for-all",
+      "inList": 0.2301,
+      "firstChoice": 0.0348
+    },
+    {
+      "slug": "strong-defense",
+      "inList": 0.2287,
+      "firstChoice": 0.0439
+    },
+    {
+      "slug": "veterans-first",
+      "inList": 0.2266,
+      "firstChoice": 0.03
+    },
+    {
+      "slug": "universal-healthcare",
+      "inList": 0.1982,
+      "firstChoice": 0.0384
+    },
+    {
+      "slug": "immigrant-rights",
+      "inList": 0.1973,
+      "firstChoice": 0.0391
+    },
+    {
+      "slug": "justice-reform",
+      "inList": 0.1926,
+      "firstChoice": 0.0337
+    },
+    {
+      "slug": "digital-rights",
+      "inList": 0.1919,
+      "firstChoice": 0.0205
+    },
+    {
+      "slug": "tax-the-rich",
+      "inList": 0.1778,
+      "firstChoice": 0.0381
+    },
+    {
+      "slug": "reproductive-freedom",
+      "inList": 0.1772,
+      "firstChoice": 0.0347
+    },
+    {
+      "slug": "gun-safety",
+      "inList": 0.1659,
+      "firstChoice": 0.0294
+    },
+    {
+      "slug": "public-schools",
+      "inList": 0.1639,
+      "firstChoice": 0.0329
+    },
+    {
+      "slug": "equal-rights",
+      "inList": 0.149,
+      "firstChoice": 0.022
+    },
+    {
+      "slug": "school-choice",
+      "inList": 0.1461,
+      "firstChoice": 0.0261
+    },
+    {
+      "slug": "border-security",
+      "inList": 0.1367,
+      "firstChoice": 0.0266
+    },
+    {
+      "slug": "balanced-budget",
+      "inList": 0.1366,
+      "firstChoice": 0.0221
+    },
+    {
+      "slug": "low-tax",
+      "inList": 0.1365,
+      "firstChoice": 0.0245
+    },
+    {
+      "slug": "union-labor",
+      "inList": 0.1354,
+      "firstChoice": 0.0172
+    },
+    {
+      "slug": "peace-party",
+      "inList": 0.1328,
+      "firstChoice": 0.0298
+    },
+    {
+      "slug": "second-amendment",
+      "inList": 0.1291,
+      "firstChoice": 0.0216
+    },
+    {
+      "slug": "right-to-life",
+      "inList": 0.1212,
+      "firstChoice": 0.0205
+    },
+    {
+      "slug": "animal-welfare",
+      "inList": 0.1192,
+      "firstChoice": 0.009
+    },
+    {
+      "slug": "public-investment",
+      "inList": 0.1163,
+      "firstChoice": 0.0175
+    },
+    {
+      "slug": "rural-farmers",
+      "inList": 0.1162,
+      "firstChoice": 0.0072
+    },
+    {
+      "slug": "secular-state",
+      "inList": 0.1098,
+      "firstChoice": 0.0114
+    },
+    {
+      "slug": "free-market-health",
+      "inList": 0.1049,
+      "firstChoice": 0.0154
+    },
+    {
+      "slug": "climate-action",
+      "inList": 0.0952,
+      "firstChoice": 0.0104
+    },
+    {
+      "slug": "law-and-order",
+      "inList": 0.0872,
+      "firstChoice": 0.0124
+    },
+    {
+      "slug": "traditional-family",
+      "inList": 0.0738,
+      "firstChoice": 0.0085
+    },
+    {
+      "slug": "energy-independence",
+      "inList": 0.0697,
+      "firstChoice": 0.0079
+    },
+    {
+      "slug": "small-business",
+      "inList": 0.0621,
+      "firstChoice": 0.0066
+    },
+    {
+      "slug": "catholic-values",
+      "inList": 0.0414,
+      "firstChoice": 0.0042
+    }
+  ]
+}
