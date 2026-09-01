@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { billLabel, getBill, type BillRow, type PartyVote } from "@/lib/bills";
+import { shortDate } from "@/lib/dates";
 import { loadDelegation } from "@/lib/delegation";
 import { PARTY_BY_SLUG, BLANK_PARTY_SLUG, VOTING_PARTIES } from "@/lib/parties";
 import { resolveForDelegation, type Vote } from "@/lib/tally";
@@ -23,14 +24,6 @@ export async function generateMetadata({ params }: Props) {
 }
 
 const pct = (n: number, d: number) => (d > 0 ? (n / d) * 100 : 0);
-
-/** Date columns arrive as Date objects, and a bare ISO string tells nobody what it is. */
-const longDate = (value: string | null) =>
-  value
-    ? new Date(value).toLocaleDateString("en-GB", {
-      day: "numeric", month: "short", year: "numeric",
-    })
-    : null;
 
 /** The list used in every worked example on the site, for readers without one. */
 const SAMPLE_DELEGATION = ["animal-welfare", "catholic-values", "equal-rights"];
@@ -106,8 +99,8 @@ function RealResult({ bill }: { bill: BillRow }) {
         </div>
       ) : (
         <p className="mt-5 text-sm text-[var(--bd-muted)]">
-          No recorded roll-call vote. Most bills are decided by voice vote, by unanimous
-          consent, or simply by never being brought to the floor.
+          No roll-call vote. Most bills pass by voice, by unanimous consent, or never reach
+          the floor.
         </p>
       )}
     </div>
@@ -151,7 +144,7 @@ export default async function BillPage({ params }: Props) {
           <span className="font-mono font-semibold text-[var(--bd-blue-deep)]">{label}</span>
           <span>·</span>
           <span className="capitalize">{bill.chamber}</span>
-          {bill.introduced_date && <>· introduced {longDate(bill.introduced_date)}</>}
+          {bill.introduced_date && <>· introduced {shortDate(bill.introduced_date)}</>}
         </p>
         <h1 className="mt-2 font-serif text-3xl font-semibold leading-tight sm:text-4xl">
           {bill.title}
@@ -184,26 +177,22 @@ export default async function BillPage({ params }: Props) {
                 </ul>
               )}
               <p className="mt-4 text-xs text-[var(--bd-muted)]">
-                Summarised by Claude <span className="capitalize">{ai.model}</span> from the
-                official summary. It can be wrong; the official text is the only authority.
+                Summarised by Claude <span className="capitalize">{ai.model}</span>. It can be
+                wrong; the official text is the authority.
               </p>
             </>
           ) : bill.official_summary ? (
             <>
-              {/* Congress's own prose, not the site's rewrite — it keeps its line breaks
-                  and is boxed so a 2,000-character slab cannot swamp the page. */}
               <p className="mt-2 max-h-64 overflow-y-auto whitespace-pre-line text-[var(--bd-muted)]">
                 {bill.official_summary}
               </p>
               <p className="mt-4 text-xs text-[var(--bd-muted)]">
-                Congress&rsquo;s own summary. A plain-words version will appear once this
-                bill is classified.
+                Congress&rsquo;s own summary. A plain-words version follows classification.
               </p>
             </>
           ) : (
             <p className="mt-2 text-[var(--bd-muted)]">
-              No summary yet. Congress publishes its own summary some weeks after a bill is
-              introduced.
+              No summary yet. Congress publishes one some weeks after introduction.
             </p>
           )}
         </div>
@@ -241,7 +230,7 @@ export default async function BillPage({ params }: Props) {
           )}
           {bill.latest_action_text && (
             <p className="mt-1 text-xs text-[var(--bd-muted)]">
-              Latest action{bill.latest_action_date && ` (${longDate(bill.latest_action_date)})`}:{" "}
+              Latest action{bill.latest_action_date && ` (${shortDate(bill.latest_action_date)})`}:{" "}
               {bill.latest_action_text}
             </p>
           )}
@@ -251,7 +240,7 @@ export default async function BillPage({ params }: Props) {
       {/* 2. Them versus us. */}
       <Section
         title="The result"
-        note="What Congress did, and what ten thousand people with delegated votes would have done."
+        note="What Congress did, and what ten thousand delegated citizens would have done."
       >
         <div className="grid gap-5 md:grid-cols-2">
           <RealResult bill={bill} />
@@ -262,14 +251,13 @@ export default async function BillPage({ params }: Props) {
             </h3>
             {result ? (
               <>
-                {/* Nobody voting is a third outcome, not a rejection: 0 of 0 in favour is
-                    not a percentage, and no majority was ever tested. */}
+                {/* Nobody voting is a third outcome, not a rejection. */}
                 <p className="mt-2 font-serif text-3xl font-semibold">
                   {result.cast === 0 ? "No result" : result.passed ? "Would pass" : "Would fail"}
                 </p>
                 <p className="mt-1 text-sm text-[var(--bd-muted)]">
                   {result.cast === 0
-                    ? `No delegate claimed this one — every party in every list abstained, so all ${result.total.toLocaleString()} lists ran off the end and the whole electorate voted blank. That is not a rejection; it is nobody's business.`
+                    ? `No delegate claimed it: all ${result.total.toLocaleString()} lists ran off the end. Not a rejection — nobody's business.`
                     : `${pct(result.yes, result.cast).toFixed(1)}% of the votes cast were in favour`}
                 </p>
 
@@ -326,23 +314,21 @@ export default async function BillPage({ params }: Props) {
               </>
             ) : (
               <p className="mt-4 text-sm text-[var(--bd-muted)]">
-                The delegates have not looked at this bill yet. Come back once it has been
-                put to them.
+                Awaiting the delegates.
               </p>
             )}
           </div>
         </div>
       </Section>
 
-      {/* 3. The reader's own vote — or, signed out, the sample list's, which is only
-             worth showing on a bill the delegates have actually been given. */}
+      {/* 3. The reader's own vote — or, signed out, the sample list's. */}
       {(delegation || votes.length > 0) && (
         <Section
-          title={delegation ? "Your vote" : "What a list like this would have done"}
+          title={delegation ? "Your vote" : "A sample list"}
           note={
             delegation
-              ? "Walked down your own list, exactly the way the simulation walks everyone else's."
-              : "A three-name list, walked down this bill's real votes the way the simulation walks everyone else's."
+              ? "Your list, walked the way the simulation walks everyone's."
+              : "Three names, walked the way the simulation walks every list."
           }
         >
           <div className="bd-card p-6">
@@ -371,39 +357,35 @@ export default async function BillPage({ params }: Props) {
                 {skipped.length > 0 && (
                   <p className="mt-4 text-sm text-[var(--bd-muted)]">
                     {skipped.map((s) => PARTY_BY_SLUG[s]?.name ?? s).join(", ")}
-                    {skipped.length === 1
-                      ? ", ranked above it, had nothing to say about this one."
-                      : " — all ranked above it — had nothing to say about this one."}
+                    {skipped.length === 1 ? " was" : " were"} ranked above it and stayed
+                    silent.
                   </p>
                 )}
               </>
             ) : votes.length === 0 ? (
-              <p className="text-[var(--bd-muted)]">
-                This bill has not been put to the delegates yet.
-              </p>
+              <p className="text-[var(--bd-muted)]">Awaiting the delegates.</p>
             ) : (
               <p className="text-lg">
                 {delegation ? "Your vote was" : "Its vote was"} <strong>blank</strong>. None of
                 the {list.filter((d) => d !== BLANK_PARTY_SLUG).length} delegates had an
-                opinion on this one.
+                opinion.
               </p>
             )}
             <Link href="/delegate" className="bd-link mt-4 inline-block text-sm">
-              {delegation ? "Change your delegates" : "Build your own list"}
+              {delegation ? "Edit your list" : "Build your own list"}
             </Link>
           </div>
         </Section>
       )}
 
-      {/* Why each party voted the way it did — including when none of them did, which
-          is the case the fall-through story is most vivid in. */}
+      {/* Why each party voted the way it did — including when none did. */}
       {votes.length > 0 && (
         <Section
           title="What the delegates said"
           note={
             spoke.length > 0
-              ? `${spoke.length} of the ${VOTING_PARTIES.length} delegates had an opinion. The rest abstained, which is the normal outcome.`
-              : `None of the ${VOTING_PARTIES.length} delegates had an opinion. This bill is nobody's subject.`
+              ? `${spoke.length} of ${VOTING_PARTIES.length} delegates had an opinion. The rest abstained, as usual.`
+              : `None of the ${VOTING_PARTIES.length} delegates had an opinion.`
           }
         >
           {spoke.length > 0 ? (
@@ -429,10 +411,9 @@ export default async function BillPage({ params }: Props) {
             </ul>
           ) : (
             <p className="bd-card p-6 text-[var(--bd-muted)]">
-              Every delegate was shown this bill and every one of them stayed silent, so
-              every list ran off its end and the blank vote cast for the whole electorate.
-              A delegate that says nothing is not a delegate voting no — it is your vote
-              passing to the next name down, and here there was no next name.
+              Every delegate stayed silent, so every list ran off its end and the whole
+              electorate voted blank. Silence is not a no — it passes the vote down the list,
+              and here there was no next name.
             </p>
           )}
         </Section>

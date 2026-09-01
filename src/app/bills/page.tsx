@@ -2,12 +2,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { billLabel, listBills } from "@/lib/bills";
+import { shortDate } from "@/lib/dates";
 import { VoteBar } from "@/components/vote-bar";
 
 export const metadata: Metadata = {
   title: "Bills",
   description:
-    "Real bills before the United States Congress, put to a simulated vote of ten thousand delegated citizens.",
+    "Real bills before Congress, put to a simulated vote of ten thousand delegated citizens.",
 };
 
 export const dynamic = "force-dynamic";
@@ -71,9 +72,8 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
         <div className="bd-rule mb-5" />
         <h1 className="font-serif text-4xl font-semibold">Bills before Congress</h1>
         <p className="mt-3 text-[var(--bd-muted)]">
-          Real legislation, updated daily. Each one is put to the ten thousand simulated
-          citizens as it is classified, and their votes are cast by whichever of their
-          delegates has an opinion.
+          Real legislation, updated daily, put to ten thousand simulated citizens and their
+          delegates.
         </p>
       </header>
 
@@ -82,6 +82,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
           type="search"
           name="q"
           defaultValue={query}
+          aria-label="Search bills"
           placeholder="Search titles and bill numbers…"
           className="w-full max-w-sm rounded-md border border-[var(--bd-line)] bg-white px-3.5 py-2 text-sm focus:border-[var(--bd-blue)]"
         />
@@ -134,7 +135,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
                   </>
                 )}
                 <span className="ml-auto flex items-center gap-2">
-                  {bill.latest_action_date}
+                  {shortDate(bill.latest_action_date)}
                   <OutcomeTag outcome={bill.real_outcome} />
                 </span>
               </div>
@@ -159,23 +160,22 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
                   </div>
                   <span className="text-xs text-[var(--bd-muted)]">
                     {bill.yes_weight + bill.no_weight === 0 ? (
-                      // Nobody voted, so there is no percentage to report and no
-                      // rejection to report either: every list ran off the end.
-                      <>No delegate claimed this one — every vote fell through to blank</>
+                      // Nobody voted: no percentage, and no rejection either.
+                      <>No delegate claimed it — all blank</>
                     ) : (
                       <>
-                        {bill.passed ? "Would pass" : "Would fail"} here —{" "}
+                        {bill.passed ? "Would pass" : "Would fail"} ·{" "}
                         {Math.round(
                           (bill.yes_weight / (bill.yes_weight + bill.no_weight)) * 100,
                         )}
-                        % in favour of those who voted
+                        % of votes cast in favour
                       </>
                     )}
                   </span>
                 </div>
               ) : (
                 <p className="mt-4 text-xs text-[var(--bd-muted)]">
-                  Not yet put to the delegates.
+                  Awaiting the delegates.
                 </p>
               )}
             </Link>
@@ -188,8 +188,6 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
           {total === 0 ? (
             <>No bills match {query ? <>“{query}”</> : "that filter"}.</>
           ) : (
-            // Rows exist, the asked-for page is simply past the end — saying
-            // "no match" here blames a search that was never run.
             <>
               That page is past the end.{" "}
               <Link href={link({ page: pages })} className="bd-link">

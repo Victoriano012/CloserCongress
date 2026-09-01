@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "The parties",
   // Counted from the roster rather than spelled out, so it cannot drift out of
   // date the next time a party is added.
-  description: `${VOTING_PARTIES.length} single-issue delegates, plus the blank vote. Each one votes only on its own subject and abstains on everything else, so a citizen can combine several without adopting anyone's whole ideology.`,
+  description: `${VOTING_PARTIES.length} single-issue delegates, plus the blank vote. Each votes only on its own subject and abstains on everything else.`,
 };
 
 type Counts = { yes: number; no: number; abstain: number };
@@ -83,12 +83,10 @@ function PartyCard({ party, counts }: { party: Party; counts: Counts | undefined
       </p>
 
       {counts ? (
-        // Three bare counters said nothing without a denominator, and a third of
-        // the roster has never voted, so a third of the grid read "0 · 0".
         <p className="mt-auto border-t border-[var(--bd-line)] pt-3 text-xs leading-relaxed text-[var(--bd-muted)]">
           {counts.yes + counts.no === 0
-            ? `Silent on all ${seen} bills so far — it has not met one in its subject yet.`
-            : `Spoke on ${counts.yes + counts.no} of the ${seen} bills classified so far, silent on the other ${counts.abstain}.`}
+            ? `Silent on all ${seen} bills so far.`
+            : `Spoke on ${counts.yes + counts.no} of ${seen} bills; silent on the rest.`}
         </p>
       ) : null}
     </Link>
@@ -106,20 +104,11 @@ export default async function PartiesPage() {
       <header className="max-w-3xl">
         <h1 className="font-serif text-4xl font-semibold">The parties</h1>
         <div className="bd-rule mt-4" />
-        <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-[var(--bd-muted)]">
-          <p>
-            Every party here is a single-issue delegate. It claims one narrow subject, votes
-            only on bills inside it, and abstains on everything else — which is the point,
-            not a gap. Abstaining is how a delegate hands your vote to the next name on your
-            list.
-          </p>
-          <p>
-            That is what lets you combine several without signing up to anyone&rsquo;s whole
-            ideology. Put the Pets and Animal Welfare Party first and the Catholic Values
-            Party second, and you get the animal party&rsquo;s vote on an animal bill, and
-            the Catholic party&rsquo;s vote on everything the animal party sits out.
-          </p>
-        </div>
+        <p className="mt-6 text-[15px] leading-relaxed text-[var(--bd-muted)]">
+          Each party is a single-issue delegate: it votes only on bills inside its subject
+          and abstains on the rest, handing your vote to the next name on your list. That is
+          what lets you combine several without adopting anyone&rsquo;s whole ideology.
+        </p>
       </header>
 
       <div className="mt-14 space-y-14">
@@ -155,9 +144,8 @@ export default async function PartiesPage() {
               <h3 className="font-serif text-xl font-semibold">{blank.name}</h3>
               <p className="text-sm text-[var(--bd-ink)]">{blank.tagline}</p>
               <p className="text-sm leading-relaxed text-[var(--bd-muted)]">
-                Always on every list, always blank — what happens when none of your delegates
-                has an opinion, or the only entry for someone who does not want to vote at
-                all.
+                Ends every list. Casts a blank when no delegate above it has an opinion, or
+                stands alone for someone who does not want to vote.
               </p>
             </div>
           </Link>

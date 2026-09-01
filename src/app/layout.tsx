@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s · BetterDemocracy",
   },
   description:
-    "Lend your vote on real bills before Congress to an ordered list of single-issue parties. When the first has no opinion on a bill, it abstains and your vote falls through to the next one.",
+    "Lend your vote on real bills before Congress to an ordered list of single-issue parties. The first one with an opinion casts it.",
   openGraph: {
     title: "BetterDemocracy",
     description:

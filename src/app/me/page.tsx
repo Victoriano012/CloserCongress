@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import { PartyChip } from "@/components/party-chip";
 import { billLabel } from "@/lib/bills";
+import { shortDate } from "@/lib/dates";
 import { query } from "@/lib/db";
 import { loadDelegation } from "@/lib/delegation";
 import { BLANK_PARTY_SLUG, PARTY_BY_SLUG } from "@/lib/parties";
@@ -13,18 +14,14 @@ import { resolveForDelegation, type Vote } from "@/lib/tally";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "How your list has been voting",
+  title: "Your record",
   description:
-    "Bill by bill, which of your delegates ended up speaking for you, how it voted, and how many delegates above it stayed silent first.",
+    "Bill by bill, which of your delegates spoke for you and how it voted.",
 };
 
 const RECENT_LIMIT = 25;
 
-/**
- * Shown to a signed-out reader, who has no list of their own: the same trio the
- * rest of the site explains the mechanism with, so the page says something
- * concrete instead of only asking for a sign-in.
- */
+/** Shown to a signed-out reader: the same trio the rest of the site uses. */
 const SAMPLE_LIST = ["animal-welfare", "catholic-values", "equal-rights"];
 
 type BillRow = {
@@ -41,16 +38,7 @@ function isVote(value: string): value is Vote {
   return value === "yes" || value === "no" || value === "abstain";
 }
 
-function shortDate(value: string | Date | null): string | null {
-  if (!value) return null;
-  return String(value instanceof Date ? value.toISOString() : value).slice(0, 10);
-}
-
-/**
- * The most recent classified bills and the party votes on them. The classifier
- * fills party_votes in the background, so both halves are best-effort: an empty
- * or unreachable table must render an honest empty state, never a 500.
- */
+/** Recent classified bills and the party votes on them. Best-effort: never a 500. */
 async function loadRecent(): Promise<{ bills: BillRow[]; votes: VoteRow[] }> {
   let bills: BillRow[] = [];
   try {
@@ -85,7 +73,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return <div className="bd-container flex flex-col gap-8 py-12">{children}</div>;
 }
 
-function Heading({ title = "How your list has been voting" }: { title?: string }) {
+function Heading({ title = "Your record" }: { title?: string }) {
   return (
     <header className="max-w-2xl">
       <h1 className="font-serif text-3xl font-semibold">{title}</h1>
@@ -133,30 +121,22 @@ export default async function MePage() {
   if (!session?.user) {
     return (
       <Shell>
-        <Heading title="Where your vote actually goes" />
+        <Heading title="Where your vote goes" />
         <div className="max-w-2xl space-y-4 text-base leading-relaxed text-[var(--bd-ink)]">
           <p>
-            A list is delegates in the order you trust them. Each one votes only on its own
-            subject, so on any given bill the first name with an opinion casts your vote and
-            the rest are never asked. A list of three reads like this:
+            On each bill, the first delegate on your list with an opinion casts your vote.
+            A list of three:
           </p>
           <OrderedChips slugs={[...SAMPLE_LIST, BLANK_PARTY_SLUG]} />
           <p>
-            On a bill about animal testing the first name speaks. On a bill about church
-            schools the first has nothing to say and the second does. On a defence
-            appropriation none of the three claims the subject, and the vote falls through
-            to the blank at the end — which is not a rejection, it is nobody&rsquo;s
-            business.
-          </p>
-          <p>
-            Sign in and this page shows that happening for your own list, bill by real bill:
-            which delegate spoke, how it voted, and how many above it stayed silent first.
+            Sign in and this page shows, bill by real bill, which of your delegates spoke
+            and how it voted.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <SignInButton />
           <Link href="/how-it-works" className="bd-link text-sm">
-            How the ordering works
+            How it works
           </Link>
         </div>
       </Shell>
@@ -171,11 +151,11 @@ export default async function MePage() {
       <Shell>
         <Heading />
         <p className="max-w-2xl text-base leading-relaxed text-[var(--bd-ink)]">
-          You have no delegates yet, so every bill is a blank vote.{" "}
+          No delegates yet, so every bill is a blank vote.{" "}
           <Link href="/delegate" className="bd-link">
             Build your list
-          </Link>{" "}
-          and this page will show you, bill by bill, who ended up speaking for you.
+          </Link>
+          .
         </p>
       </Shell>
     );
@@ -229,7 +209,6 @@ export default async function MePage() {
           Your list
         </h2>
         <div className="mt-3">
-          {/* The blank vote is not stored on a list; it is the implicit last name. */}
           <OrderedChips slugs={[...realDelegates, BLANK_PARTY_SLUG]} />
         </div>
         <p className="mt-3 text-sm text-[var(--bd-muted)]">
@@ -242,15 +221,13 @@ export default async function MePage() {
 
       {counted.length === 0 ? (
         <p className="bd-card max-w-2xl p-6 text-sm leading-relaxed text-[var(--bd-muted)]">
-          No bills have been classified yet, so there is nothing for your delegates to have
-          voted on. The classifier runs in the background — check back shortly.
+          No bills classified yet. Check back shortly.
         </p>
       ) : (
         <>
           <section>
             <h2 className="font-serif text-xl font-semibold">
-              Who did the work, over the last {counted.length}{" "}
-              {counted.length === 1 ? "bill" : "bills"}
+              Who spoke, last {counted.length} {counted.length === 1 ? "bill" : "bills"}
             </h2>
             <div className="bd-rule mt-2" />
             <ul className="mt-4 flex flex-wrap gap-2">
@@ -276,9 +253,7 @@ export default async function MePage() {
               })}
               <li className="bd-card flex items-center gap-2 border-dashed px-3 py-2 text-sm">
                 <span aria-hidden>⬜</span>
-                <span className="font-medium text-[var(--bd-muted)]">
-                  Nobody had an opinion
-                </span>
+                <span className="font-medium text-[var(--bd-muted)]">Nobody</span>
                 <span className="tabular-nums text-[var(--bd-muted)]">
                   {blanks} blank{blanks === 1 ? "" : "s"}
                 </span>
@@ -312,9 +287,7 @@ export default async function MePage() {
                     </div>
 
                     {!entry.classified ? (
-                      <p className="mt-3 text-sm text-[var(--bd-muted)]">
-                        Not classified yet — no party has looked at this one.
-                      </p>
+                      <p className="mt-3 text-sm text-[var(--bd-muted)]">Not classified yet.</p>
                     ) : (
                       <div className="mt-3 flex flex-col gap-2">
                         <div className="flex flex-wrap items-center gap-2">
@@ -322,12 +295,10 @@ export default async function MePage() {
                           <VoteBadge vote={entry.vote} />
                           <span className="text-xs text-[var(--bd-muted)]">
                             {entry.vote === "abstain"
-                              ? `all ${entry.silentAbove} of your delegates abstained`
+                              ? `all ${entry.silentAbove} delegates silent`
                               : entry.silentAbove === 0
-                                ? "your first choice spoke"
-                                : `${entry.silentAbove} delegate${
-                                    entry.silentAbove === 1 ? "" : "s"
-                                  } above abstained first`}
+                                ? "first choice"
+                                : `${entry.silentAbove} silent above`}
                           </span>
                         </div>
                         {entry.reason ? (

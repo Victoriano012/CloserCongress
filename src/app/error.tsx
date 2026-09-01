@@ -12,8 +12,7 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
       <div className="bd-rule mb-6" />
       <h1 className="font-serif text-3xl font-semibold">This page did not load</h1>
       <p className="mt-4 max-w-lg text-[var(--bd-muted)]">
-        Something went wrong on our side — most likely the database was slow to wake up.
-        Nothing you did caused it, and nothing was saved or lost.
+        Something went wrong on our side, most likely a slow database. Nothing was lost.
       </p>
       <div className="mt-8 flex gap-3">
         <button

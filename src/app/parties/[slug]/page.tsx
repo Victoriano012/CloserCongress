@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { billLabel } from "@/lib/bills";
+import { shortDate } from "@/lib/dates";
 import { query } from "@/lib/db";
 import { PARTY_BY_SLUG } from "@/lib/parties";
 
@@ -82,11 +83,7 @@ function VoteTag({ vote }: { vote: string }) {
   );
 }
 
-/**
- * The record as a sentence rather than three bare counters. The abstentions are
- * the majority of every party's record and the mechanism the site is about, so
- * they need the denominator beside them, not a large grey number on its own.
- */
+/** The record as a sentence: abstentions need their denominator beside them. */
 function Record({ counts, isBlank }: { counts: Counts; isBlank: boolean }) {
   const spoke = counts.yes + counts.no;
   const seen = spoke + counts.abstain;
@@ -94,8 +91,7 @@ function Record({ counts, isBlank }: { counts: Counts; isBlank: boolean }) {
   if (isBlank) {
     return (
       <p className="mt-6 text-[15px] leading-relaxed">
-        Blank on all {seen} bills it has been shown, by construction — it is never put to
-        the model at all.
+        Blank on all {seen} bills, by construction: it is never put to the model.
       </p>
     );
   }
@@ -103,20 +99,17 @@ function Record({ counts, isBlank }: { counts: Counts; isBlank: boolean }) {
   if (spoke === 0) {
     return (
       <p className="mt-6 max-w-2xl text-[15px] leading-relaxed">
-        Silent on all {seen} bills classified so far — none of them has fallen inside its
-        subject yet. A citizen who ranked it first has had every vote cast by whoever came
-        next on their list.
+        Silent on all {seen} bills so far: none has fallen inside its subject.
       </p>
     );
   }
 
   return (
     <p className="mt-6 max-w-2xl text-[15px] leading-relaxed">
-      Spoke on {spoke} of the {seen} bills classified so far:{" "}
+      Spoke on {spoke} of {seen} bills:{" "}
       <strong className="font-semibold text-[var(--bd-yes)]">{counts.yes} yes</strong>,{" "}
       <strong className="font-semibold text-[var(--bd-no)]">{counts.no} no</strong>. Silent
-      on the other {counts.abstain}, which is how the vote of anyone who ranked it first
-      reaches the next name on their list.
+      on the other {counts.abstain}, passing those votes down the list.
     </p>
   );
 }
@@ -164,8 +157,8 @@ export default async function PartyPage({ params }: Props) {
 
       <p className="mt-4 text-sm text-[var(--bd-muted)]">
         {party.isBlank
-          ? "Those two paragraphs are for you, not for the model. This party is never shown a bill: its abstention is hardcoded, because being silent on everything is the whole of its job."
-          : "Those two paragraphs are not a summary. They are the literal instruction the AI delegate is handed for every bill it is shown — nothing else about this party is given to it."}
+          ? "This party is never shown a bill; its abstention is hardcoded."
+          : "Those two paragraphs are the literal instruction the AI delegate is handed for every bill — nothing else."}
       </p>
 
       <section className="mt-12">
@@ -181,7 +174,7 @@ export default async function PartyPage({ params }: Props) {
         {rows.length ? (
           <>
             <h3 className="mt-10 font-serif text-lg font-semibold">
-              Most recent bills it had an opinion on
+              Recent votes
             </h3>
             <ul className="mt-4 space-y-4">
               {rows.map((row) => (
@@ -200,7 +193,7 @@ export default async function PartyPage({ params }: Props) {
                   ) : null}
                   {row.latest_action_date ? (
                     <p className="mt-2 text-xs tabular-nums text-[var(--bd-muted)]">
-                      Latest action {row.latest_action_date}
+                      Latest action {shortDate(row.latest_action_date)}
                     </p>
                   ) : null}
                 </li>

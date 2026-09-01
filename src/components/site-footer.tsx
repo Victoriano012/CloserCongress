@@ -9,9 +9,8 @@ export function SiteFooter() {
             BetterDemocracy
           </p>
           <p>
-            A demonstration, not a government service. The bills are real; the electorate
-            is simulated and the parties are fictional stand-ins voted by an AI model.
-            Nothing here affects any law.
+            A demonstration. Real bills; simulated electorate; fictional parties voted by an
+            AI model. Nothing here affects any law.
           </p>
         </div>
         <nav className="flex flex-col gap-2 sm:text-right">
@@ -25,7 +24,7 @@ export function SiteFooter() {
             Your record
           </Link>
           <Link className="hover:text-[var(--bd-blue-deep)]" href="/methodology">
-            Methodology and limits
+            Methodology
           </Link>
         </nav>
       </div>

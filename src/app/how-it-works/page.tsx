@@ -5,7 +5,7 @@ import { PARTIES } from "@/lib/parties";
 export const metadata: Metadata = {
   title: "How it works",
   description:
-    "Hand each real bill to the first delegate on your list who has an opinion about it. A plain-language walkthrough of ordered delegation, abstention and the blank vote.",
+    "A plain-language walkthrough of ordered delegation, abstention and the blank vote.",
 };
 
 const SECTIONS = [
@@ -58,12 +58,8 @@ type Step = {
   note: string;
 };
 
-/*
-  Three states, not two. "Silent" and "not reached" look alike on a page and
-  mean opposite things: a silent delegate was asked and had nothing to say,
-  which is exactly what lets the vote fall through; an unreached one never got
-  the question, because someone above it had already spoken.
-*/
+/* Three states: a silent delegate was asked and had nothing to say; an
+   unreached one never got the question. */
 const STEP_STYLE: Record<
   StepState,
   { label: string; row: string; num: string; badge: string; name: string; arrow: string }
@@ -181,10 +177,9 @@ export default function HowItWorksPage() {
               You should not have to buy a whole ideology to get one thing you care about.
             </h1>
             <p className="mt-6 text-lg leading-8 text-[var(--bd-muted)]">
-              This site takes real bills from the United States Congress and runs them past a
-              population that votes a different way: everyone keeps an ordered list of
-              single-issue delegates, and each bill is decided by the first delegate on that
-              list who actually has an opinion about it.
+              Real bills from Congress, run past a population where everyone keeps an ordered
+              list of single-issue delegates. Each bill is decided by the first delegate on
+              the list with an opinion about it.
             </p>
             <div className="bd-rule mt-8" />
           </header>
@@ -212,57 +207,44 @@ export default function HowItWorksPage() {
           <div className="mt-14 space-y-16">
             <Section id="problem" eyebrow="1" title="Two bad options">
               <p>
-                Direct democracy sounds fair until you look at the workload. Congress moves
-                thousands of bills. Reading even the summaries is a part-time job, and almost
-                all of them are about something you know nothing about. Nobody has the time,
-                so in practice direct democracy means a small, unrepresentative handful of
-                people deciding everything.
+                Direct democracy: Congress moves thousands of bills, nobody has time to read
+                them, so in practice a small unrepresentative handful decides everything.
               </p>
               <p>
-                Representative democracy solves the time problem by selling you a bundle. You
-                pick one party, once, and that party then speaks for you on abortion,
-                submarines, farm subsidies, data privacy and the postal service alike. If you
-                agree with it on four things out of forty, that is still the deal.
+                Representative democracy: you pick one party, once, and it speaks for you on
+                abortion, submarines, farm subsidies and the postal service alike — even if you
+                agree with it on four things out of forty.
               </p>
               <p className="font-medium text-[var(--bd-navy)]">
-                The idea here is that the bundle is the problem, not the delegation. Handing
-                your vote to someone who has read the bill is sensible. Handing all of it to
-                one organisation forever is not.
+                The bundle is the problem, not the delegation.
               </p>
             </Section>
 
             <Section id="three-ways" eyebrow="2" title="Two ways to lend your vote">
-              <p>
-                There are two, and the second one is the reason this site exists:
-              </p>
               <ol className="space-y-4 border-l-2 border-[var(--bd-line)] pl-5">
                 <li>
                   <span className="font-semibold text-[var(--bd-navy)]">Name a delegate.</span>{" "}
-                  Pick one of the parties on this site and it votes for you. Each one is
-                  single-issue by design: it has a narrow subject, a published stance inside
-                  that subject, and nothing to say outside it.
+                  Each party here is single-issue: a narrow subject, a published stance inside
+                  it, and nothing to say outside it.
                 </li>
                 <li>
                   <span className="font-semibold text-[var(--bd-navy)]">
                     Name several, in order.
                   </span>{" "}
-                  This is the actual point of the site. Your list is walked from the top. The
-                  first delegate with an opinion on this particular bill casts your vote and
-                  the walk stops there. Everyone below them is never consulted.
+                  Your list is walked from the top. The first delegate with an opinion on the
+                  bill casts your vote; everyone below is never consulted.
                 </li>
               </ol>
               <p>
-                Because each delegate only claims one subject, a list of five is not five
-                overlapping ideologies fighting for control. It is a set of narrow experts,
-                and which one gets to speak depends entirely on what the bill is about.
+                A list of five is not five ideologies fighting for control. It is a set of
+                narrow experts, and which one speaks depends on what the bill is about.
               </p>
             </Section>
 
             <Section id="fall-through" eyebrow="3" title="What a list actually does">
               <p>
                 Say your list is <strong>Animal Welfare</strong>, then{" "}
-                <strong>Catholic Values</strong>, then <strong>Equal Rights</strong>. Here are
-                two bills and what happens to each of them.
+                <strong>Catholic Values</strong>, then <strong>Equal Rights</strong>.
               </p>
 
               <DelegationDiagram
@@ -274,24 +256,24 @@ export default function HowItWorksPage() {
                     emoji: "🐾",
                     name: "Pets and Animal Welfare Party",
                     state: "votes",
-                    note: "Animal testing is squarely its subject. It votes yes, and the walk stops here.",
+                    note: "Its subject. It votes yes and the walk stops.",
                   },
                   {
                     rank: 2,
                     emoji: "✝️",
                     name: "Catholic Values Party",
                     state: "unreached",
-                    note: "Never consulted — your first delegate already spoke.",
+                    note: "Never consulted.",
                   },
                   {
                     rank: 3,
                     emoji: "🤝",
                     name: "Equal Rights Party",
                     state: "unreached",
-                    note: "Never consulted — someone above it already spoke.",
+                    note: "Never consulted.",
                   },
                 ]}
-                outcome="Your ballot is a yes, cast by the animal welfare party."
+                outcome="Yes, cast by the animal welfare party."
               />
 
               <DelegationDiagram
@@ -303,105 +285,81 @@ export default function HowItWorksPage() {
                     emoji: "🐾",
                     name: "Pets and Animal Welfare Party",
                     state: "silent",
-                    note: "No animals in this bill. It was asked, it has nothing to say, and your vote falls past it.",
+                    note: "Not its subject. Your vote falls past it.",
                   },
                   {
                     rank: 2,
                     emoji: "✝️",
                     name: "Catholic Values Party",
                     state: "votes",
-                    note: "Religious observance is its subject. It votes, and the walk stops here.",
+                    note: "Its subject. It votes and the walk stops.",
                   },
                   {
                     rank: 3,
                     emoji: "🤝",
                     name: "Equal Rights Party",
                     state: "unreached",
-                    note: "Never consulted — someone above it already spoke.",
+                    note: "Never consulted.",
                   },
                 ]}
-                outcome="Your ballot is cast by your second delegate — because your first one stayed silent."
+                outcome="Cast by your second delegate, because your first stayed silent."
               />
 
               <p>
-                That fall-through is the whole mechanism. You are not ranking parties by how
-                much you like them in general. You are saying: on the things I care most
-                about, this one speaks for me; on everything else, keep going down the list
-                until you find someone whose business it actually is.
+                You are not ranking parties by how much you like them. You are saying: on
+                this, speak for me; on everything else, keep going down the list.
               </p>
             </Section>
 
-            <Section id="sharp-edge" eyebrow="4" title="The sharp edge, stated honestly">
+            <Section id="sharp-edge" eyebrow="4" title="The sharp edge">
               <p>
-                A delegate abstains on everything outside its subject{" "}
-                <em>even when the people who run it would obviously have had a view</em>. The
-                animal welfare party has no position on income tax brackets. The people in it
-                certainly do. The party does not, because the party is not those people — it
-                is a mandate about animals, and nothing else.
+                A delegate abstains outside its subject{" "}
+                <em>even when the people who run it would obviously have a view</em>. The
+                animal welfare party has no position on income tax. Its members do. The party
+                is a mandate about animals, not those people.
               </p>
               <p>
-                That costs something real. On a bill where your first delegate stays silent,
-                your vote is cast by someone you ranked lower, and sometimes by nobody at all.
-                It can feel like your voice went missing.
+                That costs something: where your first delegate is silent, your vote is cast
+                by someone you ranked lower, or by nobody.
               </p>
               <p className="rounded-lg border-l-4 border-[var(--bd-blue)] bg-white px-5 py-4">
-                It is deliberate. Abstention outside scope is exactly what stops a party you
-                chose for one reason from quietly speaking for you on forty other things. A
-                delegate that had an opinion about everything would just be a political party
-                again, and we already know what that costs.
+                It is deliberate. Abstention is what stops a party you chose for one reason
+                from speaking for you on forty others. A delegate with an opinion on everything
+                would just be a political party again.
               </p>
             </Section>
 
             <Section id="blank-vote" eyebrow="5" title="The blank vote">
               <p>
-                Every list ends with the same entry, whether you put it there or not: the{" "}
-                <strong>Blank Vote Party</strong>. It has no subject and no stance. It abstains
-                on everything, forever, by design.
+                Every list ends with the <strong>Blank Vote Party</strong>. It has no subject
+                and no stance, and abstains on everything.
               </p>
               <p>
-                It is what happens when the walk reaches the bottom of your list without
-                finding anyone with an opinion. Rather than recording you as absent, the
-                system records you as present and blank — you turned up, and you declined to
-                take a side. It can also be someone&rsquo;s only entry: a list of just the
-                blank vote is a perfectly coherent position, and about a fifth of the
-                simulated population holds exactly that.
+                When the walk reaches the bottom of your list without finding an opinion, you
+                are recorded as present and blank, not absent. A list of only the blank vote is
+                a coherent position too; about a fifth of the simulated population holds it.
               </p>
             </Section>
 
             <Section id="counting" eyebrow="6" title="How a bill passes">
-              <p>
-                Once every citizen&rsquo;s list has been walked, the count is simple, and the
-                detail matters:
-              </p>
               <div className="bd-card px-5 py-5">
                 <p className="font-serif text-lg font-semibold text-[var(--bd-navy)]">
                   A bill passes if more than half of the votes{" "}
                   <em>actually cast</em> are yes.
                 </p>
                 <p className="mt-3 text-[0.95rem] leading-7 text-[var(--bd-muted)]">
-                  Votes actually cast means yes votes plus no votes. Blanks are counted,
-                  reported and visible — but they are not in that denominator.
+                  Cast means yes plus no. Blanks are counted and shown, but not in that
+                  denominator.
                 </p>
               </div>
               <p>
-                So a blank is not a quiet no. If 3,000 people vote yes, 2,000 vote no and 5,000
-                come out blank, the bill passes on 60% of the votes cast, with a participation
-                rate of 50%. Abstaining lowers participation; it does not raise the bar.
-              </p>
-              <p>
-                An exact tie fails: yes has to be strictly more than half. And if literally
-                nobody casts a vote — every delegate in the country stayed silent — the bill
-                does not pass either.
-              </p>
-              <p>
-                This is what makes the blank vote a real option rather than a trick. Choosing
-                not to take a side genuinely means not taking a side, instead of being
-                converted into opposition on your behalf.
+                So a blank is not a quiet no. 3,000 yes, 2,000 no and 5,000 blank passes on 60%
+                of votes cast, at 50% participation. A tie fails; so does a bill nobody votes
+                on.
               </p>
             </Section>
 
             <Section id="real" eyebrow="7" title="What is real here, and what is not">
-              <p>Plainly, so there is no confusion:</p>
               <ul className="space-y-4">
                 <li className="flex gap-3">
                   <span
@@ -410,9 +368,8 @@ export default function HowItWorksPage() {
                   />
                   <span>
                     <span className="font-semibold text-[var(--bd-navy)]">Real: </span>
-                    the bills. They are pulled from public congressional data, with their real
-                    sponsors, their real official summaries, and — where a recorded vote
-                    exists — what Congress actually did with them.
+                    the bills — sponsors, official summaries, and where a recorded vote
+                    exists, what Congress did.
                   </span>
                 </li>
                 <li className="flex gap-3">
@@ -422,10 +379,8 @@ export default function HowItWorksPage() {
                   />
                   <span>
                     <span className="font-semibold text-[var(--bd-navy)]">Not real: </span>
-                    the parties. All {PARTIES.filter((p) => !p.isBlank).length} delegates, and the blank
-                    vote that ends every list,
-                    are invented for this demonstration. No such organisation exists, and none
-                    of them is standing in for a real one.
+                    the parties. All {PARTIES.filter((p) => !p.isBlank).length} delegates and
+                    the blank vote are invented, and none stands in for a real organisation.
                   </span>
                 </li>
                 <li className="flex gap-3">
@@ -435,9 +390,8 @@ export default function HowItWorksPage() {
                   />
                   <span>
                     <span className="font-semibold text-[var(--bd-navy)]">Not real: </span>
-                    the electorate. The 10,000 citizens are simulated. Their delegation lists
-                    were generated from published survey data about American opinion, but no
-                    one of them is a person.
+                    the electorate. 10,000 simulated citizens, with lists generated from
+                    published survey data.
                   </span>
                 </li>
                 <li className="flex gap-3">
@@ -447,9 +401,8 @@ export default function HowItWorksPage() {
                   />
                   <span>
                     <span className="font-semibold text-[var(--bd-navy)]">Not real: </span>
-                    the party votes. An AI model reads each bill and decides, for every party
-                    at once, whether the bill is that party&rsquo;s business and how it would
-                    vote. There are no humans in that loop.
+                    the party votes. An AI model reads each bill and decides, for every party,
+                    whether it is that party&rsquo;s business and how it would vote.
                   </span>
                 </li>
                 <li className="flex gap-3">
@@ -459,28 +412,25 @@ export default function HowItWorksPage() {
                   />
                   <span>
                     <span className="font-semibold text-[var(--bd-navy)]">Yours: </span>
-                    if you sign in and build a list, it is saved and every bill page will show
-                    you which of your delegates ended up speaking for you. It does{" "}
-                    <em>not</em> move the simulated result. There are nowhere near enough real
-                    users for that to mean anything, and pretending otherwise would make the
-                    number worse, not better.
+                    sign in and build a list, and every bill page shows which of your delegates
+                    spoke for you. It does <em>not</em> move the simulated result — there are
+                    nowhere near enough real users for that to mean anything.
                   </span>
                 </li>
               </ul>
               <p className="text-[var(--bd-muted)]">
-                Every one of those choices, and every number behind them, is written up in the{" "}
+                Every number behind these choices is in the{" "}
                 <Link className="bd-link" href="/methodology">
                   methodology
                 </Link>
-                , including the parts that do not flatter the design.
+                .
               </p>
             </Section>
 
             <Section id="start" eyebrow="8" title="Build a list">
               <p>
-                The fastest way to understand any of this is to pick three delegates, put them
-                in an order, and then go and look at what happened to a bill you have opinions
-                about.
+                Pick three delegates, order them, then look at what happened to a bill you
+                care about.
               </p>
               <div className="flex flex-col gap-3 pt-1 sm:flex-row">
                 <Link

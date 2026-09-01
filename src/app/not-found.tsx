@@ -6,8 +6,7 @@ export default function NotFound() {
       <div className="bd-rule mb-6" />
       <h1 className="font-serif text-3xl font-semibold">There is nothing here</h1>
       <p className="mt-4 max-w-lg text-[var(--bd-muted)]">
-        That bill or party is not in the record. It may never have existed, or the
-        address may have a typo in it.
+        That bill or party is not in the record. Check the address for a typo.
       </p>
       <div className="mt-8 flex gap-3">
         <Link

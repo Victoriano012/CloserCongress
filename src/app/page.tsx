@@ -7,12 +7,13 @@ import { PARTY_BY_SLUG, VOTING_PARTIES } from "@/lib/parties";
 // From the 4KB stats file, not @/lib/tally: that module imports the whole
 // 200KB electorate to read one integer.
 import electorateStats from "../../data/electorate-stats.json";
+import { shortDate } from "@/lib/dates";
 import { VoteBar } from "@/components/vote-bar";
 
 export const metadata: Metadata = {
   title: "BetterDemocracy — lend your vote to a list, in order",
   description:
-    "A demonstration of a legislature where your vote goes to an ordered list of single-issue delegates. Each one is silent outside its own subject, so on any given bill the first one with an opinion speaks for you.",
+    "Real US bills, voted by an electorate that delegates to an ordered list of single-issue parties. The first one with an opinion speaks for you.",
 };
 
 /** Nothing here reads the session or the request, so the page can be cached. */
@@ -29,30 +30,22 @@ const EXAMPLE = [
   {
     slug: "animal-welfare",
     state: "silent",
-    badge: "no opinion here",
-    note: "A religious holiday is not its subject, so it stays silent and your vote falls past it.",
+    badge: "silent",
+    note: "Not its subject. Your vote falls past it.",
   },
   {
     slug: "catholic-values",
     state: "voted",
-    badge: "casts your vote",
-    note: "Religious observance is its subject. It votes yes, and the walk stops here.",
+    badge: "votes",
+    note: "Its subject. It votes yes and the walk stops.",
   },
   {
     slug: "equal-rights",
     state: "unreached",
     badge: "not reached",
-    note: "Never asked — someone above it already spoke.",
+    note: "Never asked. Someone above it spoke.",
   },
 ] as const;
-
-/** "2026-08-27" → "27 Aug 2026", without going near a timezone. */
-function shortDate(iso: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  if (!m) return iso;
-  const months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
-  return `${Number(m[3])} ${months[Number(m[2]) - 1]} ${m[1]}`;
-}
 
 async function stats() {
   try {
@@ -87,11 +80,9 @@ export default async function Home() {
               Pick an order.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--bd-muted)]">
-              Name several delegates, ranked. Each one cares about exactly one subject and
-              stays silent on everything else — so a bill about animal testing is decided by
-              your first choice, and on the other nine-tenths of Congress your vote falls
-              through to whoever&rsquo;s business it actually is. They can never disagree:
-              only one of them is ever asked.
+              Rank several single-issue delegates. Each is silent outside its own subject,
+              so on every bill the first one with an opinion casts your vote — and the rest
+              are never asked.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -173,8 +164,7 @@ export default async function Home() {
             </ol>
             <div className="border-t border-[var(--bd-line)] px-5 py-3 text-sm">
               <span className="font-semibold text-[var(--bd-navy)]">Result: </span>
-              your ballot is a yes, cast by your second delegate — because your first one had
-              nothing to say.{" "}
+              yes, cast by your second delegate.{" "}
               <Link href="/how-it-works" className="bd-link">
                 How it works
               </Link>
@@ -187,7 +177,7 @@ export default async function Home() {
         <dl className="grid gap-6 sm:grid-cols-4">
           {[
             { n: bills.toLocaleString(), l: "real bills tracked" },
-            { n: judged.toLocaleString(), l: "put to the delegates so far" },
+            { n: judged.toLocaleString(), l: "put to the delegates" },
             { n: VOTING_PARTIES.length.toString(), l: "single-issue delegates" },
             { n: electorateStats.size.toLocaleString(), l: "simulated citizens" },
           ].map((s) => (
@@ -199,8 +189,7 @@ export default async function Home() {
         </dl>
         {latest && (
           <p className="mt-4 text-xs text-[var(--bd-muted)]">
-            Last action in the record: {shortDate(latest)}. New bills arrive daily, and each
-            one is put to the delegates as it is classified.
+            Latest action {shortDate(latest)}. New bills arrive daily.
           </p>
         )}
       </section>
@@ -229,8 +218,6 @@ export default async function Home() {
                   {bill.plain_summary && (
                     <p className="mt-1.5 text-sm text-[var(--bd-muted)]">{bill.plain_summary}</p>
                   )}
-                  {/* These are the newest bills, so most of them are still in the
-                      queue. Say so, rather than ending the card mid-air. */}
                   {bill.yes_weight !== null && bill.no_weight !== null ? (
                     <div className="mt-4">
                       <VoteBar
@@ -242,7 +229,7 @@ export default async function Home() {
                     </div>
                   ) : (
                     <p className="mt-4 text-xs text-[var(--bd-muted)]">
-                      Not yet put to the delegates.
+                      Awaiting the delegates.
                     </p>
                   )}
                 </Link>

@@ -167,7 +167,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
         const stored = withoutBlank(result.delegation);
         setList(stored);
         setSaved(stored);
-        setStatus({ kind: "ok", text: "Saved. It is yours to see; it does not move the simulated result." });
+        setStatus({ kind: "ok", text: "Saved. It does not move the simulated result." });
       } else {
         setStatus({ kind: "error", text: result.error });
       }
@@ -182,9 +182,9 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
       if (deleted) {
         setList([]);
         setSaved([]);
-        setStatus({ kind: "ok", text: "Your list has been deleted." });
+        setStatus({ kind: "ok", text: "List deleted." });
       } else {
-        setStatus({ kind: "error", text: "Could not delete your list. Are you still signed in?" });
+        setStatus({ kind: "error", text: "Could not delete. Are you still signed in?" });
       }
     });
   }
@@ -216,11 +216,6 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <p className="max-w-3xl text-sm leading-relaxed text-[var(--bd-muted)]">
-        The first delegate with an opinion on a bill casts your vote. Most delegates stay
-        silent on most bills, so the ones lower down matter more than you&rsquo;d think.
-      </p>
-
       <div className="grid gap-8 lg:grid-cols-2">
         {/* ---------------------------------------------------------- LEFT */}
         <section aria-labelledby="your-list-heading" className="flex flex-col gap-4">
@@ -229,15 +224,10 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
               Your list, in order
             </h2>
             <div className="bd-rule mt-2" />
-            {/* The ⠿ grip is decorative: the row is what drags. Say so once, in
-                text, so the keyboard path is not something you have to discover. */}
-            <p className="mt-1 text-sm text-[var(--bd-muted)]">
-              Reorder by dragging a row, or with the ▲ and ▼ buttons on it.
-            </p>
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
               {list.length === 0
-                ? "Empty. Every bill will be a blank vote until you add someone."
-                : `${list.length} of ${MAX_DELEGATES} parties.`}
+                ? "Empty: every bill is a blank vote until you add someone."
+                : `${list.length} of ${MAX_DELEGATES}. Drag rows or use ▲ ▼ to reorder.`}
             </p>
           </div>
 
@@ -347,8 +337,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                   <span aria-hidden>⬜</span> Blank Vote Party
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-[var(--bd-muted)]">
-                  Always last — blank when nobody above has an opinion. It cannot be moved
-                  or removed.
+                  Always last. Blank when nobody above has an opinion.
                 </p>
               </div>
             </div>
@@ -419,8 +408,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             </h2>
             <div className="bd-rule mt-2" />
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
-              Adding puts a party at the bottom of your list. You can move it up
-              afterwards.
+              Added parties go to the bottom of your list.
             </p>
           </div>
 
@@ -433,22 +421,19 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by name, tagline or subject…"
+              placeholder="Search…"
               className={`w-full rounded-md border border-[var(--bd-line)] bg-white px-3 py-2 text-sm placeholder:text-[var(--bd-muted)] ${FOCUS}`}
             />
           </div>
 
           {full ? (
             <p className="rounded-md border border-[var(--bd-line)] bg-blue-50 px-3 py-2 text-sm text-[var(--bd-blue-deep)]">
-              Your list is full at {MAX_DELEGATES} delegates. Remove one before adding
-              another.
+              List full at {MAX_DELEGATES}. Remove one to add another.
             </p>
           ) : null}
 
           {availableCount === 0 ? (
-            <p className="text-sm text-[var(--bd-muted)]">
-              No delegates match that search.
-            </p>
+            <p className="text-sm text-[var(--bd-muted)]">No matches.</p>
           ) : (
             <div className="flex flex-col gap-6">
               {available.map((group) => (
@@ -480,11 +465,6 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                           onClick={() => add(party.slug)}
                           disabled={full}
                           aria-label={`Add ${party.name} to your list`}
-                          title={
-                            full
-                              ? `Your list already holds the maximum of ${MAX_DELEGATES} parties.`
-                              : undefined
-                          }
                           className={`shrink-0 rounded-md border border-blue-200 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-blue-50 disabled:cursor-not-allowed disabled:border-[var(--bd-line)] disabled:text-[var(--bd-muted)] disabled:hover:bg-transparent ${FOCUS}`}
                         >
                           Add
