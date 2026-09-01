@@ -9,8 +9,8 @@ export function SiteFooter() {
             Closer Democracy
           </p>
           <p>
-            A demonstration. Real bills; simulated electorate; fictional parties voted by an
-            AI model. Nothing here affects any law.
+            This is a demonstration and has no relation to the government. Nothing here affects
+            any law. The bills are real, but the electorate and parties are simulated.
           </p>
         </div>
         <nav className="flex flex-col gap-2 sm:text-right">
