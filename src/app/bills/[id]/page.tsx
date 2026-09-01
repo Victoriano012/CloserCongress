@@ -135,26 +135,54 @@ export default async function BillPage({ params }: Props) {
         ← All bills
       </Link>
 
-      <header className="mt-4 max-w-3xl">
+      <header className="mt-4">
         <p className="flex flex-wrap items-center gap-2 text-sm text-[var(--bd-muted)]">
           <span className="font-mono font-semibold text-[var(--bd-blue-deep)]">{label}</span>
           <span>·</span>
           <span className="capitalize">{bill.chamber}</span>
           {bill.introduced_date && <>· introduced {shortDate(bill.introduced_date)}</>}
         </p>
-        <h1 className="mt-2 font-serif text-3xl font-semibold leading-tight sm:text-4xl">
-          {bill.title}
-        </h1>
-        {bill.sponsor_name && (
-          <p className="mt-2 text-sm text-[var(--bd-muted)]">
-            Sponsored by {bill.sponsor_name}
-            {bill.sponsor_party && ` (${bill.sponsor_party}${bill.sponsor_state ? `-${bill.sponsor_state}` : ""})`}
-          </p>
-        )}
+        <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0 max-w-3xl">
+            <h1 className="font-serif text-3xl font-semibold leading-tight sm:text-4xl">
+              {bill.title}
+            </h1>
+            {bill.sponsor_name && (
+              <p className="mt-2 text-sm text-[var(--bd-muted)]">
+                Sponsored by {bill.sponsor_name}
+                {bill.sponsor_party && ` (${bill.sponsor_party}${bill.sponsor_state ? `-${bill.sponsor_state}` : ""})`}
+              </p>
+            )}
+          </div>
+          {(bill.pdf_url || bill.congress_url) && (
+            <div className="flex flex-col gap-2 sm:flex-row lg:shrink-0 lg:justify-end">
+              {bill.pdf_url && (
+                <a
+                  href={bill.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-md bg-[var(--bd-navy)] px-4 py-3 text-sm font-medium text-white hover:bg-[var(--bd-blue-deep)]"
+                >
+                  <span aria-hidden>📄</span> Bill text (PDF)
+                </a>
+              )}
+              {bill.congress_url && (
+                <a
+                  href={bill.congress_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-md border border-[var(--bd-line)] bg-white px-4 py-3 text-center text-sm font-medium hover:bg-blue-50"
+                >
+                  On congress.gov
+                </a>
+              )}
+            </div>
+          )}
+        </div>
       </header>
 
-      {/* 1. What it says, in plain words — next to the text itself. */}
-      <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_16rem]">
+      {/* 1. What it says, in plain words. */}
+      <div className="mt-8">
         <div className="bd-card border-l-4 border-l-[var(--bd-blue)] p-6">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--bd-muted)]">
             {ai ? "In plain words" : "The official summary"}
@@ -192,45 +220,12 @@ export default async function BillPage({ params }: Props) {
             </p>
           )}
         </div>
-
-        <div className="flex flex-col gap-2">
-          {bill.pdf_url && (
-            <a
-              href={bill.pdf_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-md bg-[var(--bd-navy)] px-4 py-3 text-sm font-medium text-white hover:bg-[var(--bd-blue-deep)]"
-            >
-              <span aria-hidden>📄</span> Bill text (PDF)
-            </a>
-          )}
-          {bill.text_url && (
-            <a
-              href={bill.text_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md border border-[var(--bd-line)] bg-white px-4 py-3 text-center text-sm font-medium hover:bg-blue-50"
-            >
-              Full text
-            </a>
-          )}
-          {bill.congress_url && (
-            <a
-              href={bill.congress_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md border border-[var(--bd-line)] bg-white px-4 py-3 text-center text-sm font-medium hover:bg-blue-50"
-            >
-              On congress.gov
-            </a>
-          )}
-          {bill.latest_action_text && (
-            <p className="mt-1 text-xs text-[var(--bd-muted)]">
-              Latest action{bill.latest_action_date && ` (${shortDate(bill.latest_action_date)})`}:{" "}
-              {bill.latest_action_text}
-            </p>
-          )}
-        </div>
+        {bill.latest_action_text && (
+          <p className="mt-3 text-xs text-[var(--bd-muted)]">
+            Latest action{bill.latest_action_date && ` (${shortDate(bill.latest_action_date)})`}:{" "}
+            {bill.latest_action_text}
+          </p>
+        )}
       </div>
 
       {/* 2. Them versus us. */}
