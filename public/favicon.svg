@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" fill="#0b2545" />
+  <g transform="translate(51.2 51.2) scale(17.0667)" color="#f7f9fc">
+    <path
+      d="M3.75 10.5h16.5l1.25 10.75h-19L3.75 10.5Z"
+      fill="currentColor"
+      opacity=".18"
+    />
+    <path
+      d="M3.75 10.5h4m8.5 0h4l1.25 10.75h-19L3.75 10.5Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <rect
+      x="7.75"
+      y="2.25"
+      width="8.5"
+      height="10.5"
+      rx=".75"
+      stroke="currentColor"
+      stroke-width="1.5"
+    />
+    <path
+      d="m10.15 7.15 1.35 1.3 2.7-2.8M7.25 15h9.5"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+</svg>

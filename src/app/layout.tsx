@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -11,6 +11,18 @@ const serif = Source_Serif_4({ variable: "--font-serif-display", subsets: ["lati
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://closerdemocracy.vercel.app"),
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-icon.png", type: "image/png", sizes: "180x180" },
+    ],
+  },
   title: {
     default: "Closer Democracy — one vote, several delegates, in your order",
     template: "%s · Closer Democracy",
@@ -23,6 +35,10 @@ export const metadata: Metadata = {
       "Real US bills, an electorate that delegates issue by issue, and a side-by-side comparison with what Congress actually did.",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0b2545",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
