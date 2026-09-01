@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { MobileMenu } from "@/components/mobile-menu";
 
 const NAV = [
@@ -17,16 +18,13 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--bd-line)] bg-white/90 backdrop-blur">
       <div className="bd-container flex h-16 items-center gap-4">
-        <Link href="/" className="flex min-w-0 items-center gap-2.5">
-          <span
-            aria-hidden
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-[var(--bd-navy)] text-[13px] font-bold text-white"
-          >
-            BD
-          </span>
-          <span className="truncate font-serif text-lg font-semibold text-[var(--bd-navy)]">
-            Closer Democracy
-          </span>
+        <Link href="/" aria-label="Closer Democracy home" className="min-w-0">
+          <Logo
+            size={32}
+            wordmark="Closer Democracy"
+            title="Closer Democracy ballot box logo"
+            className="text-[var(--bd-navy)]"
+          />
         </Link>
 
         <nav className="ml-auto hidden items-center gap-1 text-sm lg:flex">
