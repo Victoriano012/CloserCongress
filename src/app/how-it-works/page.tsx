@@ -11,14 +11,14 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS = [
-  { id: "problem", label: "The problem" },
-  { id: "two-ways", label: "Two ways to lend a vote" },
-  { id: "fall-through", label: "The list, worked through" },
+  { id: "problem", label: "Two bad options" },
+  { id: "two-ways", label: "Two ways to lend your vote" },
+  { id: "fall-through", label: "What a list actually does" },
   { id: "sharp-edge", label: "The sharp edge" },
   { id: "blank-vote", label: "The blank vote" },
-  { id: "counting", label: "How votes are counted" },
-  { id: "real", label: "What is real and what is not" },
-  { id: "start", label: "Where to start" },
+  { id: "counting", label: "How a bill passes" },
+  { id: "real", label: "What is real here, and what is not" },
+  { id: "start", label: "Build a list" },
 ];
 
 /* ---------------------------------------------------------------------- page */
