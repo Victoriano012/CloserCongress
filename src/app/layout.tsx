@@ -10,15 +10,15 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const serif = Source_Serif_4({ variable: "--font-serif-display", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://betterdemocracy3-vcv.vercel.app"),
+  metadataBase: new URL("https://closerdemocracy.vercel.app"),
   title: {
-    default: "BetterDemocracy — one vote, several delegates, in your order",
-    template: "%s · BetterDemocracy",
+    default: "Closer Democracy — one vote, several delegates, in your order",
+    template: "%s · Closer Democracy",
   },
   description:
     "Lend your vote on real bills before Congress to an ordered list of single-issue parties. The first one with an opinion casts it.",
   openGraph: {
-    title: "BetterDemocracy",
+    title: "Closer Democracy",
     description:
       "Real US bills, an electorate that delegates issue by issue, and a side-by-side comparison with what Congress actually did.",
     type: "website",

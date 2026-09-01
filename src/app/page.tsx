@@ -12,7 +12,7 @@ import { DelegationDiagram } from "@/components/delegation-diagram";
 import { VoteBar } from "@/components/vote-bar";
 
 export const metadata: Metadata = {
-  title: "BetterDemocracy — lend your vote to a list, in order",
+  title: "Closer Democracy — lend your vote to a list, in order",
   description:
     "Real US bills, voted by an electorate that delegates to an ordered list of single-issue parties. The first one with an opinion speaks for you.",
 };

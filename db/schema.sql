@@ -1,4 +1,4 @@
--- BetterDemocracy 3 schema.
+-- Closer Democracy schema.
 
 create table if not exists parties (
   slug        text primary key,

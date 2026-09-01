@@ -6,7 +6,7 @@ export function SiteFooter() {
       <div className="bd-container flex flex-col gap-6 py-10 text-sm text-[var(--bd-muted)] sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-md space-y-2">
           <p className="font-serif text-base font-semibold text-[var(--bd-navy)]">
-            BetterDemocracy
+            Closer Democracy
           </p>
           <p>
             A demonstration. Real bills; simulated electorate; fictional parties voted by an

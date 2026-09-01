@@ -11,7 +11,7 @@
 import { XMLParser } from "fast-xml-parser";
 
 const USER_AGENT =
-  "BetterDemocracy/1.0 (civic education project; +https://github.com/betterdemocracy)";
+  "CloserDemocracy/1.0 (civic education project; +https://github.com/Victoriano012/CloserDemocracy)";
 
 /* ------------------------------------------------------------------ types */
 

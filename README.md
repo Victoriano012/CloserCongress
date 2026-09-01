@@ -1,10 +1,10 @@
-# BetterDemocracy 3
+# Closer Democracy
 
 A working demonstration of what the legislative branch could look like if you
 could vote on the laws yourself — or hand your vote to **several** delegates, in
 order, instead of buying one whole ideology as a bundle.
 
-Live at **https://betterdemocracy3-vcv.vercel.app**
+Live at **https://closerdemocracy.vercel.app**
 
 ## The idea
 

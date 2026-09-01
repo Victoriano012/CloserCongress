@@ -25,7 +25,7 @@ export function SiteHeader() {
             BD
           </span>
           <span className="truncate font-serif text-lg font-semibold text-[var(--bd-navy)]">
-            BetterDemocracy
+            Closer Democracy
           </span>
         </Link>
 
