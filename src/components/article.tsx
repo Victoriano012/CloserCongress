@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** The long-form pages: numbered sections and an "On this page" list. */
+/** The long-form pages: anchored sections and an "On this page" list. */
 
 export type TocEntry = { id: string; label: string };
 
@@ -14,11 +14,15 @@ export function Eyebrow({ children }: { children: ReactNode }) {
 
 export function Section({
   id, eyebrow, title, children,
-}: { id: string; eyebrow: string; title: string; children: ReactNode }) {
+}: { id: string; eyebrow?: string; title: string; children: ReactNode }) {
   return (
     <section id={id} className="scroll-mt-24">
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 className="mt-2 font-serif text-2xl font-semibold sm:text-[1.75rem]">{title}</h2>
+      {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+      <h2
+        className={`${eyebrow ? "mt-2 " : ""}font-serif text-2xl font-semibold sm:text-[1.75rem]`}
+      >
+        {title}
+      </h2>
       <div className="bd-rule mt-4" />
       <div className="mt-6 space-y-5 text-[1.0625rem] leading-8 text-[var(--bd-ink)]">
         {children}

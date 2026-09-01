@@ -40,7 +40,7 @@ export default function HowItWorksPage() {
           <Toc sections={SECTIONS} />
 
           <div className="mt-14 space-y-16">
-            <Section id="problem" eyebrow="1" title="Two bad options">
+            <Section id="problem" title="Two bad options">
               <p>
                 Direct democracy: Congress moves thousands of bills, nobody has time to read
                 them, so in practice a small unrepresentative handful decides everything.
@@ -55,7 +55,7 @@ export default function HowItWorksPage() {
               </p>
             </Section>
 
-            <Section id="two-ways" eyebrow="2" title="Two ways to lend your vote">
+            <Section id="two-ways" title="Two ways to lend your vote">
               <ol className="space-y-4 border-l-2 border-[var(--bd-line)] pl-5">
                 <li>
                   <span className="font-semibold text-[var(--bd-navy)]">Name a delegate.</span>{" "}
@@ -81,7 +81,7 @@ export default function HowItWorksPage() {
               </p>
             </Section>
 
-            <Section id="fall-through" eyebrow="3" title="What a list actually does">
+            <Section id="fall-through" title="What a list actually does">
               <p>
                 Say your list is <strong>Animal Welfare</strong>, then{" "}
                 <strong>Catholic Values</strong>, then <strong>Equal Rights</strong>.
@@ -115,7 +115,7 @@ export default function HowItWorksPage() {
               </p>
             </Section>
 
-            <Section id="sharp-edge" eyebrow="4" title="The sharp edge">
+            <Section id="sharp-edge" title="The sharp edge">
               <p>
                 A delegate abstains outside its subject{" "}
                 <em>even when the people who run it would obviously have a view</em>. The
@@ -133,7 +133,7 @@ export default function HowItWorksPage() {
               </p>
             </Section>
 
-            <Section id="blank-vote" eyebrow="5" title="The blank vote">
+            <Section id="blank-vote" title="The blank vote">
               <p>
                 Every list ends with the <strong>Blank Vote Party</strong>. It has no subject
                 and no stance, and abstains on everything.
@@ -145,7 +145,7 @@ export default function HowItWorksPage() {
               </p>
             </Section>
 
-            <Section id="counting" eyebrow="6" title="How a bill passes">
+            <Section id="counting" title="How a bill passes">
               <div className="bd-card px-5 py-5">
                 <p className="font-serif text-lg font-semibold text-[var(--bd-navy)]">
                   A bill passes if more than half of the votes{" "}
@@ -163,7 +163,7 @@ export default function HowItWorksPage() {
               </p>
             </Section>
 
-            <Section id="real" eyebrow="7" title="What is real here, and what is not">
+            <Section id="real" title="What is real here, and what is not">
               <ul className="space-y-4">
                 <li className="flex gap-3">
                   <span
@@ -231,7 +231,7 @@ export default function HowItWorksPage() {
               </p>
             </Section>
 
-            <Section id="start" eyebrow="8" title="Build a list">
+            <Section id="start" title="Build a list">
               <p>
                 Pick three delegates, order them, then look at what happened to a bill you
                 care about.
