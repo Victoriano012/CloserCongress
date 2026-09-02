@@ -32,7 +32,9 @@ export function Section({
 }
 
 /** Inline card on small screens, sticky rail on large ones. */
-export function Toc({ sections, sticky }: { sections: TocEntry[]; sticky?: boolean }) {
+export function Toc({
+  sections, sticky, numbered,
+}: { sections: TocEntry[]; sticky?: boolean; numbered?: boolean }) {
   if (sticky) {
     return (
       <nav aria-label="On this page" className="hidden lg:block">
@@ -42,7 +44,9 @@ export function Toc({ sections, sticky }: { sections: TocEntry[]; sticky?: boole
           <ol className="mt-4 space-y-2.5 text-sm">
             {sections.map((s, i) => (
               <li key={s.id} className="flex gap-2.5">
-                <span className="tabular-nums text-[var(--bd-muted)]">{i + 1}</span>
+                {numbered && (
+                  <span className="tabular-nums text-[var(--bd-muted)]">{i + 1}</span>
+                )}
                 <a
                   href={`#${s.id}`}
                   className="text-[var(--bd-muted)] transition-colors hover:text-[var(--bd-blue-deep)]"
@@ -62,7 +66,9 @@ export function Toc({ sections, sticky }: { sections: TocEntry[]; sticky?: boole
       <ol className="mt-3 space-y-1.5 text-sm">
         {sections.map((s, i) => (
           <li key={s.id} className="flex gap-2">
-            <span className="tabular-nums text-[var(--bd-muted)]">{i + 1}.</span>
+            {numbered && (
+              <span className="tabular-nums text-[var(--bd-muted)]">{i + 1}.</span>
+            )}
             <a className="bd-link" href={`#${s.id}`}>
               {s.label}
             </a>

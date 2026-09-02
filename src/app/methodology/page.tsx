@@ -96,7 +96,7 @@ export default function MethodologyPage() {
             are flagged <Estimated />.
           </ArticleHeader>
 
-          <Toc sections={SECTIONS} />
+          <Toc sections={SECTIONS} numbered />
 
           <div className="mt-14 space-y-16">
             {/* ------------------------------------------------------------ bills */}
@@ -588,7 +588,7 @@ export default function MethodologyPage() {
           </div>
         </article>
 
-        <Toc sections={SECTIONS} sticky />
+        <Toc sections={SECTIONS} sticky numbered />
       </div>
     </div>
   );
