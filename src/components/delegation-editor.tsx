@@ -270,11 +270,11 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
               My list
             </h2>
             <div className="bd-rule mt-2" />
-            <p className="mt-3 text-sm text-[var(--bd-muted)]">
-              {list.length === 0
-                ? "Empty: every bill is a blank vote until you add someone."
-                : `${list.length} ${list.length === 1 ? "party" : "parties"}. Drag rows or use ▲ ▼ to reorder. Double-click a party to open its page.`}
-            </p>
+            {list.length === 0 && (
+              <p className="mt-3 text-sm text-[var(--bd-muted)]">
+                Empty: every bill is a blank vote until you add someone.
+              </p>
+            )}
           </div>
 
           <ol
@@ -469,10 +469,6 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
               Parties
             </h2>
             <div className="bd-rule mt-2" />
-            <p className="mt-3 text-sm text-[var(--bd-muted)]">
-              Added parties go to the bottom of My List. Parties already on it show their
-              position. Double-click a party to open its page.
-            </p>
           </div>
 
           <div>
