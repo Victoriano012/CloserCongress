@@ -21,7 +21,7 @@ export function SiteHeader() {
           <Logo
             size={32}
             wordmark="Closer Democracy"
-            title="Closer Democracy ballot box logo"
+            title="Closer Democracy pantheon logo"
             className="text-[var(--bd-navy)]"
             wordmarkClassName="font-wordmark text-xl leading-none tracking-tight md:text-[1.625rem]"
           />

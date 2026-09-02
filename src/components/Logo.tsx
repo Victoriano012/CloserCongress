@@ -30,33 +30,32 @@ export function Logo({
         className="shrink-0"
       >
         <title>{title}</title>
+        <path d="M12 2.75 2.75 8.75h18.5L12 2.75Z" fill="currentColor" opacity=".12" />
         <path
-          d="M3.75 10.5h16.5l1.25 10.75h-19L3.75 10.5Z"
-          fill="currentColor"
-          opacity=".12"
-        />
-        <path
-          d="M3.75 10.5h4m8.5 0h4l1.25 10.75h-19L3.75 10.5Z"
+          d="M12 2.75 2.75 8.75h18.5L12 2.75Z"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <rect
-          x="7.75"
-          y="2.25"
-          width="8.5"
-          height="10.5"
-          rx=".75"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
         <path
-          d="m10.15 7.15 1.35 1.3 2.7-2.8M7.25 15h9.5"
+          d="M4.25 8.75v2.75h15.5V8.75"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
+        />
+        <path
+          d="M5.75 11.5v6.75M9.917 11.5v6.75M14.083 11.5v6.75M18.25 11.5v6.75"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M4.25 18.25h15.5M2.75 21.25h18.5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
         />
       </svg>
       {wordmarkText ? (
