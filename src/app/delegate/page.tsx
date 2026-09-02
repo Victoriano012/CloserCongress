@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { SignInButton, SignOutButton } from "@/components/auth-buttons";
 import { DelegationEditor } from "@/components/delegation-editor";
+import { ListRecord } from "@/components/list-record";
 import { loadDelegation } from "@/lib/delegation";
 import { BLANK_PARTY_SLUG } from "@/lib/parties";
 
@@ -43,7 +44,8 @@ export default async function DelegatePage() {
   const session = await auth();
   if (!session?.user) return <SignedOut />;
 
-  const delegation = (await loadDelegation()) ?? [BLANK_PARTY_SLUG];
+  const stored = await loadDelegation();
+  const delegation = stored ?? [BLANK_PARTY_SLUG];
 
   return (
     <div className="bd-container flex flex-col gap-8 py-12">
@@ -64,6 +66,8 @@ export default async function DelegatePage() {
       </div>
 
       <DelegationEditor initial={delegation} />
+
+      {stored ? <ListRecord delegation={stored} /> : null}
 
       <p className="max-w-2xl text-xs leading-relaxed text-[var(--bd-muted)]">
         Encrypted under a key derived from your Google account id, which is never stored.
