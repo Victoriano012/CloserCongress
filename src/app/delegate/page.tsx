@@ -56,7 +56,7 @@ export default async function DelegatePage() {
           <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)]">
             A bill walks down this list until it reaches a party with an opinion, and that
             party casts your vote.{" "}
-            <Link href="/me" className="bd-link">
+            <Link href="/bills?mine=1" className="bd-link">
               See how it has been voting
             </Link>
             .

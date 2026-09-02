@@ -53,7 +53,7 @@ export async function ListRecord({ delegation }: { delegation: Delegation }) {
               <DelegateTally delegates={realDelegates} tally={tally} blanks={blanks} />
             </div>
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
-              <Link href="/me" className="bd-link">
+              <Link href="/bills?mine=1" className="bd-link">
                 See it bill by bill
               </Link>
               .

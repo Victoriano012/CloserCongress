@@ -26,12 +26,10 @@ export type ResolvedVote = {
   reason: string | null;
 };
 
-export type RecordEntry = ResolvedVote & { bill: RecordBill };
+type RecordEntry = ResolvedVote & { bill: RecordBill };
 
 export type DelegationRecord = {
-  /** Every recent bill, classified or not, newest first. */
-  resolved: RecordEntry[];
-  /** How many of them are classified. */
+  /** How many of the recent bills are classified. */
   counted: number;
   /** Non-blank votes cast per delegate slug. */
   tally: Map<string, number>;
@@ -106,7 +104,7 @@ async function loadRecent(): Promise<RecordBill[]> {
   }
 }
 
-/** How a delegation has voted on the recent bills: bill by bill, plus per-delegate totals. */
+/** How a delegation has voted on the recent bills: per-delegate totals. */
 export async function loadDelegationRecord(delegation: Delegation): Promise<DelegationRecord> {
   const bills = await loadRecent();
   const byBill = await loadVotes(bills.map((b) => b.id));
@@ -124,5 +122,5 @@ export async function loadDelegationRecord(delegation: Delegation): Promise<Dele
     else tally.set(entry.party, (tally.get(entry.party) ?? 0) + 1);
   }
 
-  return { resolved, counted: counted.length, tally, blanks };
+  return { counted: counted.length, tally, blanks };
 }
