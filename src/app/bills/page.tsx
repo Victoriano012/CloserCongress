@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { SignInButton } from "@/components/auth-buttons";
-import { VoteBar } from "@/components/vote-bar";
+import { VoteDistributionBar } from "@/components/bills/vote-distribution-bar";
 import { YourVote } from "@/components/your-vote";
 import { billLabel, listBills } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
@@ -26,15 +26,18 @@ const OUTCOMES = [
 
 const PER_PAGE = 25;
 
-function OutcomeTag({ outcome }: { outcome: string }) {
-  const tone =
-    outcome === "passed"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-      : "border-rose-200 bg-rose-50 text-rose-800";
+/** One of the three comparable columns: heading, verdict, then (optionally) a bar. */
+function VoteColumn({
+  heading, verdict, children,
+}: { heading: string; verdict?: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <span className={`rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${tone}`}>
-      {outcome}
-    </span>
+    <div className="flex min-w-0 flex-col gap-2">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--bd-muted)]">
+        {heading}
+      </h3>
+      {verdict && <p className="truncate text-sm font-semibold leading-5">{verdict}</p>}
+      {children}
+    </div>
   );
 }
 
@@ -177,10 +180,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
                     <span>{bill.policy_area}</span>
                   </>
                 )}
-                <span className="ml-auto flex items-center gap-2">
-                  {shortDate(bill.latest_action_date)}
-                  <OutcomeTag outcome={bill.real_outcome} />
-                </span>
+                <span className="ml-auto">{shortDate(bill.latest_action_date)}</span>
               </div>
 
               <h2 className="mt-2 font-serif text-lg font-semibold leading-snug">
@@ -191,42 +191,65 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
                 <p className="mt-1.5 text-sm text-[var(--bd-muted)]">{bill.plain_summary}</p>
               )}
 
-              {bill.yes_weight !== null && bill.no_weight !== null ? (
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="max-w-xs flex-1">
-                    <VoteBar
+              <div className="mt-4 grid gap-5 border-t border-[var(--bd-line)] pt-4 sm:[grid-template-columns:3fr_3fr_4fr]">
+                <VoteColumn
+                  heading="In Congress"
+                  verdict={
+                    <span
+                      style={{ color: bill.real_outcome === "passed" ? "var(--bd-yes)" : "var(--bd-no)" }}
+                    >
+                      {bill.real_outcome === "passed" ? "Passed" : "Failed"}
+                    </span>
+                  }
+                >
+                  {bill.real_yea !== null && bill.real_nay !== null && (
+                    <VoteDistributionBar
+                      yes={bill.real_yea}
+                      no={bill.real_nay}
+                      abstain={bill.real_not_voting ?? 0}
+                      words={{ yes: "yea", no: "nay", abstain: "not voting" }}
+                    />
+                  )}
+                </VoteColumn>
+
+                <VoteColumn
+                  heading="In Closer Democracy"
+                  verdict={
+                    bill.yes_weight === null || bill.no_weight === null ? (
+                      <span className="font-normal text-[var(--bd-muted)]">Awaiting the delegates</span>
+                    ) : bill.yes_weight + bill.no_weight === 0 ? (
+                      // Nobody voted: no percentage, and no rejection either.
+                      <span className="font-normal text-[var(--bd-muted)]">All blank</span>
+                    ) : (
+                      <span style={{ color: bill.passed ? "var(--bd-yes)" : "var(--bd-no)" }}>
+                        {bill.passed ? "Would pass" : "Would fail"}
+                      </span>
+                    )
+                  }
+                >
+                  {bill.yes_weight !== null && bill.no_weight !== null && (
+                    <VoteDistributionBar
                       yes={bill.yes_weight}
                       no={bill.no_weight}
-                      blank={bill.blank_weight ?? 0}
-                      height={8}
+                      abstain={bill.blank_weight ?? 0}
                     />
-                  </div>
-                  <span className="text-xs text-[var(--bd-muted)]">
-                    {bill.yes_weight + bill.no_weight === 0 ? (
-                      // Nobody voted: no percentage, and no rejection either.
-                      <>All blank</>
-                    ) : (
-                      <>
-                        {bill.passed ? "Would pass" : "Would fail"} ·{" "}
-                        {Math.round(
-                          (bill.yes_weight / (bill.yes_weight + bill.no_weight)) * 100,
-                        )}
-                        % in favour
-                      </>
-                    )}
-                  </span>
-                </div>
-              ) : (
-                <p className="mt-4 text-xs text-[var(--bd-muted)]">
-                  Awaiting the delegates.
-                </p>
-              )}
+                  )}
+                </VoteColumn>
 
-              {myVotes?.get(bill.id)?.classified ? (
-                <div className="mt-4 border-t border-[var(--bd-line)] pt-3">
-                  <YourVote entry={myVotes.get(bill.id)!} clampReason />
-                </div>
-              ) : null}
+                <VoteColumn heading="Your vote">
+                  {myVotes?.get(bill.id) ? (
+                    <YourVote entry={myVotes.get(bill.id)!} clampReason />
+                  ) : (
+                    <p className="text-sm text-[var(--bd-muted)]">
+                      {!delegation
+                        ? "Sign in to see how your delegates voted."
+                        : !hasDelegates
+                          ? "No delegates yet — build My List to vote."
+                          : "Awaiting the delegates."}
+                    </p>
+                  )}
+                </VoteColumn>
+              </div>
             </Link>
           </li>
         ))}

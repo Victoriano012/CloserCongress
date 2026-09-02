@@ -69,6 +69,9 @@ export interface BillListItem {
   latest_action_date: string | null;
   policy_area: string | null;
   real_outcome: BillRow["real_outcome"];
+  real_yea: number | null;
+  real_nay: number | null;
+  real_not_voting: number | null;
   plain_summary: string | null;
   passed: boolean | null;
   yes_weight: number | null;
@@ -119,7 +122,7 @@ export async function listBills(opts: {
 
   const items = await query<BillListItem>(
     `select b.id, b.title, b.chamber, b.bill_type, b.number, b.latest_action_date::text,
-            b.policy_area, b.real_outcome,
+            b.policy_area, b.real_outcome, b.real_yea, b.real_nay, b.real_not_voting,
             a.plain_summary,
             r.passed, r.yes_weight, r.no_weight, r.blank_weight
        from bills b

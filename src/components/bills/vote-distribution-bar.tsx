@@ -14,6 +14,8 @@ export type VoteDistributionBarProps = {
   no: number;
   abstain?: number;
   label?: string;
+  /** Override the legend wording, e.g. "not voting" for a roll call. */
+  words?: Partial<Record<"yes" | "no" | "abstain", string>>;
 };
 
 type Key = "yes" | "no" | "abstain";
@@ -73,18 +75,20 @@ export function voteSegments({ yes, no, abstain = 0 }: VoteDistributionBarProps)
   });
 }
 
-export function describeVotes({ yes, no, abstain = 0, label }: VoteDistributionBarProps): string {
+export function describeVotes({ yes, no, abstain = 0, label, words }: VoteDistributionBarProps): string {
   const total = yes + no + abstain;
   const lead = label ? `${label}: ` : "";
   if (total === 0) return `${lead}No votes yet`;
+  const word = { ...WORD, ...words };
   const parts = voteSegments({ yes, no, abstain })
     .filter((s) => s.count > 0)
-    .map((s) => `${s.count.toLocaleString()} ${WORD[s.key]} (${formatPct(s.pct)})`);
+    .map((s) => `${s.count.toLocaleString()} ${word[s.key]} (${formatPct(s.pct)})`);
   return `${lead}${total.toLocaleString()} votes: ${parts.join(", ")}`;
 }
 
 export function VoteDistributionBar(props: VoteDistributionBarProps) {
-  const { yes, no, abstain = 0, label } = props;
+  const { yes, no, abstain = 0, label, words } = props;
+  const word = { ...WORD, ...words };
   const total = yes + no + abstain;
   const segments = voteSegments(props);
   const shown = segments.filter((s) => s.count > 0);
@@ -140,7 +144,7 @@ export function VoteDistributionBar(props: VoteDistributionBarProps) {
                 className="inline-block h-2 w-2 shrink-0 rounded-full"
                 style={{ background: FILL[s.key] }}
               />
-              <span className="tabular-nums">{s.count.toLocaleString()}</span> {WORD[s.key]}
+              <span className="tabular-nums">{s.count.toLocaleString()}</span> {word[s.key]}
               {!s.labelInside && s.count > 0 && (
                 <span className="text-[var(--bd-muted)] tabular-nums">· {formatPct(s.pct)}</span>
               )}
