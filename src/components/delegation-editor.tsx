@@ -201,7 +201,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
     if (!list.includes(slug)) return;
     apply(
       list.filter((s) => s !== slug),
-      `${PARTY_BY_SLUG[slug]?.name ?? slug} removed from your list.`,
+      `${PARTY_BY_SLUG[slug]?.name ?? slug} removed from My List.`,
     );
   }
 
@@ -267,7 +267,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
         <section aria-labelledby="your-list-heading" className="flex flex-col gap-4">
           <div>
             <h2 id="your-list-heading" className="font-serif text-xl font-semibold">
-              Your list
+              My list
             </h2>
             <div className="bd-rule mt-2" />
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
@@ -364,7 +364,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                     <button
                       type="button"
                       onClick={() => remove(party.slug)}
-                      aria-label={`Remove ${party.name} from your list`}
+                      aria-label={`Remove ${party.name} from My List`}
                       className={`grid h-8 w-8 place-items-center rounded-md border border-[var(--bd-line)] text-[var(--bd-no)] hover:bg-red-50 ${FOCUS}`}
                     >
                       <span aria-hidden>✕</span>
@@ -470,7 +470,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             </h2>
             <div className="bd-rule mt-2" />
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
-              Added parties go to the bottom of your list. Parties already on it show their
+              Added parties go to the bottom of My List. Parties already on it show their
               position. Double-click a party to open its page.
             </p>
           </div>
@@ -516,13 +516,13 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                           {at ? (
                             <div className="flex shrink-0 items-center justify-end gap-2">
                               <span className="inline-flex h-8 min-w-9 items-center justify-center whitespace-nowrap rounded-md border border-blue-200 bg-blue-100/70 px-2 text-sm font-semibold tabular-nums text-blue-800">
-                                <span className="sr-only">Position {at} in your list</span>
+                                <span className="sr-only">Position {at} in My List</span>
                                 <span aria-hidden>#{at}</span>
                               </span>
                               <button
                                 type="button"
                                 onClick={() => remove(party.slug)}
-                                aria-label={`Remove ${party.name} from your list`}
+                                aria-label={`Remove ${party.name} from My List`}
                                 className={`rounded-md border border-[var(--bd-line)] px-3 py-1.5 text-sm font-medium text-[var(--bd-no)] hover:bg-red-50 ${FOCUS}`}
                               >
                                 Remove
@@ -532,7 +532,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                             <button
                               type="button"
                               onClick={() => add(party.slug)}
-                              aria-label={`Add ${party.name} to your list`}
+                              aria-label={`Add ${party.name} to My List`}
                               className={`shrink-0 rounded-md border border-blue-200 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-blue-50 ${FOCUS}`}
                             >
                               Add

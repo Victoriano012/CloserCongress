@@ -105,7 +105,7 @@ export default function PartiesPage() {
         <div className="bd-rule mt-4" />
         <p className="mt-6 text-[15px] leading-relaxed text-[var(--bd-muted)]">
           Each party votes only on bills inside its subject and abstains on the rest, handing
-          your vote to the next name on your list. Open a party to see what it stands for and
+          your vote to the next name on My List. Open a party to see what it stands for and
           how it has voted.
         </p>
       </header>

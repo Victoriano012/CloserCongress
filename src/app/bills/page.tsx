@@ -144,7 +144,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
               <>
                 No delegates yet, so every bill is a blank vote.{" "}
                 <Link href="/delegate" className="bd-link">
-                  Build your list
+                  Build My List
                 </Link>{" "}
                 to see how you voted.
               </>

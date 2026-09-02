@@ -11,7 +11,7 @@ import { BLANK_PARTY_SLUG } from "@/lib/parties";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Your list",
+  title: "My list",
   description:
     "Build an ordered list of single-issue delegates. The first one with an opinion on a bill casts your vote.",
 };
@@ -20,7 +20,7 @@ function SignedOut() {
   return (
     <div className="bd-container flex flex-col gap-8 py-12">
       <div className="max-w-2xl">
-        <h1 className="font-serif text-3xl font-semibold">Your list</h1>
+        <h1 className="font-serif text-3xl font-semibold">My list</h1>
         <div className="bd-rule mt-3" />
         <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)]">
           An ordered list of single-issue parties. A bill walks down it until it reaches
@@ -32,8 +32,8 @@ function SignedOut() {
       <div className="flex flex-col gap-4">
         <SignInButton />
         <p className="max-w-2xl text-sm leading-relaxed text-[var(--bd-muted)]">
-          Your list is encrypted under a key derived from your Google account id, which is
-          never stored. Not end-to-end: this server reads your list to show it to you.
+          My List is encrypted under a key derived from your Google account id, which is
+          never stored. Not end-to-end: this server reads My List to show it to you.
         </p>
       </div>
     </div>
@@ -51,7 +51,7 @@ export default async function DelegatePage() {
     <div className="bd-container flex flex-col gap-8 py-12">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-2xl">
-          <h1 className="font-serif text-3xl font-semibold">Your list</h1>
+          <h1 className="font-serif text-3xl font-semibold">My list</h1>
           <div className="bd-rule mt-3" />
           <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)]">
             A bill walks down this list until it reaches a party with an opinion, and that
@@ -71,7 +71,7 @@ export default async function DelegatePage() {
 
       <p className="max-w-2xl text-xs leading-relaxed text-[var(--bd-muted)]">
         Encrypted under a key derived from your Google account id, which is never stored.
-        Not end-to-end: this server reads your list to render this page.
+        Not end-to-end: this server reads My List to render this page.
       </p>
     </div>
   );

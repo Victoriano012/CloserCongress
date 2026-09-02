@@ -66,7 +66,7 @@ export default function HowItWorksPage() {
                   <span className="font-semibold text-[var(--bd-navy)]">
                     Name several, in order.
                   </span>{" "}
-                  Your list is walked from the top. The first delegate with an opinion on the
+                  My List is walked from the top. The first delegate with an opinion on the
                   bill casts your vote; everyone below is never consulted.
                 </li>
               </ol>
@@ -83,7 +83,7 @@ export default function HowItWorksPage() {
 
             <Section id="fall-through" title="What a list actually does">
               <p>
-                Say your list is <strong>Animal Welfare</strong>, then{" "}
+                Say My List reads <strong>Animal Welfare</strong>, then{" "}
                 <strong>Catholic Values</strong>, then <strong>Equal Rights</strong>.
               </p>
 
@@ -139,7 +139,7 @@ export default function HowItWorksPage() {
                 and no stance, and abstains on everything.
               </p>
               <p>
-                When the walk reaches the bottom of your list without finding an opinion, you
+                When the walk reaches the bottom of My List without finding an opinion, you
                 are recorded as present and blank, not absent. A list of only the blank vote is
                 a coherent position too; about a fifth of the simulated population holds it.
               </p>

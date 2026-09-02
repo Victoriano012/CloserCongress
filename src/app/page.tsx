@@ -60,7 +60,7 @@ export default async function Home() {
               <strong className="block font-semibold text-[var(--bd-navy)]">
                 Your vote is never locked in.
               </strong>
-              Change your list whenever you like. Your latest saved list replaces the previous
+              Change My List whenever you like. Your latest saved list replaces the previous
               one.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -68,7 +68,7 @@ export default async function Home() {
                 href="/delegate"
                 className="rounded-md bg-blue-700 px-5 py-3 font-medium text-white hover:bg-blue-800"
               >
-                Build your list
+                Build My List
               </Link>
               <Link
                 href="/bills"
@@ -81,7 +81,7 @@ export default async function Home() {
 
           <div className="self-start">
             <DelegationDiagram
-              caption="Your list, walked from the top"
+              caption="My List, walked from the top"
               bill="A bill recognising a religious holiday"
               steps={[
                 { slug: SAMPLE_LIST[0], state: "silent", note: "Not its subject. Your vote falls past it." },

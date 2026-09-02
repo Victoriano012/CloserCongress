@@ -318,7 +318,7 @@ export default async function BillPage({ params }: Props) {
           title={delegation ? "Your vote" : "A sample list"}
           note={
             delegation
-              ? "Your list, walked the way the simulation walks everyone's."
+              ? "My List, walked the way the simulation walks everyone's."
               : "Three names, walked the way the simulation walks every list."
           }
         >
@@ -363,7 +363,7 @@ export default async function BillPage({ params }: Props) {
               </p>
             )}
             <Link href="/delegate" className="bd-link mt-4 inline-block text-sm">
-              {delegation ? "Edit your list" : "Build your own list"}
+              {delegation ? "Edit My List" : "Build My List"}
             </Link>
           </div>
         </Section>

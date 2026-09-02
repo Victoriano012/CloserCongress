@@ -477,9 +477,9 @@ export default function MethodologyPage() {
               </ol>
 
               <p>
-                We can still read your list: the server sees it in plaintext while serving you
+                We can still read My List: the server sees it in plaintext while serving you
                 a page. This is not end-to-end encryption; it defends against a leaked or
-                subpoenaed dump, not a compromised server. Deleting your list deletes the row.
+                subpoenaed dump, not a compromised server. Deleting My List deletes the row.
               </p>
             </Section>
 
