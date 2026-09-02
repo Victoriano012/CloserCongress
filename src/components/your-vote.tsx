@@ -17,13 +17,11 @@ export function YourVote({ entry, clampReason = false }: { entry: ResolvedVote; 
         <VoteTag vote={entry.vote} />
         <span className="text-xs text-[var(--bd-muted)]">through</span>
         <PartyChip slug={entry.party} />
-        <span className="text-xs text-[var(--bd-muted)]">
-          {entry.vote === "abstain"
-            ? `all ${entry.silentAbove} delegates silent`
-            : entry.silentAbove === 0
-              ? "first choice"
-              : `${entry.silentAbove} silent above`}
-        </span>
+        {entry.vote !== "abstain" && (
+          <span className="text-xs text-[var(--bd-muted)]">
+            {entry.silentAbove === 0 ? "first choice" : `${entry.silentAbove} silent above`}
+          </span>
+        )}
       </div>
       {entry.reason ? (
         <p
