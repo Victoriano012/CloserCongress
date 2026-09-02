@@ -1,9 +1,14 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { SignInButton } from "@/components/auth-buttons";
+import { VoteBar } from "@/components/vote-bar";
+import { YourVote } from "@/components/your-vote";
 import { billLabel, listBills } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
-import { VoteBar } from "@/components/vote-bar";
+import { loadDelegation } from "@/lib/delegation";
+import { BLANK_PARTY_SLUG } from "@/lib/parties";
+import { loadVotesForBills } from "@/lib/record";
 
 export const metadata: Metadata = {
   title: "Bills",
@@ -41,25 +46,36 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
   const params = await searchParams;
   const query = typeof params.q === "string" ? params.q : "";
   const outcome = typeof params.outcome === "string" ? params.outcome : "all";
+  const mine = params.mine === "1";
   // Number("1e400") is Infinity, which is truthy — it would survive `|| 1` and
   // reach Postgres as an offset, which is a 500.
   const asked = Number(params.page);
   const page = Number.isFinite(asked) ? Math.min(Math.max(Math.trunc(asked), 1), 10_000) : 1;
 
+  const delegation = await loadDelegation();
+  const hasDelegates = (delegation ?? []).some((slug) => slug !== BLANK_PARTY_SLUG);
+
   const { items, total } = await listBills({
     query: query || undefined,
     outcome,
+    votedOnly: mine,
     limit: PER_PAGE,
     offset: (page - 1) * PER_PAGE,
   });
   const pages = Math.max(Math.ceil(total / PER_PAGE), 1);
 
+  const myVotes =
+    delegation && hasDelegates
+      ? await loadVotesForBills(delegation, items.map((b) => b.id))
+      : null;
+
   const link = (next: Record<string, string | number>) => {
     const sp = new URLSearchParams();
     if (query) sp.set("q", query);
     if (outcome !== "all") sp.set("outcome", outcome);
+    if (mine) sp.set("mine", "1");
     for (const [k, v] of Object.entries(next)) {
-      if (v === "all" || v === "" || v === 1) sp.delete(k);
+      if (v === "all" || v === "" || v === 1 || v === 0) sp.delete(k);
       else sp.set(k, String(v));
     }
     const s = sp.toString();
@@ -86,13 +102,14 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
           className="w-full max-w-sm rounded-md border border-[var(--bd-line)] bg-white px-3.5 py-2 text-sm focus:border-[var(--bd-blue)]"
         />
         {outcome !== "all" && <input type="hidden" name="outcome" value={outcome} />}
+        {mine && <input type="hidden" name="mine" value="1" />}
         <button
           type="submit"
           className="rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
         >
           Search
         </button>
-        <div className="ml-auto flex gap-1 text-sm">
+        <div className="ml-auto flex flex-wrap gap-1 text-sm">
           {OUTCOMES.map((o) => (
             <Link
               key={o.value}
@@ -106,11 +123,42 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
               {o.label}
             </Link>
           ))}
+          <Link
+            href={link({ mine: mine ? 0 : 1, page: 1 })}
+            aria-pressed={mine}
+            className={`ml-1 rounded-md border px-3 py-1.5 ${
+              mine
+                ? "border-[var(--bd-navy)] bg-[var(--bd-navy)] text-white"
+                : "border-[var(--bd-line)] text-[var(--bd-muted)] hover:bg-blue-50"
+            }`}
+          >
+            Your votes
+          </Link>
         </div>
       </form>
 
+      {mine && !myVotes ? (
+        <div className="bd-card mt-6 flex flex-wrap items-center gap-4 p-5 text-sm">
+          <p className="text-[var(--bd-ink)]">
+            {delegation ? (
+              <>
+                No delegates yet, so every bill is a blank vote.{" "}
+                <Link href="/delegate" className="bd-link">
+                  Build your list
+                </Link>{" "}
+                to see how you voted.
+              </>
+            ) : (
+              <>Sign in to see how your delegates voted on each bill.</>
+            )}
+          </p>
+          {!delegation && <SignInButton />}
+        </div>
+      ) : null}
+
       <p className="mt-6 text-sm text-[var(--bd-muted)]">
         {total.toLocaleString()} {total === 1 ? "bill" : "bills"}
+        {mine && <> {myVotes ? "you voted on" : "put to the delegates"}</>}
         {query && <> matching “{query}”</>}
       </p>
 
@@ -177,6 +225,12 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
                   Awaiting the delegates.
                 </p>
               )}
+
+              {myVotes?.get(bill.id)?.classified ? (
+                <div className="mt-4 border-t border-[var(--bd-line)] pt-3">
+                  <YourVote entry={myVotes.get(bill.id)!} clampReason />
+                </div>
+              ) : null}
             </Link>
           </li>
         ))}

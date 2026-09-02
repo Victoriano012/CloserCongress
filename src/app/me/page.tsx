@@ -5,8 +5,7 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import { DelegateTally } from "@/components/delegate-tally";
 import { OrderedChips } from "@/components/ordered-chips";
-import { PartyChip } from "@/components/party-chip";
-import { VoteTag } from "@/components/vote-tag";
+import { YourVote } from "@/components/your-vote";
 import { billLabel } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
 import { loadDelegation } from "@/lib/delegation";
@@ -142,28 +141,9 @@ export default async function MePage() {
                       ) : null}
                     </div>
 
-                    {!entry.classified ? (
-                      <p className="mt-3 text-sm text-[var(--bd-muted)]">Not classified yet.</p>
-                    ) : (
-                      <div className="mt-3 flex flex-col gap-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <PartyChip slug={entry.party} />
-                          <VoteTag vote={entry.vote} />
-                          <span className="text-xs text-[var(--bd-muted)]">
-                            {entry.vote === "abstain"
-                              ? `all ${entry.silentAbove} delegates silent`
-                              : entry.silentAbove === 0
-                                ? "first choice"
-                                : `${entry.silentAbove} silent above`}
-                          </span>
-                        </div>
-                        {entry.reason ? (
-                          <p className="text-sm leading-relaxed text-[var(--bd-muted)]">
-                            {entry.reason}
-                          </p>
-                        ) : null}
-                      </div>
-                    )}
+                    <div className="mt-3">
+                      <YourVote entry={entry} />
+                    </div>
                   </li>
                 );
               })}
