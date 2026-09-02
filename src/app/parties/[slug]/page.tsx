@@ -32,8 +32,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const party = PARTY_BY_SLUG[slug];
-  if (!party) return { title: "Unknown party" };
-  return { title: party.name, description: party.tagline };
+  if (!party) return {};
+  return { description: party.tagline };
 }
 
 /**

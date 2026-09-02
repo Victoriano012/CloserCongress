@@ -18,10 +18,7 @@ const wordmark = Fraunces({
 export const metadata: Metadata = {
   metadataBase: new URL("https://closerdemocracy.vercel.app"),
   manifest: "/manifest.webmanifest",
-  title: {
-    default: "Closer Democracy — one vote, several delegates, in your order",
-    template: "%s · Closer Democracy",
-  },
+  title: "Closer Democracy",
   description:
     "Lend your vote on real bills before Congress to an ordered list of single-issue parties. The first one with an opinion casts it.",
   openGraph: {

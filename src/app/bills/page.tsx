@@ -11,7 +11,6 @@ import { BLANK_PARTY_SLUG } from "@/lib/parties";
 import { loadVotesForBills } from "@/lib/record";
 
 export const metadata: Metadata = {
-  title: "Bills",
   description:
     "Real bills before Congress, put to a simulated vote of ten thousand delegated citizens.",
 };

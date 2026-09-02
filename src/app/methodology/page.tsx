@@ -12,7 +12,6 @@ import {
 } from "@/lib/electorate-model";
 
 export const metadata: Metadata = {
-  title: "Methodology and limits",
   description:
     "Where the bills come from, how each party's vote is decided, how the synthetic electorate is calibrated, what is stored about you, and where the model is wrong.",
 };

@@ -10,7 +10,6 @@ import { BLANK_PARTY_SLUG } from "@/lib/parties";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "My list",
   description:
     "Build an ordered list of single-issue delegates. The first one with an opinion on a bill casts your vote.",
 };

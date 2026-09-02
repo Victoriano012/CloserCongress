@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { billLabel, getBill, type BillRow, type PartyVote } from "@/lib/bills";
@@ -13,14 +14,11 @@ export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ id: string }> };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const data = await getBill(id);
-  if (!data) return { title: "Bill not found" };
-  return {
-    title: `${billLabel(data.bill)} — ${data.bill.title}`.slice(0, 110),
-    description: data.ai?.plain_summary ?? data.bill.official_summary?.slice(0, 200),
-  };
+  if (!data) return {};
+  return { description: data.ai?.plain_summary ?? data.bill.official_summary?.slice(0, 200) };
 }
 
 const pct = (n: number, d: number) => (d > 0 ? (n / d) * 100 : 0);

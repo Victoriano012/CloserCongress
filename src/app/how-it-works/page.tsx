@@ -5,7 +5,6 @@ import { DelegationDiagram } from "@/components/delegation-diagram";
 import { SAMPLE_LIST, VOTING_PARTIES } from "@/lib/parties";
 
 export const metadata: Metadata = {
-  title: "How it works",
   description:
     "A plain-language walkthrough of ordered delegation, abstention and the blank vote.",
 };

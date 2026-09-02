@@ -12,7 +12,6 @@ import {
 } from "@/lib/parties";
 
 export const metadata: Metadata = {
-  title: "The parties",
   // Counted from the roster rather than spelled out, so it cannot drift out of
   // date the next time a party is added.
   description: `${VOTING_PARTIES.length} single-issue delegates, plus the blank vote. Each votes only on its own subject and abstains on everything else.`,
