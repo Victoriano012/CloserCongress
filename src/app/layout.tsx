@@ -18,17 +18,6 @@ const wordmark = Fraunces({
 export const metadata: Metadata = {
   metadataBase: new URL("https://closerdemocracy.vercel.app"),
   manifest: "/manifest.webmanifest",
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
-      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: [
-      { url: "/apple-icon.png", type: "image/png", sizes: "180x180" },
-    ],
-  },
   title: {
     default: "Closer Democracy — one vote, several delegates, in your order",
     template: "%s · Closer Democracy",
