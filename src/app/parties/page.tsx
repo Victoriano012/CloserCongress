@@ -45,19 +45,19 @@ function PartyCard({ party }: { party: Party }) {
   );
 }
 
-/** Two exact inverses with a neutral, two-way connector between them. */
+/** Two exact inverses, a red cross between them; the label is for screen readers only. */
 function OppositePair({ a, b }: { a: Party; b: Party }) {
   return (
     <div className="grid items-center gap-2 sm:grid-cols-[1fr_auto_1fr] sm:gap-4">
       <PartyCard party={a} />
-      <p className="flex items-center justify-center gap-1.5 text-xs font-medium uppercase tracking-wide text-[var(--bd-muted)]">
-        <span aria-hidden className="text-base leading-none sm:hidden">
-          ↕
+      <p className="flex justify-center">
+        <span
+          aria-hidden
+          className="grid size-8 place-items-center rounded-full border-2 border-red-600 text-base font-bold leading-none text-red-600"
+        >
+          ✕
         </span>
-        <span aria-hidden className="hidden text-base leading-none sm:inline">
-          ↔
-        </span>
-        Opposite values
+        <span className="sr-only">Opposite values</span>
       </p>
       <PartyCard party={b} />
     </div>
