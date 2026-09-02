@@ -2,7 +2,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-20 border-t border-[var(--bd-line)] bg-white">
       <div className="bd-container space-y-2 py-10 text-sm text-[var(--bd-muted)]">
-        <p className="font-serif text-base font-semibold text-[var(--bd-navy)]">
+        <p className="font-wordmark text-base font-semibold tracking-tight text-[var(--bd-navy)]">
           Closer Democracy
         </p>
         <p>
