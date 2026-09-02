@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 
+import { RESOLVED_OUTCOMES } from "@/lib/bill-outcome";
 import { query } from "@/lib/db";
 import { ensureResult } from "@/lib/results";
 import type { TallyResult, Vote } from "@/lib/tally";
@@ -83,6 +84,11 @@ export function billLabel(bill: { bill_type: string; number: number }): string {
   return `${prefix[bill.bill_type] ?? bill.bill_type.toUpperCase()} ${bill.number}`;
 }
 
+/**
+ * Lists only resolved bills (see `isResolved`). In-progress bills stay in the
+ * table and surface here on their own once the nightly sync settles them; the
+ * detail route still serves them by direct link.
+ */
 export async function listBills(opts: {
   limit?: number;
   offset?: number;
@@ -94,8 +100,8 @@ export async function listBills(opts: {
   const limit = Math.min(opts.limit ?? 25, 100);
   const offset = Math.max(opts.offset ?? 0, 0);
 
-  const where: string[] = [];
-  const params: unknown[] = [];
+  const params: unknown[] = [RESOLVED_OUTCOMES];
+  const where: string[] = ["b.real_outcome = any($1::text[])"];
   if (opts.query) {
     // Escape LIKE metacharacters: without this, searching "50_000" matches
     // "50X000" and searching "%" matches every bill in the table.
@@ -109,7 +115,7 @@ export async function listBills(opts: {
   if (opts.votedOnly) {
     where.push("exists (select 1 from party_votes pv where pv.bill_id = b.id)");
   }
-  const clause = where.length ? `where ${where.join(" and ")}` : "";
+  const clause = `where ${where.join(" and ")}`;
 
   const items = await query<BillListItem>(
     `select b.id, b.title, b.chamber, b.bill_type, b.number, b.latest_action_date::text,
@@ -177,3 +183,4 @@ export const getBill = cache(async function getBill(id: string): Promise<{
 });
 
 export { ensureResult };
+export { isResolved } from "@/lib/bill-outcome";

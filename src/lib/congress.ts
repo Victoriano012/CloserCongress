@@ -306,6 +306,10 @@ export function normalizeSponsorName(v: unknown): string | null {
 /** GovTrack `current_status` values we met but did not anticipate. */
 export const unknownStatuses = new Set<string>();
 
+/**
+ * Statuses where Congress is not done with the bill. Includes passage by one
+ * chamber only: the bill is still moving, so it is neither passed nor failed.
+ */
 const KNOWN_PENDING = new Set([
   "introduced",
   "referred",
@@ -313,15 +317,26 @@ const KNOWN_PENDING = new Set([
   "prov_kill_suspensionfailed",
   "prov_kill_cloturefailed",
   "prov_kill_pingpongfail",
+  "pass_over_house",
+  "pass_over_senate",
+  "pass_back_house",
+  "pass_back_senate",
+  "conference_passed_house",
+  "conference_passed_senate",
+  "override_pass_over_house",
+  "override_pass_over_senate",
 ]);
 
 export function mapStatus(status: string): Outcome {
   const s = status.toLowerCase();
-  // "override" is a *successful* veto override, so test it before "veto".
+  if (KNOWN_PENDING.has(s)) return "pending";
+  // "vetoed_override_fail_*" is a failed override, so test "fail" first; a bare
+  // "override" (enacted_veto_override) is a successful one, so test it before "veto".
+  if (s.includes("fail") || s.includes("kill")) return "failed";
   if (s.includes("override")) return "passed";
-  if (s.includes("fail") || s.includes("kill") || s.includes("veto")) return "failed";
+  if (s.includes("veto")) return "failed";
   if (s.includes("pass") || s.includes("enacted") || s.includes("signed")) return "passed";
-  if (!KNOWN_PENDING.has(s)) unknownStatuses.add(status);
+  unknownStatuses.add(status);
   return "pending";
 }
 
@@ -362,37 +377,61 @@ export async function discoverRecentBills(opts: {
   const out: DiscoveredBill[] = [];
   let filtered = 0;
   for (const o of body.objects ?? []) {
-    const billType = BILL_TYPES[o.bill_type];
-    if (!billType || !INGESTED_TYPES.has(billType)) {
-      filtered++;
-      continue;
-    }
-
-    const sponsor = o.sponsor;
-    const sponsorName =
-      sponsor && (sponsor.firstname || sponsor.lastname)
-        ? `${sponsor.firstname ?? ""} ${sponsor.lastname ?? ""}`.trim()
-        : (sponsor?.name ?? null);
-
-    out.push({
-      id: `${o.congress}-${billType}-${o.number}`,
-      congress: o.congress,
-      billType,
-      number: o.number,
-      title: o.title_without_number || o.title || `${billType.toUpperCase()} ${o.number}`,
-      chamber: originChamber(billType),
-      sponsorName: normalizeSponsorName(sponsorName),
-      sponsorParty: normalizeParty(o.sponsor_role?.party),
-      sponsorState: o.sponsor_role?.state ?? null,
-      introducedDate: toDate(o.introduced_date),
-      latestActionDate: toDate(o.current_status_date),
-      currentStatus: o.current_status,
-      currentStatusLabel: o.current_status_label ?? null,
-      congressUrl: o.link ?? null,
-    });
+    const d = toDiscovered(o);
+    if (d) out.push(d);
+    else filtered++;
   }
   opts.onFiltered?.(filtered);
   return out;
+}
+
+/** Null when the bill is not a type we ingest. */
+function toDiscovered(o: GovTrackBill): DiscoveredBill | null {
+  const billType = BILL_TYPES[o.bill_type];
+  if (!billType || !INGESTED_TYPES.has(billType)) return null;
+
+  const sponsor = o.sponsor;
+  const sponsorName =
+    sponsor && (sponsor.firstname || sponsor.lastname)
+      ? `${sponsor.firstname ?? ""} ${sponsor.lastname ?? ""}`.trim()
+      : (sponsor?.name ?? null);
+
+  return {
+    id: `${o.congress}-${billType}-${o.number}`,
+    congress: o.congress,
+    billType,
+    number: o.number,
+    title: o.title_without_number || o.title || `${billType.toUpperCase()} ${o.number}`,
+    chamber: originChamber(billType),
+    sponsorName: normalizeSponsorName(sponsorName),
+    sponsorParty: normalizeParty(o.sponsor_role?.party),
+    sponsorState: o.sponsor_role?.state ?? null,
+    introducedDate: toDate(o.introduced_date),
+    latestActionDate: toDate(o.current_status_date),
+    currentStatus: o.current_status,
+    currentStatusLabel: o.current_status_label ?? null,
+    congressUrl: o.link ?? null,
+  };
+}
+
+/**
+ * Current GovTrack record for one bill we already hold, so its status can be
+ * re-checked without a full hydration. Null when GovTrack does not know it.
+ */
+export async function fetchBillStatus(
+  congress: number,
+  billType: string,
+  number: number,
+): Promise<DiscoveredBill | null> {
+  const govtrackType = Object.keys(BILL_TYPES).find((k) => BILL_TYPES[k] === billType);
+  if (!govtrackType) return null;
+  const url =
+    `https://www.govtrack.us/api/v2/bill?congress=${congress}` +
+    `&bill_type=${govtrackType}&number=${number}`;
+  const res = await fetchWithRetry(url);
+  const body = (await res.json()) as { objects?: GovTrackBill[] };
+  const o = body.objects?.[0];
+  return o ? toDiscovered(o) : null;
 }
 
 /* ---------------------------------------------------------------- hydration */

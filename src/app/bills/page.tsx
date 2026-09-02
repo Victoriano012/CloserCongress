@@ -17,9 +17,9 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+// The index only lists resolved bills, so there is no "In progress" filter.
 const OUTCOMES = [
   { value: "all", label: "All" },
-  { value: "pending", label: "In progress" },
   { value: "passed", label: "Passed" },
   { value: "failed", label: "Failed" },
 ];
@@ -30,13 +30,10 @@ function OutcomeTag({ outcome }: { outcome: string }) {
   const tone =
     outcome === "passed"
       ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-      : outcome === "failed"
-        ? "border-rose-200 bg-rose-50 text-rose-800"
-        : "border-[var(--bd-line)] bg-slate-50 text-[var(--bd-muted)]";
-  const label = outcome === "pending" ? "In progress" : outcome;
+      : "border-rose-200 bg-rose-50 text-rose-800";
   return (
     <span className={`rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${tone}`}>
-      {label}
+      {outcome}
     </span>
   );
 }
@@ -87,7 +84,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
         <div className="bd-rule mb-5" />
         <h1 className="font-serif text-4xl font-semibold">Bills before Congress</h1>
         <p className="mt-3 text-[var(--bd-muted)]">
-          Real legislation, updated daily, put to ten thousand simulated citizens.
+          Real legislation Congress has passed or defeated, updated daily, put to ten thousand simulated citizens.
         </p>
       </header>
 
@@ -238,7 +235,11 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
       {items.length === 0 && (
         <p className="bd-card mt-4 p-8 text-center text-[var(--bd-muted)]">
           {total === 0 ? (
-            <>No bills match {query ? <>“{query}”</> : "that filter"}.</>
+            query || mine || outcome !== "all" ? (
+              <>No bills match {query ? <>“{query}”</> : "that filter"}.</>
+            ) : (
+              <>No bills have reached a final vote yet. They appear here once Congress passes or defeats them.</>
+            )
           ) : (
             <>
               That page is past the end.{" "}

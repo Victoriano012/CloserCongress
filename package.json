@@ -11,7 +11,8 @@
     "migrate": "tsx scripts/migrate.ts",
     "classify": "tsx scripts/classify.ts",
     "electorate": "tsx scripts/generate-electorate.ts",
-    "tally": "tsx scripts/tally.ts"
+    "tally": "tsx scripts/tally.ts",
+    "test": "tsx --test 'src/**/*.test.ts'"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
