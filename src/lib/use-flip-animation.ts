@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 /** How long a reordered row takes to slide into its new slot. */
-export const FLIP_DURATION_MS = 500;
+export const FLIP_DURATION_MS = 300;
 
 /**
  * FLIP animation for a list whose children carry `data-flip-key`.
