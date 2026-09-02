@@ -57,7 +57,7 @@ export default async function Home() {
             </p>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-[var(--bd-muted)]">
               <strong className="block font-semibold text-[var(--bd-navy)]">
-                Your vote is never locked in.
+                Change your vote at any time.
               </strong>
               Change My List whenever you like. Your latest saved list replaces the previous
               one.
