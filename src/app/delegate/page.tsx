@@ -49,10 +49,10 @@ export default async function DelegatePage() {
   return (
     <div className="bd-container flex flex-col gap-8 py-12">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="max-w-2xl">
+        <div>
           <h1 className="font-serif text-3xl font-semibold">My list</h1>
           <div className="bd-rule mt-3" />
-          <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)]">
+          <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)] lg:whitespace-nowrap">
             A bill walks down this list until it reaches a party with an opinion, and that
             party casts your vote.
           </p>
