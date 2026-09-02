@@ -27,9 +27,6 @@ import {
   type PartyAxis,
 } from "@/lib/parties";
 
-/** Entries stored include the terminal blank vote, so 10 - 1 real delegates. */
-const MAX_DELEGATES = 9;
-
 const FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bd-blue)]";
 
@@ -132,7 +129,6 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
   const [pending, startTransition] = useTransition();
 
   const dirty = !sameList(list, saved);
-  const full = list.length >= MAX_DELEGATES;
 
   const chosen = useMemo(
     () => list.map((slug) => PARTY_BY_SLUG[slug]).filter(Boolean),
@@ -191,7 +187,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
   }
 
   function add(slug: string) {
-    if (full || list.includes(slug)) return;
+    if (list.includes(slug)) return;
     apply(
       [...list, slug],
       `${PARTY_BY_SLUG[slug]?.name ?? slug} added at position ${list.length + 1}.`,
@@ -274,7 +270,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
               {list.length === 0
                 ? "Empty: every bill is a blank vote until you add someone."
-                : `${list.length} of ${MAX_DELEGATES}. Drag rows or use ▲ ▼ to reorder. Double-click a party to open its page.`}
+                : `${list.length} ${list.length === 1 ? "party" : "parties"}. Drag rows or use ▲ ▼ to reorder. Double-click a party to open its page.`}
             </p>
           </div>
 
@@ -314,7 +310,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                 >
                   <span
                     aria-hidden
-                    className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md bg-[var(--bd-navy)] text-xs font-bold tabular-nums text-white"
+                    className="mt-0.5 grid h-6 min-w-6 shrink-0 place-items-center rounded-md bg-[var(--bd-navy)] px-1 text-xs font-bold tabular-nums text-white"
                   >
                     {index + 1}
                   </span>
@@ -386,7 +382,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             >
               <span
                 aria-hidden
-                className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md border border-[var(--bd-line)] bg-white text-xs font-bold tabular-nums text-[var(--bd-muted)]"
+                className="mt-0.5 grid h-6 min-w-6 shrink-0 place-items-center rounded-md border border-[var(--bd-line)] bg-white px-1 text-xs font-bold tabular-nums text-[var(--bd-muted)]"
               >
                 {list.length + 1}
               </span>
@@ -485,12 +481,6 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             />
           </div>
 
-          {full ? (
-            <p className="rounded-md border border-[var(--bd-line)] bg-blue-50 px-3 py-2 text-sm text-[var(--bd-blue-deep)]">
-              List full at {MAX_DELEGATES}. Remove one to add another.
-            </p>
-          ) : null}
-
           {catalogCount === 0 ? (
             <p className="text-sm text-[var(--bd-muted)]">No matches.</p>
           ) : (
@@ -534,9 +524,8 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                             <button
                               type="button"
                               onClick={() => add(party.slug)}
-                              disabled={full}
                               aria-label={`Add ${party.name} to your list`}
-                              className={`shrink-0 rounded-md border border-blue-200 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-blue-50 disabled:cursor-not-allowed disabled:border-[var(--bd-line)] disabled:text-[var(--bd-muted)] disabled:hover:bg-transparent ${FOCUS}`}
+                              className={`shrink-0 rounded-md border border-blue-200 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-blue-50 ${FOCUS}`}
                             >
                               Add
                             </button>

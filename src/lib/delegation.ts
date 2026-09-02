@@ -8,18 +8,17 @@ import { getGoogleSub } from "@/lib/session";
 /** An ordered list of party slugs. Always ends with the blank-vote party. */
 export type Delegation = string[];
 
-/** Maximum entries in a stored delegation, including the terminal blank vote. */
-const MAX_ENTRIES = 10;
-
 /**
  * Coerces untrusted input into a valid delegation:
- * unknown slugs dropped, duplicates removed, capped, and always terminated by
- * the blank vote — a blank vote is terminal, so anything after it is dropped.
+ * unknown slugs dropped, duplicates removed, and always terminated by the
+ * blank vote — a blank vote is terminal, so anything after it is dropped.
+ * Any number of parties is allowed; duplicates are the only ceiling.
  */
 export function sanitizeDelegation(input: unknown): Delegation {
-  // Cap the input, not just the output: a server action body can carry a
-  // 250k-element array, and the loop below would walk all of it.
-  const raw = Array.isArray(input) ? input.slice(0, 100) : [];
+  // Bound the scan, not the list: a server action body can carry a
+  // 250k-element array, and the loop below would walk all of it. Every
+  // party fits well within this, so it never truncates a legitimate list.
+  const raw = Array.isArray(input) ? input.slice(0, 1000) : [];
   const seen = new Set<string>();
   const out: string[] = [];
 
@@ -30,7 +29,6 @@ export function sanitizeDelegation(input: unknown): Delegation {
     seen.add(item);
     if (item === BLANK_PARTY_SLUG) break; // terminal: ignore everything after
     out.push(item);
-    if (out.length >= MAX_ENTRIES - 1) break;
   }
 
   out.push(BLANK_PARTY_SLUG);
