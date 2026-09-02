@@ -19,6 +19,7 @@ import {
 import {
   AXIS_LABELS,
   BLANK_PARTY_SLUG,
+  OPPOSITE_OF,
   PARTY_BY_SLUG,
   VOTING_PARTIES,
   type Party,
@@ -97,19 +98,20 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
     [list],
   );
 
-  const available = useMemo(() => {
-    const taken = new Set(list);
+  /** Every voting party matching the search, selected or not. */
+  const catalog = useMemo(() => {
     const groups: { axis: PartyAxis; parties: Party[] }[] = [];
     for (const axis of AXES) {
-      const parties = VOTING_PARTIES.filter(
-        (p) => p.axis === axis && !taken.has(p.slug) && matches(p, search),
-      );
+      const parties = VOTING_PARTIES.filter((p) => p.axis === axis && matches(p, search));
       if (parties.length) groups.push({ axis, parties });
     }
     return groups;
-  }, [list, search]);
+  }, [search]);
 
-  const availableCount = available.reduce((n, g) => n + g.parties.length, 0);
+  const catalogCount = catalog.reduce((n, g) => n + g.parties.length, 0);
+
+  /** Slug → 1-based position in the list. */
+  const position = new Map(list.map((slug, i) => [slug, i + 1]));
 
   function apply(next: string[], message: string) {
     setList(next);
@@ -151,10 +153,10 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
     );
   }
 
-  function remove(index: number) {
-    const slug = list[index];
+  function remove(slug: string) {
+    if (!list.includes(slug)) return;
     apply(
-      list.filter((_, i) => i !== index),
+      list.filter((s) => s !== slug),
       `${PARTY_BY_SLUG[slug]?.name ?? slug} removed from your list.`,
     );
   }
@@ -238,7 +240,10 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             }}
             onDrop={onDrop}
           >
-            {chosen.map((party, index) => (
+            {chosen.map((party, index) => {
+              const oppositeAt = position.get(OPPOSITE_OF[party.slug]);
+              const opposite = oppositeAt ? PARTY_BY_SLUG[OPPOSITE_OF[party.slug]] : null;
+              return (
               <li key={party.slug}>
                 <Indicator active={dragIndex !== null && dropAt === index} />
                 <div
@@ -277,6 +282,16 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                     <p className="mt-1 text-xs leading-relaxed text-[var(--bd-muted)]">
                       {party.scope}
                     </p>
+                    {opposite ? (
+                      <p className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-[var(--bd-line)] bg-[var(--bd-paper)] px-1.5 py-0.5 text-xs text-[var(--bd-muted)]">
+                        <span aria-hidden>↔</span>
+                        <span>
+                          Opposite values to {opposite.name}
+                          <span aria-hidden> (#{oppositeAt})</span>
+                          <span className="sr-only"> at position {oppositeAt}</span>
+                        </span>
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="flex shrink-0 items-center gap-1">
@@ -302,7 +317,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                     </button>
                     <button
                       type="button"
-                      onClick={() => remove(index)}
+                      onClick={() => remove(party.slug)}
                       aria-label={`Remove ${party.name} from your list`}
                       className={`grid h-8 w-8 place-items-center rounded-md border border-[var(--bd-line)] text-[var(--bd-no)] hover:bg-red-50 ${FOCUS}`}
                     >
@@ -311,7 +326,8 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                   </div>
                 </div>
               </li>
-            ))}
+              );
+            })}
           </ol>
 
           <div>
@@ -401,20 +417,21 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
         </section>
 
         {/* --------------------------------------------------------- RIGHT */}
-        <section aria-labelledby="available-heading" className="flex flex-col gap-4">
+        <section aria-labelledby="parties-heading" className="flex flex-col gap-4">
           <div>
-            <h2 id="available-heading" className="font-serif text-xl font-semibold">
-              Available parties
+            <h2 id="parties-heading" className="font-serif text-xl font-semibold">
+              Parties
             </h2>
             <div className="bd-rule mt-2" />
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
-              Added parties go to the bottom of your list.
+              Added parties go to the bottom of your list. Parties already on it show their
+              position.
             </p>
           </div>
 
           <div>
             <label htmlFor="delegate-search" className="sr-only">
-              Search available delegates
+              Search parties
             </label>
             <input
               id="delegate-search"
@@ -432,45 +449,68 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             </p>
           ) : null}
 
-          {availableCount === 0 ? (
+          {catalogCount === 0 ? (
             <p className="text-sm text-[var(--bd-muted)]">No matches.</p>
           ) : (
             <div className="flex flex-col gap-6">
-              {available.map((group) => (
+              {catalog.map((group) => (
                 <div key={group.axis}>
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--bd-muted)]">
                     {AXIS_LABELS[group.axis]}
                   </h3>
                   <ul className="mt-2 flex flex-col gap-2">
-                    {group.parties.map((party) => (
-                      <li
-                        key={party.slug}
-                        className="bd-card flex items-start gap-3 border-l-4 p-3"
-                        style={{ borderLeftColor: party.color }}
-                      >
-                        <span aria-hidden className="text-lg leading-none">
-                          {party.emoji}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium leading-snug">{party.name}</p>
-                          <p className="mt-0.5 text-xs text-[var(--bd-ink)]">
-                            {party.tagline}
-                          </p>
-                          <p className="mt-1 text-xs leading-relaxed text-[var(--bd-muted)]">
-                            {party.scope}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => add(party.slug)}
-                          disabled={full}
-                          aria-label={`Add ${party.name} to your list`}
-                          className={`shrink-0 rounded-md border border-blue-200 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-blue-50 disabled:cursor-not-allowed disabled:border-[var(--bd-line)] disabled:text-[var(--bd-muted)] disabled:hover:bg-transparent ${FOCUS}`}
+                    {group.parties.map((party) => {
+                      const at = position.get(party.slug);
+                      return (
+                        <li
+                          key={party.slug}
+                          className={`bd-card flex items-start gap-3 border-l-4 p-3 ${
+                            at ? "bg-blue-50/60" : ""
+                          }`}
+                          style={{ borderLeftColor: party.color }}
                         >
-                          Add
-                        </button>
-                      </li>
-                    ))}
+                          <span aria-hidden className="text-lg leading-none">
+                            {party.emoji}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium leading-snug">{party.name}</p>
+                            <p className="mt-0.5 text-xs text-[var(--bd-ink)]">
+                              {party.tagline}
+                            </p>
+                            <p className="mt-1 text-xs leading-relaxed text-[var(--bd-muted)]">
+                              {party.scope}
+                            </p>
+                          </div>
+                          {at ? (
+                            <div className="flex shrink-0 flex-col items-end gap-1.5">
+                              <span className="grid h-6 min-w-6 place-items-center rounded-md bg-[var(--bd-navy)] px-1.5 text-xs font-bold tabular-nums text-white">
+                                <span className="sr-only">In your list at position </span>
+                                <span aria-hidden>#</span>
+                                {at}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => remove(party.slug)}
+                                aria-label={`Remove ${party.name} from your list`}
+                                className={`rounded-md border border-[var(--bd-line)] px-3 py-1.5 text-sm font-medium text-[var(--bd-no)] hover:bg-red-50 ${FOCUS}`}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => add(party.slug)}
+                              disabled={full}
+                              aria-label={`Add ${party.name} to your list`}
+                              className={`shrink-0 rounded-md border border-blue-200 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-blue-50 disabled:cursor-not-allowed disabled:border-[var(--bd-line)] disabled:text-[var(--bd-muted)] disabled:hover:bg-transparent ${FOCUS}`}
+                            >
+                              Add
+                            </button>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}
