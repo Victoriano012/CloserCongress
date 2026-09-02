@@ -516,11 +516,10 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                         >
                           <PartyLabel party={party} onOpen={() => open(party.slug)} />
                           {at ? (
-                            <div className="flex shrink-0 flex-col items-end gap-1.5">
-                              <span className="grid h-6 min-w-6 place-items-center rounded-md bg-[var(--bd-navy)] px-1.5 text-xs font-bold tabular-nums text-white">
-                                <span className="sr-only">In your list at position </span>
-                                <span aria-hidden>#</span>
-                                {at}
+                            <div className="flex shrink-0 items-center justify-end gap-2">
+                              <span className="inline-flex h-8 min-w-9 items-center justify-center whitespace-nowrap rounded-md border border-blue-200 bg-blue-100/70 px-2 text-sm font-semibold tabular-nums text-blue-800">
+                                <span className="sr-only">Position {at} in your list</span>
+                                <span aria-hidden>#{at}</span>
                               </span>
                               <button
                                 type="button"
