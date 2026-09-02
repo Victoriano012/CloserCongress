@@ -467,7 +467,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             <div className="bd-rule mt-2" />
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
               Added parties go to the bottom of your list. Parties already on it show their
-              position.
+              position. Double-click a party to open its page.
             </p>
           </div>
 
