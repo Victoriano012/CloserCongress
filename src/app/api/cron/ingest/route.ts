@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { secretEquals } from "@/lib/crypto";
 import { runIngest } from "@/lib/ingest";
 
+// Scheduled in vercel.json as "0 8 * * *". Vercel crons run in UTC and JSON
+// has no comments, so the conversion lives here: 08:00 UTC is 04:00 US Eastern
+// during daylight time (EDT, most of the congressional calendar) and 03:00
+// during standard time (EST). Every run also re-checks in-progress bills, so
+// outcomes that changed overnight are on the Bills page by morning.
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 

@@ -28,6 +28,10 @@ async function main() {
     `${s.discovered} discovered, ${s.inserted} inserted, ${s.updated} updated, ` +
       `${s.skipped} skipped, ${s.errors} errors in ${((Date.now() - started) / 1000).toFixed(1)}s`,
   );
+  console.log(
+    `${s.checked} in-progress bills re-checked, ${s.refreshed} refreshed, ` +
+      `${s.statusChanged} changed outcome, ${s.abandoned} abandoned`,
+  );
   if (s.unknownStatuses.length) {
     console.log(`unanticipated GovTrack statuses: ${s.unknownStatuses.join(", ")}`);
   }

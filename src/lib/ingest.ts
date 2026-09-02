@@ -4,8 +4,10 @@
 import { sql } from "@/lib/db";
 import {
   discoverRecentBills,
+  fetchBillStatus,
   hydrateBill,
   mapLimit,
+  mapStatus,
   unknownStatuses,
   type IngestedBill,
 } from "@/lib/congress";
@@ -16,8 +18,15 @@ export type IngestSummary = {
   updated: number;
   skipped: number;
   errors: number;
-  /** Bills discovered but never hydrated because the run hit its deadline. */
+  /** Bills never fetched (discovered or in-progress) because the run hit its deadline. */
   abandoned: number;
+  /** Stored in-progress bills whose GovTrack status was re-checked. */
+  checked: number;
+  /** Of those, how many had moved and were re-hydrated. */
+  refreshed: number;
+  /** Of those, how many changed outcome (pending → passed/failed). */
+  statusChanged: number;
+  statusChanges: string[];
   unknownStatuses: string[];
   errorSamples: string[];
 };
@@ -106,9 +115,16 @@ export async function runIngest(opts: {
   const errorSamples: string[] = [];
 
   let abandoned = 0;
+  const pastDeadline = () => opts.deadline !== undefined && Date.now() > opts.deadline;
+  const recordError = (id: string, e: unknown) => {
+    errors++;
+    if (errorSamples.length < 5) {
+      errorSamples.push(`${id}: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  };
 
   await mapLimit(discovered, 4, async (d) => {
-    if (opts.deadline !== undefined && Date.now() > opts.deadline) {
+    if (pastDeadline()) {
       abandoned++;
       return;
     }
@@ -117,14 +133,67 @@ export async function runIngest(opts: {
       if (await upsert(bill)) inserted++;
       else updated++;
     } catch (e) {
-      errors++;
-      if (errorSamples.length < 5) {
-        errorSamples.push(`${d.id}: ${e instanceof Error ? e.message : String(e)}`);
-      }
+      recordError(d.id, e);
     } finally {
       opts.onProgress?.(++done, discovered.length);
     }
   });
+
+  // Second pass: re-check every stored bill that is still in progress, so one
+  // that passed or failed since the last run gets its new outcome persisted
+  // even if it fell outside the discovery window or limit above. Only a cheap
+  // GovTrack status lookup per bill; full hydration happens only when the
+  // status actually moved. Least recently touched bills go first, so a run that
+  // hits its deadline resumes where the previous one left off.
+  const handled = new Set(discovered.map((d) => d.id));
+  const pending = (
+    (await sql.query(
+      `select id, congress, bill_type, number, real_outcome, real_stage
+         from bills
+        where real_outcome = 'pending' and congress = $1
+        order by updated_at asc`,
+      [opts.congress ?? 119],
+    )) as unknown as PendingRow[]
+  ).filter((r) => !handled.has(r.id));
+
+  let checked = 0;
+  let refreshed = 0;
+  let statusChanged = 0;
+  const statusChanges: string[] = [];
+
+  await mapLimit(pending, 4, async (row) => {
+    if (pastDeadline()) {
+      abandoned++;
+      return;
+    }
+    try {
+      const d = await fetchBillStatus(row.congress, row.bill_type, row.number);
+      checked++;
+      if (!d) return;
+      const outcome = mapStatus(d.currentStatus);
+      if (outcome === row.real_outcome && d.currentStatusLabel === row.real_stage) {
+        await sql.query(`update bills set updated_at = now() where id = $1`, [row.id]);
+        return;
+      }
+      const bill = await hydrateBill(d);
+      await upsert(bill);
+      refreshed++;
+      if (bill.realOutcome !== row.real_outcome) {
+        statusChanged++;
+        if (statusChanges.length < 20) {
+          statusChanges.push(`${row.id}: ${row.real_outcome} → ${bill.realOutcome}`);
+        }
+      }
+    } catch (e) {
+      recordError(row.id, e);
+    }
+  });
+
+  console.log(
+    `ingest: checked ${checked}/${pending.length} in-progress bills, ` +
+      `${refreshed} refreshed, ${statusChanged} changed outcome`,
+  );
+  for (const s of statusChanges) console.log(`  ${s}`);
 
   return {
     discovered: discovered.length,
@@ -133,7 +202,20 @@ export async function runIngest(opts: {
     skipped,
     errors,
     abandoned,
+    checked,
+    refreshed,
+    statusChanged,
+    statusChanges,
     unknownStatuses: [...unknownStatuses],
     errorSamples,
   };
 }
+
+type PendingRow = {
+  id: string;
+  congress: number;
+  bill_type: string;
+  number: number;
+  real_outcome: string;
+  real_stage: string | null;
+};

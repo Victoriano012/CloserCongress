@@ -62,7 +62,7 @@ See `src/lib/claude-cli.ts`.
 npm install
 vercel env pull            # DATABASE_URL, AUTH_*, VAULT_PEPPER, CRON_SECRET
 npm run migrate            # apply db/schema.sql and seed the party roster
-npm run ingest -- --days 7 # pull recent bills (the cron does this daily)
+npm run ingest -- --days 7 # pull recent bills + refresh in-progress ones (the cron does this daily at 4:00 AM ET)
 npm run classify           # ask the AI how each party votes — slow, resumable
 npm run tally              # precompute the simulated result for every bill
 npm run dev
@@ -71,7 +71,7 @@ npm run dev
 | Script | What it does |
 | --- | --- |
 | `npm run migrate` | Applies `db/schema.sql`, upserts `src/lib/parties.ts` into `parties`. |
-| `npm run ingest` | `--days N --congress N --limit N`. Idempotent; safe to re-run. |
+| `npm run ingest` | `--days N --congress N --limit N`. Pulls recently active bills, then re-checks every stored in-progress bill and persists any new passed/failed outcome. Idempotent; safe to re-run. Vercel runs it daily at `0 8 * * *` UTC = 4:00 AM Eastern (EDT). |
 | `npm run classify` | `--limit N --concurrency N --force --model haiku`. Skips bills already classified. Deletes the cached tally when it reclassifies. |
 | `npm run electorate` | Regenerates `data/electorate.json` from the seed. Changes the electorate hash, which invalidates every cached tally. |
 | `npm run tally` | Fills `bill_results` for anything classified but not yet tallied. |

@@ -137,9 +137,11 @@ export default function MethodologyPage() {
 
               <H3>Cadence</H3>
               <p>
-                Ingestion runs daily at 11:00 UTC over a seven-day window, up to 200 bills per
-                run, upserted by bill id. Classification is a separate manual step (below), so
-                a new bill can sit unclassified for a while.
+                Ingestion runs daily at 4:00 AM Eastern (08:00 UTC) over a seven-day window, up
+                to 200 bills per run, upserted by bill id. The same run re-checks every stored
+                bill that is still in progress, so one that passed or failed overnight shows its
+                new outcome the next morning. Classification is a separate manual step (below),
+                so a new bill can sit unclassified for a while.
               </p>
             </Section>
 

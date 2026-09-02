@@ -104,7 +104,7 @@ The comparison at `:9` is also a plain `!==` on a secret, which short-circuits o
 
 Live confirmation that the guard *is* wired up when the variable is present (production build, port 3988): `GET /api/cron/ingest` with no header → `HTTP 401`.
 
-`vercel.json` (`"0 11 * * *"`, daily 11:00 UTC) is consistent with the code's 7-day lookback window, so a missed day self-heals. That part is fine.
+`vercel.json` (`"0 8 * * *"`, daily 08:00 UTC = 4:00 AM ET) is consistent with the code's 7-day lookback window, so a missed day self-heals. That part is fine.
 
 **Suggested fix:**
 
@@ -321,7 +321,7 @@ Quite a lot, and some of it is better than it needed to be.
 - **No `dangerouslySetInnerHTML` anywhere.** All model- and internet-sourced strings go through React's escaping.
 - **404s work.** `/bills/does-not-exist` and `/parties/nope` both return a real `HTTP 404` via `notFound()`.
 - **`src/app/me/page.tsx` is the model for the rest of the app** — it wraps both queries in `try`/`catch` and returns an honest empty state, with a comment explaining why. `/bills` and `/bills/[id]` should copy it.
-- **`vercel.json`'s daily 11:00 UTC schedule matches the code's 7-day lookback**, so a skipped run self-heals.
+- **`vercel.json`'s daily 08:00 UTC (4:00 AM ET) schedule matches the code's 7-day lookback**, so a skipped run self-heals.
 - **`VAULT_PEPPER` absence is fatal at module load** (`crypto.ts:16-20`) — the app refuses to start rather than degrading to a weak key. That is the right instinct; it just needs a length check too.
 - `npx next build` completes clean: no type errors, no lint failures, no warnings.
 
