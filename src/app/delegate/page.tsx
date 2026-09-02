@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 
 import { auth } from "@/auth";
@@ -55,11 +54,7 @@ export default async function DelegatePage() {
           <div className="bd-rule mt-3" />
           <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)]">
             A bill walks down this list until it reaches a party with an opinion, and that
-            party casts your vote.{" "}
-            <Link href="/bills?mine=1" className="bd-link">
-              See how it has been voting
-            </Link>
-            .
+            party casts your vote.
           </p>
         </div>
         <SignOutButton />
