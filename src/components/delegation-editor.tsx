@@ -26,6 +26,7 @@ import {
   type Party,
   type PartyAxis,
 } from "@/lib/parties";
+import { useFlipAnimation } from "@/lib/use-flip-animation";
 
 const FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bd-blue)]";
@@ -127,6 +128,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropAt, setDropAt] = useState<number | null>(null);
   const [pending, startTransition] = useTransition();
+  const { ref: listRef, snapshot, animating } = useFlipAnimation<HTMLOListElement>(list);
 
   const dirty = !sameList(list, saved);
 
@@ -177,8 +179,9 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
 
   function move(index: number, dir: "up" | "down") {
     const target = dir === "up" ? index - 1 : index + 1;
-    if (target < 0 || target >= list.length) return;
+    if (animating || target < 0 || target >= list.length) return;
     const slug = list[index];
+    snapshot();
     apply(
       moved(list, index, dir === "up" ? target : target + 1),
       `${PARTY_BY_SLUG[slug]?.name ?? slug} moved to position ${target + 1} of ${list.length}.`,
@@ -275,6 +278,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
           </div>
 
           <ol
+            ref={listRef}
             className="flex flex-col"
             onDragOver={(event) => {
               if (dragIndex !== null) event.preventDefault();
@@ -285,7 +289,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
               const oppositeAt = position.get(OPPOSITE_OF[party.slug]);
               const opposite = oppositeAt ? PARTY_BY_SLUG[OPPOSITE_OF[party.slug]] : null;
               return (
-              <li key={party.slug}>
+              <li key={party.slug} data-flip-key={party.slug}>
                 <Indicator active={dragIndex !== null && dropAt === index} />
                 <div
                   draggable
@@ -332,6 +336,8 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                     ) : null}
                   </PartyLabel>
 
+                  {/* While a swap animates, `move` ignores clicks; aria-disabled (not
+                      disabled) so the button keeps keyboard focus. */}
                   <div className="flex shrink-0 items-center gap-1">
                     <button
                       type="button"
@@ -339,6 +345,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                       onClick={() => move(index, "up")}
                       disabled={index === 0}
                       aria-label={`Move ${party.name} up`}
+                      aria-disabled={animating || undefined}
                       className={`grid h-8 w-8 place-items-center rounded-md border border-[var(--bd-line)] text-[var(--bd-blue-deep)] hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent ${FOCUS}`}
                     >
                       <span aria-hidden>▲</span>
@@ -349,6 +356,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                       onClick={() => move(index, "down")}
                       disabled={index === list.length - 1}
                       aria-label={`Move ${party.name} down`}
+                      aria-disabled={animating || undefined}
                       className={`grid h-8 w-8 place-items-center rounded-md border border-[var(--bd-line)] text-[var(--bd-blue-deep)] hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent ${FOCUS}`}
                     >
                       <span aria-hidden>▼</span>
