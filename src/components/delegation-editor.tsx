@@ -10,6 +10,7 @@
  * and ▲/▼ buttons that do the same job for keyboard and touch.
  */
 
+import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
 import {
@@ -79,7 +80,47 @@ function Indicator({ active }: { active: boolean }) {
   );
 }
 
+/** True when a click landed on one of the row's buttons rather than the row itself. */
+function onControl(event: React.MouseEvent): boolean {
+  return event.target instanceof Element && event.target.closest("button") !== null;
+}
+
+/**
+ * Logo and name. Focusable so Enter opens the party page, mirroring the
+ * double-click on the surrounding card.
+ */
+function PartyLabel({
+  party,
+  onOpen,
+  children,
+}: {
+  party: Party;
+  onOpen: () => void;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div
+      role="link"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" && event.target === event.currentTarget) {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
+      className={`min-w-0 flex-1 rounded-md ${FOCUS}`}
+    >
+      <p className="text-sm font-medium leading-snug">
+        <span aria-hidden>{party.emoji}</span> {party.name}
+        <span className="sr-only">. Press Enter to open this party&apos;s page.</span>
+      </p>
+      {children}
+    </div>
+  );
+}
+
 export function DelegationEditor({ initial }: { initial: string[] }) {
+  const router = useRouter();
   const [list, setList] = useState<string[]>(() => withoutBlank(initial));
   const [saved, setSaved] = useState<string[]>(() => withoutBlank(initial));
   const [search, setSearch] = useState("");
@@ -112,6 +153,10 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
 
   /** Slug → 1-based position in the list. */
   const position = new Map(list.map((slug, i) => [slug, i + 1]));
+
+  function open(slug: string) {
+    router.push(`/parties/${slug}`);
+  }
 
   function apply(next: string[], message: string) {
     setList(next);
@@ -229,7 +274,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
             <p className="mt-3 text-sm text-[var(--bd-muted)]">
               {list.length === 0
                 ? "Empty: every bill is a blank vote until you add someone."
-                : `${list.length} of ${MAX_DELEGATES}. Drag rows or use ▲ ▼ to reorder.`}
+                : `${list.length} of ${MAX_DELEGATES}. Drag rows or use ▲ ▼ to reorder. Double-click a party to open its page.`}
             </p>
           </div>
 
@@ -259,7 +304,10 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                     setDragIndex(null);
                     setDropAt(null);
                   }}
-                  className={`bd-card flex items-start gap-3 border-l-4 p-3 ${
+                  onDoubleClick={(event) => {
+                    if (!onControl(event)) open(party.slug);
+                  }}
+                  className={`bd-card flex select-none items-start gap-3 border-l-4 p-3 ${
                     dragIndex === index ? "opacity-50" : ""
                   }`}
                   style={{ borderLeftColor: party.color }}
@@ -275,13 +323,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                     ⠿
                   </span>
 
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium leading-snug">
-                      <span aria-hidden>{party.emoji}</span> {party.name}
-                    </p>
-                    <p className="mt-1 text-xs leading-relaxed text-[var(--bd-muted)]">
-                      {party.scope}
-                    </p>
+                  <PartyLabel party={party} onOpen={() => open(party.slug)}>
                     {opposite ? (
                       <p className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-[var(--bd-line)] bg-[var(--bd-paper)] px-1.5 py-0.5 text-xs text-[var(--bd-muted)]">
                         <span aria-hidden>↔</span>
@@ -292,7 +334,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                         </span>
                       </p>
                     ) : null}
-                  </div>
+                  </PartyLabel>
 
                   <div className="flex shrink-0 items-center gap-1">
                     <button
@@ -464,23 +506,15 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                       return (
                         <li
                           key={party.slug}
-                          className={`bd-card flex items-start gap-3 border-l-4 p-3 ${
+                          onDoubleClick={(event) => {
+                            if (!onControl(event)) open(party.slug);
+                          }}
+                          className={`bd-card flex select-none items-center gap-3 border-l-4 p-3 ${
                             at ? "bg-blue-50/60" : ""
                           }`}
                           style={{ borderLeftColor: party.color }}
                         >
-                          <span aria-hidden className="text-lg leading-none">
-                            {party.emoji}
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium leading-snug">{party.name}</p>
-                            <p className="mt-0.5 text-xs text-[var(--bd-ink)]">
-                              {party.tagline}
-                            </p>
-                            <p className="mt-1 text-xs leading-relaxed text-[var(--bd-muted)]">
-                              {party.scope}
-                            </p>
-                          </div>
+                          <PartyLabel party={party} onOpen={() => open(party.slug)} />
                           {at ? (
                             <div className="flex shrink-0 flex-col items-end gap-1.5">
                               <span className="grid h-6 min-w-6 place-items-center rounded-md bg-[var(--bd-navy)] px-1.5 text-xs font-bold tabular-nums text-white">
