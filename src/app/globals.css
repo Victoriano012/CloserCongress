@@ -94,3 +94,19 @@
   outline: 2px solid var(--bd-blue);
   outline-offset: 2px;
 }
+
+/* The vote-distribution bar grows in from the left once, on first paint. */
+@keyframes bd-grow {
+  from { width: 0; }
+}
+@keyframes bd-fade-in {
+  from { opacity: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bd-grow {
+    animation: bd-grow 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .bd-fade-in {
+    animation: bd-fade-in 250ms 450ms both;
+  }
+}

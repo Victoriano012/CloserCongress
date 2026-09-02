@@ -8,6 +8,7 @@ import { loadDelegation } from "@/lib/delegation";
 import { PARTY_BY_SLUG, BLANK_PARTY_SLUG, SAMPLE_LIST, VOTING_PARTIES } from "@/lib/parties";
 import { resolveForDelegation, type Vote } from "@/lib/tally";
 import { PartyChip } from "@/components/party-chip";
+import { VoteDistributionBar } from "@/components/bills/vote-distribution-bar";
 import { PartyBreakdownBar, sortContributions, VoteBar } from "@/components/vote-bar";
 
 export const dynamic = "force-dynamic";
@@ -251,21 +252,7 @@ export default async function BillPage({ params }: Props) {
                 </p>
 
                 <div className="mt-5">
-                  <VoteBar yes={result.yes} no={result.no} blank={result.blank} />
-                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                    <span>
-                      <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-[var(--bd-yes)]" />
-                      {result.yes.toLocaleString()} in favour
-                    </span>
-                    <span>
-                      <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-[var(--bd-no)]" />
-                      {result.no.toLocaleString()} against
-                    </span>
-                    <span>
-                      <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-[var(--bd-blank-fill)]" />
-                      {result.blank.toLocaleString()} blank
-                    </span>
-                  </div>
+                  <VoteDistributionBar yes={result.yes} no={result.no} abstain={result.blank} />
                 </div>
 
                 <h3 className="mt-6 text-xs font-semibold uppercase tracking-wider text-[var(--bd-muted)]">
