@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { MobileMenu } from "@/components/mobile-menu";
+import { NavLink } from "@/components/nav-link";
 
 const NAV = [
   { href: "/bills", label: "Bills" },
@@ -10,9 +11,9 @@ const NAV = [
 ];
 
 const LINK =
-  "rounded-md px-3 py-2 text-[var(--bd-muted)] transition-colors hover:bg-blue-50 hover:text-[var(--bd-blue-deep)]";
+  "rounded-md px-3 py-2 text-[var(--bd-muted)] transition-colors hover:bg-blue-50 hover:text-[var(--bd-blue-deep)] aria-[current=page]:bg-blue-50 aria-[current=page]:font-semibold aria-[current=page]:text-[var(--bd-navy)] aria-[current=page]:shadow-[inset_0_-2px_0_var(--bd-blue)]";
 const CTA =
-  "rounded-md bg-blue-700 px-3.5 py-2 font-medium text-white transition-colors hover:bg-blue-800";
+  "rounded-md bg-blue-700 px-3.5 py-2 font-medium text-white transition-colors hover:bg-blue-800 aria-[current=page]:bg-[var(--bd-navy)] aria-[current=page]:font-semibold";
 
 export function SiteHeader() {
   return (
@@ -29,13 +30,13 @@ export function SiteHeader() {
 
         <nav className="ml-auto hidden items-center gap-1 text-sm lg:flex">
           {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className={LINK}>
+            <NavLink key={item.href} href={item.href} className={LINK}>
               {item.label}
-            </Link>
+            </NavLink>
           ))}
-          <Link href="/delegate" className={`ml-2 ${CTA}`}>
+          <NavLink href="/delegate" className={`ml-2 ${CTA}`}>
             Your list
-          </Link>
+          </NavLink>
         </nav>
 
         <MobileMenu className="bd-menu ml-auto lg:hidden">
@@ -56,13 +57,13 @@ export function SiteHeader() {
 
           <nav className="absolute inset-x-0 top-full flex flex-col gap-1 border-b border-[var(--bd-line)] bg-white p-4 text-sm shadow-lg">
             {NAV.map((item) => (
-              <Link key={item.href} href={item.href} className={LINK}>
+              <NavLink key={item.href} href={item.href} className={LINK}>
                 {item.label}
-              </Link>
+              </NavLink>
             ))}
-            <Link href="/delegate" className={`mt-1 text-center ${CTA}`}>
+            <NavLink href="/delegate" className={`mt-1 text-center ${CTA}`}>
               Your list
-            </Link>
+            </NavLink>
           </nav>
         </MobileMenu>
       </div>
