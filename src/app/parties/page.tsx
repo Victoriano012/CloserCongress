@@ -51,10 +51,7 @@ function OppositePair({ a, b }: { a: Party; b: Party }) {
     <div className="grid items-center gap-2 sm:grid-cols-[1fr_auto_1fr] sm:gap-4">
       <PartyCard party={a} />
       <p className="flex justify-center">
-        <span
-          aria-hidden
-          className="grid size-8 place-items-center rounded-full border-2 border-red-600 text-base font-bold leading-none text-red-600"
-        >
+        <span aria-hidden className="text-xl font-bold leading-none text-red-600">
           ✕
         </span>
         <span className="sr-only">Opposite values</span>
