@@ -23,6 +23,7 @@ export function SiteHeader() {
             wordmark="Closer Democracy"
             title="Closer Democracy ballot box logo"
             className="text-[var(--bd-navy)]"
+            wordmarkClassName="font-wordmark text-xl leading-none tracking-tight md:text-[1.625rem]"
           />
         </Link>
 

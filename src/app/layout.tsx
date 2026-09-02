@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Fraunces, Inter, Source_Serif_4 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteHeader } from "@/components/site-header";
@@ -8,6 +8,12 @@ import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const serif = Source_Serif_4({ variable: "--font-serif-display", subsets: ["latin"] });
+const wordmark = Fraunces({
+  variable: "--font-wordmark-display",
+  subsets: ["latin"],
+  weight: "600",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://closerdemocracy.vercel.app"),
@@ -43,7 +49,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${serif.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${serif.variable} ${wordmark.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <a
           href="#main"

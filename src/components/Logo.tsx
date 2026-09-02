@@ -4,6 +4,8 @@ export type LogoProps = {
   className?: string;
   /** `true` uses the default BetterDemocracy wordmark; a string supplies a custom one. */
   wordmark?: boolean | string;
+  /** Extra classes for the wordmark text (font, size, tracking). */
+  wordmarkClassName?: string;
   title?: string;
 };
 
@@ -11,6 +13,7 @@ export function Logo({
   size = 32,
   className = "",
   wordmark = false,
+  wordmarkClassName = "font-serif text-lg",
   title = "BetterDemocracy logo",
 }: LogoProps) {
   const wordmarkText = wordmark === true ? "BetterDemocracy" : wordmark || null;
@@ -57,7 +60,7 @@ export function Logo({
         />
       </svg>
       {wordmarkText ? (
-        <span className="truncate font-serif text-lg font-semibold">{wordmarkText}</span>
+        <span className={`truncate font-semibold ${wordmarkClassName}`}>{wordmarkText}</span>
       ) : null}
     </span>
   );
