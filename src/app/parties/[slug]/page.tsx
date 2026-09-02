@@ -84,7 +84,7 @@ function Record({ counts, isBlank }: { counts: Counts; isBlank: boolean }) {
   if (isBlank) {
     return (
       <p className="mt-6 text-[15px] leading-relaxed">
-        Blank on all {seen} bills, by construction: it is never put to the model.
+        Blank on all {seen} bills, by construction: we are never put to the model.
       </p>
     );
   }
@@ -92,17 +92,17 @@ function Record({ counts, isBlank }: { counts: Counts; isBlank: boolean }) {
   if (spoke === 0) {
     return (
       <p className="mt-6 max-w-2xl text-[15px] leading-relaxed">
-        Silent on all {seen} bills so far.
+        We have been silent on all {seen} bills so far.
       </p>
     );
   }
 
   return (
     <p className="mt-6 max-w-2xl text-[15px] leading-relaxed">
-      Spoke on {spoke} of {seen} bills:{" "}
+      We spoke on {spoke} of {seen} bills:{" "}
       <strong className="font-semibold text-[var(--bd-yes)]">{counts.yes} yes</strong>,{" "}
-      <strong className="font-semibold text-[var(--bd-no)]">{counts.no} no</strong>. Silent
-      on the other {counts.abstain}.
+      <strong className="font-semibold text-[var(--bd-no)]">{counts.no} no</strong>. We stayed
+      silent on the other {counts.abstain}.
     </p>
   );
 }
@@ -137,12 +137,12 @@ export default async function PartyPage({ params }: Props) {
 
       <section className="mt-10 grid gap-6 md:grid-cols-2">
         <div className="bd-card p-6">
-          <h2 className="font-serif text-xl font-semibold">What it votes on</h2>
+          <h2 className="font-serif text-xl font-semibold">What we vote on</h2>
           <div className="bd-rule mt-3" />
           <p className="mt-4 text-[15px] leading-relaxed">{party.scope}</p>
         </div>
         <div className="bd-card p-6">
-          <h2 className="font-serif text-xl font-semibold">How it votes</h2>
+          <h2 className="font-serif text-xl font-semibold">How we vote</h2>
           <div className="bd-rule mt-3" />
           <p className="mt-4 text-[15px] leading-relaxed">{party.stance}</p>
         </div>
@@ -150,12 +150,12 @@ export default async function PartyPage({ params }: Props) {
 
       <p className="mt-4 text-sm text-[var(--bd-muted)]">
         {party.isBlank
-          ? "This party is never shown a bill; its abstention is hardcoded."
-          : "Those two paragraphs are the AI delegate's entire instruction, for every bill."}
+          ? "We are never shown a bill; our abstention is hardcoded."
+          : "Those two paragraphs are the entire instruction our AI delegate reads, for every bill."}
       </p>
 
       <section className="mt-12">
-        <h2 className="font-serif text-2xl font-semibold">Its record</h2>
+        <h2 className="font-serif text-2xl font-semibold">Our record</h2>
         <div className="bd-rule mt-3" />
 
         {counts ? (
