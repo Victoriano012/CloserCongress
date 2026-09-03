@@ -49,21 +49,6 @@ export default async function DelegatePage() {
         )}
 
         {stored ? <ListRecord delegation={stored} /> : null}
-
-        <p className="max-w-2xl text-xs leading-relaxed text-[var(--bd-muted)]">
-          {signedIn ? (
-            <>
-              Encrypted under a key derived from your Google account id, which is never stored.
-              Not end-to-end: this server reads My List to render this page.
-            </>
-          ) : (
-            <>
-              Saved in this browser only. If you sign in, My List is encrypted under a key
-              derived from your Google account id, which is never stored. Not end-to-end: this
-              server reads My List to render this page.
-            </>
-          )}
-        </p>
       </div>
     </div>
   );
