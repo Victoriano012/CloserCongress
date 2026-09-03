@@ -4,8 +4,8 @@ import { MobileMenu } from "@/components/mobile-menu";
 import { NavLink } from "@/components/nav-link";
 
 const NAV = [
-  { href: "/bills", label: "Bills" },
   { href: "/parties", label: "Parties" },
+  { href: "/bills", label: "Bills" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/delegate", label: "My list" },
 ];
