@@ -5,7 +5,7 @@ legislation directly, or delegate to an *ordered list* of single-issue parties. 
 that doesn't care about a bill **abstains**, and the vote falls through to the next party
 in the citizen's list. Real bills, real outcomes, simulated electorate.
 
-Production URL: `https://closerdemocracy.vercel.app`
+Production URL: `https://closercongress.vercel.app`
 
 ---
 
@@ -94,7 +94,7 @@ acts on them. All critique + fix rounds land **before** any ticket that needs Vi
 - **T-F2** Act on round-two findings. → T-C4
 
 ### Phase 5 — Ship
-- **T-14** Deploy to Vercel as `closerdemocracy`, wire env vars, verify the
+- **T-14** Deploy to Vercel as `closercongress`, wire env vars, verify the
   production Google OAuth callback, enable the daily ingestion cron.
 - **T-15** Hand-off notes: how to re-run classification, how to add parties, the honest
   limits of the simulation.

@@ -16,7 +16,7 @@ const wordmark = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://closerdemocracy.vercel.app"),
+  metadataBase: new URL("https://closercongress.vercel.app"),
   manifest: "/manifest.webmanifest",
   title: "Closer Congress",
   description:
