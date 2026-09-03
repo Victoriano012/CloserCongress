@@ -1,9 +1,11 @@
 import "./_env";
 import { neon } from "@neondatabase/serverless";
 import { runClaude } from "../src/lib/claude-cli";
+import { fetchBillText } from "../src/lib/congress";
 import { ensureResult } from "../src/lib/results";
 import { PARTIES } from "../src/lib/parties";
 import {
+  billSource,
   buildPrompt,
   parseClassification,
   type BillForClassification,
@@ -29,13 +31,18 @@ type Row = {
   chamber: string; sponsor_name: string | null; sponsor_party: string | null;
   sponsor_state: string | null; policy_area: string | null;
   official_summary: string | null; latest_action_text: string | null;
+  text_url: string | null;
 };
 
-const toBill = (r: Row): BillForClassification => ({
+const toBill = async (r: Row): Promise<BillForClassification> => ({
   id: r.id, congress: r.congress, billType: r.bill_type, number: r.number,
   title: r.title, chamber: r.chamber, sponsorName: r.sponsor_name,
   sponsorParty: r.sponsor_party, sponsorState: r.sponsor_state,
   policyArea: r.policy_area, officialSummary: r.official_summary,
+  // Most bills reach the classifier before CRS has written a summary. The
+  // text itself is published within a day or two, so read that instead of
+  // asking the model to guess from the title.
+  billText: !r.official_summary && r.text_url ? await fetchBillText(r.text_url) : null,
   latestActionText: r.latest_action_text,
 });
 
@@ -78,13 +85,13 @@ async function persist(billId: string, c: Classification) {
 }
 
 async function classifyOne(row: Row, attempt = 1): Promise<"ok" | "failed"> {
-  const bill = toBill(row);
   try {
+    const bill = await toBill(row);
     const raw = await runClaude(buildPrompt(bill), { model });
     const parsed = parseClassification(raw);
     await persist(row.id, parsed);
     const cast = Object.values(parsed.votes).filter((v) => v.vote !== "abstain").length;
-    console.log(`  ✓ ${row.id.padEnd(16)} ${cast} of ${CLASSIFIABLE_COUNT} parties voted — ${parsed.summary.slice(0, 70)}…`);
+    console.log(`  ✓ ${row.id.padEnd(16)} [${billSource(bill).padEnd(7)}] ${cast} of ${CLASSIFIABLE_COUNT} parties voted — ${parsed.summary.slice(0, 70)}…`);
     return "ok";
   } catch (e) {
     if (attempt < 3) {
@@ -102,7 +109,7 @@ async function main() {
   const rows = (await sql.query(
     `select b.id, b.congress, b.bill_type, b.number, b.title, b.chamber,
             b.sponsor_name, b.sponsor_party, b.sponsor_state, b.policy_area,
-            b.official_summary, b.latest_action_text
+            b.official_summary, b.latest_action_text, b.text_url
        from bills b ${where}
       order by (b.real_yea is not null) desc,
                (b.real_outcome <> 'pending') desc,

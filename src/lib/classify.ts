@@ -26,6 +26,8 @@ export type BillForClassification = {
   sponsorState?: string | null;
   policyArea?: string | null;
   officialSummary?: string | null;
+  /** Plain text of the bill itself, used when no CRS summary exists yet. */
+  billText?: string | null;
   latestActionText?: string | null;
 };
 
@@ -40,6 +42,21 @@ export type Classification = {
 const CLASSIFIABLE = PARTIES.filter((p) => !p.isBlank);
 
 const MAX_SUMMARY_CHARS = 4000;
+/**
+ * Bill text is far wordier than a summary, and most newly introduced bills
+ * have nothing else: CRS summaries trail introduction by weeks or months, so at
+ * any moment the great majority of bills on the site have no summary at all.
+ * Without the text the model was judging those from the title alone, told to
+ * be cautious, and abstaining almost everyone.
+ */
+const MAX_TEXT_CHARS = 12000;
+
+/** Which source the prompt describes the bill from. */
+export function billSource(bill: BillForClassification): "summary" | "text" | "title" {
+  if (bill.officialSummary?.trim()) return "summary";
+  if (bill.billText?.trim()) return "text";
+  return "title";
+}
 
 function billLabel(b: BillForClassification) {
   const type = b.billType.toUpperCase().replace("HR", "H.R.").replace("HJRES", "H.J.Res.")
@@ -52,7 +69,17 @@ export function buildPrompt(bill: BillForClassification): string {
     (p) => `- ${p.slug}\n    scope: ${p.scope}\n    stance: ${p.stance}`,
   ).join("\n");
 
-  const summary = (bill.officialSummary ?? "").slice(0, MAX_SUMMARY_CHARS).trim();
+  const source = billSource(bill);
+  let content: string;
+  if (source === "summary") {
+    content = `\nOfficial summary (Congressional Research Service):\n${bill.officialSummary!.slice(0, MAX_SUMMARY_CHARS).trim()}`;
+  } else if (source === "text") {
+    const text = bill.billText!.trim();
+    const cut = text.length > MAX_TEXT_CHARS;
+    content = `\nNo official summary has been published yet. This is the text of the bill as introduced${cut ? ` (first ${MAX_TEXT_CHARS} characters)` : ""}:\n${text.slice(0, MAX_TEXT_CHARS)}`;
+  } else {
+    content = `\nNo official summary has been published yet. Judge the bill from its title alone, and be correspondingly cautious: if the title does not make the content clear, most parties should abstain.`;
+  }
 
   const facts = [
     `Bill: ${billLabel(bill)} (${bill.congress}th Congress, ${bill.chamber})`,
@@ -62,9 +89,7 @@ export function buildPrompt(bill: BillForClassification): string {
     bill.policyArea ? `Policy area: ${bill.policyArea}` : null,
     `Title: ${bill.title}`,
     bill.latestActionText ? `Latest action: ${bill.latestActionText}` : null,
-    summary
-      ? `\nOfficial summary (Congressional Research Service):\n${summary}`
-      : `\nNo official summary has been published yet. Judge the bill from its title alone, and be correspondingly cautious: if the title does not make the content clear, most parties should abstain.`,
+    content,
   ]
     .filter(Boolean)
     .join("\n");
@@ -98,7 +123,7 @@ Judge the bill's actual legal effect, not its name — bills are often named to 
 
 Two parties on the same subject usually land on opposite sides, but not always: sometimes both support a bill for different reasons, and sometimes only one of them cares.
 
-If the bill has no official summary and the title is a bare acronym that tells you nothing about its content, say so in the summary field and let the parties abstain — but if the title does name a subject, treat that subject as real and judge it.
+If you have only the title to go on and it is a bare acronym that tells you nothing about its content, say so in the summary field and let the parties abstain — but if the title does name a subject, treat that subject as real and judge it.
 
 # Output
 

@@ -121,10 +121,11 @@ See `src/lib/crypto.ts` and the threat model in `critiques/security.md`.
 - Several salience figures are estimated rather than published; the methodology
   page flags exactly which.
 - Delegation *orderings* are a modelling assumption with no survey behind them.
-- Bills are judged from their title and official summary, not their full text.
-  Congress often publishes neither for weeks after introduction, so recently
-  introduced bills are frequently judged on a title alone — and the parties
-  correctly abstain when a title says nothing.
+- Bills are judged from their official summary when one exists, otherwise from
+  the first 12,000 characters of the bill text as introduced. CRS summaries lag
+  introduction by weeks or months, so most bills are judged from the text; a
+  bill whose text govinfo has not published yet is judged on its title alone,
+  and the parties correctly abstain when a title says nothing.
 - This simulates a legislature with no amendments, no negotiation and no
   procedure. Real legislating is mostly those three things.
 

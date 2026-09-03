@@ -554,11 +554,12 @@ export default function MethodologyPage() {
 
                 <div className="rounded-lg border-l-4 border-[var(--bd-no)] bg-white px-5 py-4">
                   <p className="font-semibold text-[var(--bd-navy)]">
-                    Bills are judged on their summary, never their text.
+                    Bills are judged on a summary or an excerpt, never the whole text.
                   </p>
                   <p className="mt-1.5 text-[0.95rem] leading-7 text-[var(--bd-muted)]">
-                    The model sees title, sponsor, policy area and a 4,000-character summary,
-                    not the bill. An omnibus, a rider, or a bill with no summary yet is judged
+                    The model sees title, sponsor, policy area and either the 4,000-character
+                    official summary or, when none has been written yet, the first 12,000
+                    characters of the bill as introduced. An omnibus or a late rider is judged
                     on far less than a human delegate would read.
                   </p>
                 </div>

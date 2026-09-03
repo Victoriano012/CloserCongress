@@ -241,6 +241,29 @@ export function htmlToText(html: string): string {
     .trim();
 }
 
+/**
+ * The enacting text of a govinfo BILLS .htm page, with the GPO header (bill
+ * number, sponsors, committee referral) cut off so the model reads the bill,
+ * not the paperwork around it. Null when the page holds no recognisable text.
+ */
+export function billTextFromHtml(html: string): string | null {
+  const plain = htmlToText(html);
+  const start = plain.search(/^\s*(A BILL|A JOINT RESOLUTION|AN ACT|JOINT RESOLUTION)\s*$/m);
+  const body = (start === -1 ? plain : plain.slice(start)).replace(/^\s*<DOC>\s*/, "").trim();
+  return body.length ? body : null;
+}
+
+/** Bill text for the classifier. Null when govinfo has not published it yet. */
+export async function fetchBillText(textUrl: string): Promise<string | null> {
+  try {
+    const res = await fetchWithRetry(textUrl);
+    return billTextFromHtml(await res.text());
+  } catch (e) {
+    if (e instanceof HttpError && e.status === 404) return null;
+    throw e;
+  }
+}
+
 /** senate.gov declares iso-8859-1; honour whatever the XML prolog says. */
 async function fetchXml(url: string): Promise<Record<string, unknown>> {
   const res = await fetchWithRetry(url);
