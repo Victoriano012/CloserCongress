@@ -59,7 +59,9 @@ export function Logo({
         />
       </svg>
       {wordmarkText ? (
-        <span className={`truncate font-semibold ${wordmarkClassName}`}>{wordmarkText}</span>
+        <span className={`whitespace-nowrap font-semibold leading-[1.2] ${wordmarkClassName}`}>
+          {wordmarkText}
+        </span>
       ) : null}
     </span>
   );

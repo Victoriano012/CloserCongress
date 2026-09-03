@@ -51,7 +51,7 @@ export default async function Home() {
                 size={40}
                 wordmark
                 className="gap-3 text-[var(--bd-navy)] md:gap-4 md:[&>svg]:h-[60px] md:[&>svg]:w-[60px]"
-                wordmarkClassName="font-wordmark text-[1.75rem] leading-none tracking-tight md:text-[2.75rem]"
+                wordmarkClassName="font-wordmark text-[1.75rem] tracking-tight md:text-[2.75rem]"
               />
             </div>
             <div className="bd-rule mb-6" />

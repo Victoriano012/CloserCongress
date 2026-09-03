@@ -23,7 +23,7 @@ export function SiteHeader() {
             wordmark="Closer Congress"
             title="Closer Congress ballot logo"
             className="text-[var(--bd-navy)]"
-            wordmarkClassName="font-wordmark text-xl leading-none tracking-tight md:text-[1.625rem]"
+            wordmarkClassName="font-wordmark text-xl tracking-tight md:text-[1.625rem]"
           />
         </Link>
 
