@@ -2,8 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { auth } from "@/auth";
-import { SignInButton } from "@/components/auth-buttons";
-import { GuestVotesBanner, GuestYourVote } from "@/components/bills/guest-your-vote";
+import { GuestYourVote } from "@/components/bills/guest-your-vote";
 import { GuestListMerge } from "@/components/guest-list-merge";
 import { PageHeader } from "@/components/page-header";
 import { VoteDistributionBar } from "@/components/bills/vote-distribution-bar";
@@ -49,7 +48,6 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
   const params = await searchParams;
   const query = typeof params.q === "string" ? params.q : "";
   const outcome = typeof params.outcome === "string" ? params.outcome : "all";
-  const mine = params.mine === "1";
   // Number("1e400") is Infinity, which is truthy — it would survive `|| 1` and
   // reach Postgres as an offset, which is a 500.
   const asked = Number(params.page);
@@ -63,7 +61,6 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
   const { items, total } = await listBills({
     query: query || undefined,
     outcome,
-    votedOnly: mine,
     limit: PER_PAGE,
     offset: (page - 1) * PER_PAGE,
   });
@@ -78,7 +75,6 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
     const sp = new URLSearchParams();
     if (query) sp.set("q", query);
     if (outcome !== "all") sp.set("outcome", outcome);
-    if (mine) sp.set("mine", "1");
     for (const [k, v] of Object.entries(next)) {
       if (v === "all" || v === "" || v === 1 || v === 0) sp.delete(k);
       else sp.set(k, String(v));
@@ -105,7 +101,6 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
           className="w-full max-w-sm rounded-md border border-[var(--bd-line)] bg-white px-3.5 py-2 text-sm focus:border-[var(--bd-blue)]"
         />
         {outcome !== "all" && <input type="hidden" name="outcome" value={outcome} />}
-        {mine && <input type="hidden" name="mine" value="1" />}
         <button
           type="submit"
           className="rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
@@ -126,39 +121,11 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
               {o.label}
             </Link>
           ))}
-          <Link
-            href={link({ mine: mine ? 0 : 1, page: 1 })}
-            aria-pressed={mine}
-            className={`ml-1 rounded-md border px-3 py-1.5 ${
-              mine
-                ? "border-[var(--bd-navy)] bg-[var(--bd-navy)] text-white"
-                : "border-[var(--bd-line)] text-[var(--bd-muted)] hover:bg-blue-50"
-            }`}
-          >
-            Your votes
-          </Link>
         </div>
       </form>
 
-      {mine && !signedIn ? (
-        <GuestVotesBanner>
-          <SignInButton />
-        </GuestVotesBanner>
-      ) : mine && !myVotes ? (
-        <div className="bd-card mt-6 flex flex-wrap items-center gap-4 p-5 text-sm">
-          <p className="text-[var(--bd-ink)]">
-            No delegates yet, so every bill is a blank vote.{" "}
-            <Link href="/delegate" className="bd-link">
-              Build My List
-            </Link>{" "}
-            to see how you voted.
-          </p>
-        </div>
-      ) : null}
-
       <p className="mt-6 text-sm text-[var(--bd-muted)]">
         {total.toLocaleString()} {total === 1 ? "bill" : "bills"}
-        {mine && <> {myVotes ? "you voted on" : "put to the delegates"}</>}
         {query && <> matching “{query}”</>}
       </p>
 
@@ -257,7 +224,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
       {items.length === 0 && (
         <p className="bd-card mt-4 p-8 text-center text-[var(--bd-muted)]">
           {total === 0 ? (
-            query || mine || outcome !== "all" ? (
+            query || outcome !== "all" ? (
               <>No bills match {query ? <>“{query}”</> : "that filter"}.</>
             ) : (
               <>No bills have reached a final vote yet. They appear here once Congress passes or defeats them.</>

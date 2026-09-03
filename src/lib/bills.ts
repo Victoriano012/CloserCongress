@@ -99,8 +99,6 @@ export async function listBills(opts: {
   offset?: number;
   query?: string;
   outcome?: string;
-  /** Only bills the delegates have voted on, i.e. ones with a classified vote. */
-  votedOnly?: boolean;
 } = {}): Promise<{ items: BillListItem[]; total: number }> {
   const limit = Math.min(opts.limit ?? 25, 100);
   const offset = Math.max(opts.offset ?? 0, 0);
@@ -116,9 +114,6 @@ export async function listBills(opts: {
   if (opts.outcome && opts.outcome !== "all") {
     params.push(opts.outcome);
     where.push(`b.real_outcome = $${params.length}`);
-  }
-  if (opts.votedOnly) {
-    where.push("exists (select 1 from party_votes pv where pv.bill_id = b.id)");
   }
   const clause = `where ${where.join(" and ")}`;
 
