@@ -247,7 +247,7 @@ export default function MethodologyPage() {
               </p>
               <p>
                 Issues that clear the bar are ordered by an exponential race weighted by
-                salience, capped at nine, with the blank vote appended.
+                salience, capped at twelve, with the blank vote appended.
               </p>
               <p>
                 Separately, {pct(NONVOTER_BLANK_SHARE)} of each group&rsquo;s non-voters get a

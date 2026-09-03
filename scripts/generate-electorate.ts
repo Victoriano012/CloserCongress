@@ -54,7 +54,7 @@ function calibrate(tilts: Record<string, number>, salience: number, target: numb
 }
 
 /** Maximum delegates before the terminal blank vote. */
-const DELEGATE_CAP = 9;
+const DELEGATE_CAP = 12;
 
 const partyIndex = new Map(PARTIES.map((p, i) => [p.slug, i]));
 const BLANK_INDEX = partyIndex.get(BLANK_PARTY_SLUG)!;

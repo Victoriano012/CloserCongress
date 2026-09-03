@@ -22,7 +22,8 @@ export type ClaudeRunOptions = {
 
 export async function runClaude(
   prompt: string,
-  // 180 s was too tight: haiku spends 6-8k thinking tokens on a 33-party roster,
+  // 180 s was too tight: haiku spent 6-8k thinking tokens on a 33-party roster
+  // (the roster is now 49),
   // which is ~80 s alone, and a handful of bills reproducibly ran past the limit
   // under concurrency. The ceiling exists to stop a hung CLI, not to pace a slow one.
   { model = "haiku", timeoutMs = 420_000 }: ClaudeRunOptions = {},

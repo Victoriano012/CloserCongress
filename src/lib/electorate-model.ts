@@ -260,6 +260,103 @@ export const AXES: AxisSpec[] = [
     source: { label: "Composite: AP-NORC Jan 2025 (64% say too little is spent on education) against EdChoice 2026 (69% support vouchers)", estimated: true },
     salienceSource: { label: "Gallup, Sep 2024: 38% call education extremely important" },
   },
+  {
+    key: "trade",
+    partyA: "free-trade", partyB: "fair-trade",
+    nationalA: 0.59,
+    salience: 0.28,
+    // Cross-cutting: the right has swung protectionist since 2016 while the
+    // college-educated left, once the sceptics, now lean free trade.
+    tilt: tilt(-2.2, -1.4, -0.6, -0.4, -0.3, 0.6, 0.4, 1.9, 1.0),
+    source: {
+      label:
+        "Mapped, not measured: Pew, Apr 2025 has 59% disapproving of the 2025 tariff increases. Disapproving of one round of tariffs is not the same as preferring free trade to industrial protection",
+      estimated: true,
+    },
+    salienceSource: { label: "Gallup, Sep 2024: 28% call trade with other nations extremely important", estimated: true },
+  },
+  {
+    key: "finance",
+    partyA: "consumer-protection", partyB: "free-finance",
+    nationalA: 0.62,
+    salience: 0.18,
+    tilt: tilt(-1.8, -1.0, 0.3, -1.4, 0.7, 1.0, 1.3, 1.4, 2.4),
+    source: {
+      label:
+        "Mapped, not measured: Pew, Jan 2024 has 62% saying banks and financial institutions have a negative effect on the country. Distrust of banks is a proxy for wanting them regulated, not a poll of it",
+      estimated: true,
+    },
+    salienceSource: { label: "Financial regulation appears on no published priority list", estimated: true },
+  },
+  {
+    key: "government",
+    partyA: "public-service", partyB: "lean-government",
+    nationalA: 0.55,
+    salience: 0.24,
+    tilt: tilt(-2.6, -1.4, -0.6, -1.2, 0.2, 0.9, 0.8, 2.4, 2.2),
+    source: {
+      label:
+        "Mapped, not measured: Pew, Apr 2025 has 55% saying the 2025 cuts to federal agencies went too far. A reaction to one year's cuts stands in for a standing view of how large the workforce should be",
+      estimated: true,
+    },
+    salienceSource: { label: "Gallup, Sep 2024: 'the way the government works' is not broken out; 24% is a judgement", estimated: true },
+  },
+  {
+    key: "technology",
+    partyA: "tech-accountability", partyB: "tech-innovation",
+    nationalA: 0.58,
+    salience: 0.16,
+    // Unusually flat: concern about AI runs across the spectrum, and the
+    // deregulatory wing is a small libertarian-leaning slice of each side.
+    tilt: tilt(-0.5, 0.2, -0.6, -0.1, 0.3, 0.3, 0.2, 0.6, 0.4),
+    source: {
+      label:
+        "Pew, Apr 2025: 58% are more worried that government will not go far enough regulating AI than that it will go too far. AI stands in for the whole technology axis, which also covers platforms and children's online safety",
+      estimated: true,
+    },
+    salienceSource: { label: "Technology regulation appears on no published priority list", estimated: true },
+  },
+  {
+    key: "public-lands",
+    partyA: "public-lands", partyB: "multiple-use",
+    nationalA: 0.70,
+    salience: 0.12,
+    tilt: tilt(-2.4, -1.4, -0.4, -0.8, 0.2, 0.6, 0.6, 1.8, 2.2),
+    source: {
+      label:
+        "Mapped, not measured: Colorado College State of the Rockies, Feb 2025 has 72% of voters in eight Western states opposing the sale of public lands; 70% extends a Western poll to the whole country",
+      estimated: true,
+    },
+    salienceSource: { label: "Public lands appear on no national priority list; salient mainly in the West", estimated: true },
+  },
+  {
+    key: "welfare",
+    partyA: "safety-net", partyB: "self-reliance",
+    nationalA: 0.46,
+    salience: 0.27,
+    // The Tuned-Out Middle and Order and Opportunity Left are economically
+    // liberal on aid but back work requirements, so they sit near the centre.
+    tilt: tilt(-2.6, -1.8, -0.8, -1.4, 0.2, 0.3, 1.0, 1.6, 2.6),
+    source: {
+      label:
+        "Composite: KFF, Jun 2025 has 62% supporting Medicaid work requirements, against Pew, Jan 2025 with 55% saying government should do more for the needy. A near-even split is the honest reading of two questions pointing different ways",
+      estimated: true,
+    },
+    salienceSource: { label: "Gallup, Sep 2024: 27% call poverty and homelessness extremely important", estimated: true },
+  },
+  {
+    key: "elections",
+    partyA: "voting-access", partyB: "election-integrity",
+    nationalA: 0.50,
+    salience: 0.30,
+    tilt: tilt(-3.0, -2.2, -1.0, -1.4, 0.0, 0.8, 1.0, 2.6, 2.8),
+    source: {
+      label:
+        "Composite: Pew, Feb 2024 has 81% backing photo ID and 58% backing automatic registration. Both sides of this axis command majorities on their signature question, so the split is set at even",
+      estimated: true,
+    },
+    salienceSource: { label: "Gallup, Sep 2024: 49% call democracy extremely important, but that figure already drives the democracy axis; 30% is a judgement for election rules alone", estimated: true },
+  },
 
   // One-sided issues: no organised opposing party exists on this site, so the
   // tilt governs how likely someone is to care rather than which side they take.
@@ -327,6 +424,24 @@ export const AXES: AxisSpec[] = [
     tilt: tilt(-0.4, -0.2, 0.0, -0.1, 0.0, 0.1, 0.2, 0.3, 0.6),
     source: { label: "Not a national split — this axis has one party only, so the figure shapes who cares, not who wins. Gallup, May 2015: 32% say animals deserve the same rights as people, 62% some protection. The only reading available, and eleven years old", estimated: true },
     salienceSource: { label: "Animal welfare appears on no priority list", estimated: true },
+  },
+  {
+    key: "disaster",
+    partyA: "disaster-readiness",
+    salience: 0.14,
+    tilt: tilt(-0.2, 0.0, 0.1, 0.0, 0.2, 0.3, 0.2, 0.2, 0.3),
+    source: { label: "Not a national split — this axis has one party only, so the figure shapes who cares, not who wins. Disaster relief enjoys broad bipartisan support; no head-to-head polling", estimated: true },
+    salienceSource: { label: "Not on any published priority list; concentrated in coastal and wildfire states", estimated: true },
+  },
+  {
+    key: "seniors",
+    partyA: "seniors",
+    salience: 0.30,
+    // The oldest groups (Pragmatic Right, Faith First) care most; the youngest
+    // (Leftward Progressives, Unconventional Right) least.
+    tilt: tilt(0.3, 0.6, -0.6, 0.9, 0.2, 0.2, 0.1, 0.0, -0.8),
+    source: { label: "Not a national split — this axis has one party only, so the figure shapes who cares, not who wins. Pew, Jan 2025: 79% oppose reducing Social Security benefits" },
+    salienceSource: { label: "Gallup, Sep 2024: 30% is a judgement; Social Security is not on the 22-issue list but tops AARP's own polling of voters over 50", estimated: true },
   },
 ];
 

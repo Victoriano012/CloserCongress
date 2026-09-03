@@ -2,7 +2,7 @@
  * The AI delegate layer.
  *
  * In the idea this site demonstrates, every party is run by humans who read each
- * bill and decide whether it is their business. Hiring thirty-one groups of
+ * bill and decide whether it is their business. Hiring nearly fifty groups of
  * people is not on the table, so a small model stands in for all of them at
  * once: one prompt per bill, every party judged in the same pass.
  *
