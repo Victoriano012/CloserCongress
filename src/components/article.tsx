@@ -19,7 +19,7 @@ export function Section({
     <section id={id} className="scroll-mt-24">
       {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
       <h2
-        className={`${eyebrow ? "mt-2 " : ""}font-serif text-2xl font-semibold sm:text-[1.75rem]`}
+        className={`${eyebrow ? "mt-2 " : ""}font-serif text-2xl font-semibold leading-snug sm:text-[1.75rem]`}
       >
         {title}
       </h2>
@@ -87,7 +87,7 @@ export function ArticleHeader({
       <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-blue)]">
         {kicker}
       </p>
-      <h1 className="mt-3 font-serif text-4xl font-semibold leading-[1.15] sm:text-5xl">
+      <h1 className="mt-3 font-serif text-4xl font-semibold leading-snug sm:text-5xl">
         {title}
       </h1>
       <p className="mt-6 text-lg leading-8 text-[var(--bd-muted)]">{children}</p>

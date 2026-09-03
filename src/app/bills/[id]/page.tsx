@@ -133,7 +133,7 @@ export default async function BillPage({ params }: Props) {
         </p>
         <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 max-w-3xl">
-            <h1 className="font-serif text-3xl font-semibold leading-tight sm:text-4xl">
+            <h1 className="font-serif text-3xl font-semibold leading-snug sm:text-4xl">
               {bill.title}
             </h1>
             {bill.sponsor_name && (

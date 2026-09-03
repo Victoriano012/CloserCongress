@@ -23,7 +23,7 @@ export default function Home() {
           />
         </div>
         <div className="bd-rule mb-6" />
-        <h1 className="font-serif text-3xl font-semibold leading-[1.1] sm:text-4xl lg:text-5xl">
+        <h1 className="font-serif text-3xl font-semibold leading-snug sm:text-4xl lg:text-5xl">
           <span className="block">Don&rsquo;t pick a party every four years.</span>
           <span className="block">Pick your preferences, whenever you want.</span>
         </h1>

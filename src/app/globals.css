@@ -9,6 +9,20 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-serif-display), ui-serif, Georgia, serif;
   --font-wordmark: var(--font-wordmark-display), var(--font-serif-display), ui-serif, Georgia, serif;
+
+  /*
+    Tailwind's default line-heights for the large sizes (2xl 1.33, 3xl 1.2,
+    4xl 1.11, 5xl 1.0) fall below the display fonts' natural height
+    (Source Serif 4 = 1.371, Fraunces = 1.233), so when a wrapped heading is
+    selected each line's highlight box paints over the descenders of the line
+    above. These sizes are only ever used for display-font headings; keep them
+    at least at the font's natural height. Tighten rhythm with margins, never
+    by lowering these.
+  */
+  --text-2xl--line-height: 1.375;
+  --text-3xl--line-height: 1.375;
+  --text-4xl--line-height: 1.375;
+  --text-5xl--line-height: 1.375;
 }
 
 :root {
@@ -41,6 +55,17 @@
   ::selection {
     background: #bfdbfe;
     color: var(--bd-navy);
+  }
+
+  /*
+    Display-font text: a translucent highlight, so even where line boxes
+    touch, the glyphs of the line above show through instead of being covered.
+  */
+  .font-serif::selection,
+  .font-serif *::selection,
+  .font-wordmark::selection,
+  .font-wordmark *::selection {
+    background: rgb(29 78 216 / 0.3);
   }
 
   h1, h2, h3 {
