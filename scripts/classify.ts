@@ -1,6 +1,7 @@
 import "./_env";
 import { neon } from "@neondatabase/serverless";
 import { runClaude } from "../src/lib/claude-cli";
+import { ensureResult } from "../src/lib/results";
 import { PARTIES } from "../src/lib/parties";
 import {
   buildPrompt,
@@ -65,10 +66,15 @@ async function persist(billId: string, c: Classification) {
     [billId, c.summary, JSON.stringify(c.keyPoints), JSON.stringify(c.topics), model],
   );
 
-  // A re-classification invalidates any cached tally. ensureResult also checks
-  // a hash of the votes themselves, so a failure here self-heals; this just
-  // saves the next reader from recomputing.
-  await sql.query(`delete from bill_results where bill_id = $1`, [billId]);
+  // Tally immediately. The list page reads bill_results with a plain left join
+  // and shows "Awaiting the delegates" when the row is missing, so a bill that
+  // is classified but not yet tallied looks identical to one never classified.
+  // ensureResult hashes the votes, so a stale row from a previous run is
+  // recomputed rather than served.
+  await ensureResult(
+    billId,
+    entries.map(([slug, v]) => ({ party_slug: slug, vote: v.vote, reason: v.reason })),
+  );
 }
 
 async function classifyOne(row: Row, attempt = 1): Promise<"ok" | "failed"> {
