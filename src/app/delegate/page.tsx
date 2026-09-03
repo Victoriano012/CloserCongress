@@ -18,11 +18,11 @@ export const metadata: Metadata = {
 /** Sign-in button plus a note that it is optional. Stacked under the heading on mobile, right-aligned beside it on desktop. */
 function SignInAside() {
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:flex-row-reverse sm:justify-end sm:text-right">
-      <SignInButton />
-      <p className="max-w-[17rem] text-xs leading-snug text-[var(--bd-muted)]">
-        Sign in only if you want your list saved across devices — it works fine without.
+    <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-right">
+      <p className="text-xs leading-snug text-[var(--bd-muted)]">
+        To save your list across devices
       </p>
+      <SignInButton />
     </div>
   );
 }
