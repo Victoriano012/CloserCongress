@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <section className="bd-container grid gap-x-12 gap-y-10 pb-16 pt-10 lg:grid-cols-[1fr_1.05fr] lg:pb-24 lg:pt-12">
       <div className="lg:col-span-2">
-        <div role="img" aria-label="Closer Congress" className="mb-10 lg:mb-14">
+        <div role="img" aria-label="Closer Congress" className="mb-5 lg:mb-7">
           <Logo
             size={40}
             wordmark
@@ -22,11 +22,11 @@ export default function Home() {
             wordmarkClassName="font-wordmark text-[1.75rem] tracking-tight md:text-[2.75rem]"
           />
         </div>
+        <div className="bd-rule mb-5 rounded-full lg:mb-7" />
         <h1 className="font-serif text-3xl font-semibold leading-snug sm:text-4xl lg:text-5xl">
           <span className="block">Don&rsquo;t pick a party every four years.</span>
           <span className="block">Pick your preferences, whenever you want.</span>
         </h1>
-        <div className="bd-rule mt-3 rounded-full" />
       </div>
       <div className="lg:order-2 lg:flex lg:flex-col lg:justify-center lg:py-8">
         <p className="max-w-xl text-lg leading-relaxed text-[var(--bd-muted)] xl:text-xl">
