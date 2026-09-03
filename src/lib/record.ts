@@ -2,7 +2,9 @@ import "server-only";
 
 import { query } from "@/lib/db";
 import type { Delegation } from "@/lib/delegation";
-import { resolveForDelegation, type Vote } from "@/lib/tally";
+import { resolveVote, type PartyVoteRow, type ResolvedVote } from "@/lib/my-list";
+
+export type { ResolvedVote };
 
 const RECENT_LIMIT = 25;
 
@@ -14,15 +16,7 @@ export type RecordBill = {
   latest_action_date: string | Date | null;
 };
 
-type VoteRow = { bill_id: string; party_slug: string; vote: string; reason: string | null };
-
-/** How one delegation voted on one bill, and through whom. */
-export type ResolvedVote = {
-  classified: boolean;
-  party: string;
-  vote: Vote;
-  reason: string | null;
-};
+type VoteRow = PartyVoteRow & { bill_id: string };
 
 type RecordEntry = ResolvedVote & { bill: RecordBill };
 
@@ -35,12 +29,8 @@ export type DelegationRecord = {
   blanks: number;
 };
 
-function isVote(value: string): value is Vote {
-  return value === "yes" || value === "no" || value === "abstain";
-}
-
 /** Party votes on the given bills, grouped by bill. Best-effort: never a 500. */
-async function loadVotes(billIds: string[]): Promise<Map<string, VoteRow[]>> {
+export async function loadVotes(billIds: string[]): Promise<Map<string, VoteRow[]>> {
   const byBill = new Map<string, VoteRow[]>();
   if (!billIds.length) return byBill;
   try {
@@ -59,20 +49,6 @@ async function loadVotes(billIds: string[]): Promise<Map<string, VoteRow[]>> {
     // fall through with whatever was grouped
   }
   return byBill;
-}
-
-function resolveVote(delegation: Delegation, rows: VoteRow[]): ResolvedVote {
-  const map: Record<string, Vote> = {};
-  for (const row of rows) if (isVote(row.vote)) map[row.party_slug] = row.vote;
-
-  const outcome = resolveForDelegation(delegation, map);
-
-  return {
-    classified: rows.length > 0,
-    party: outcome.party,
-    vote: outcome.vote,
-    reason: rows.find((row) => row.party_slug === outcome.party)?.reason ?? null,
-  };
 }
 
 /** How a delegation voted on each of the given bills, keyed by bill id. */

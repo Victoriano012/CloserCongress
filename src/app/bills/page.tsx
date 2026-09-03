@@ -1,14 +1,17 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
+import { GuestVotesBanner, GuestYourVote } from "@/components/bills/guest-your-vote";
+import { GuestListMerge } from "@/components/guest-list-merge";
 import { VoteDistributionBar } from "@/components/bills/vote-distribution-bar";
 import { YourVote } from "@/components/your-vote";
 import { billLabel, listBills } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
 import { loadDelegation } from "@/lib/delegation";
-import { BLANK_PARTY_SLUG } from "@/lib/parties";
-import { loadVotesForBills } from "@/lib/record";
+import { hasDelegates } from "@/lib/my-list";
+import { loadVotes, loadVotesForBills } from "@/lib/record";
 
 export const metadata: Metadata = {
   description:
@@ -51,8 +54,10 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
   const asked = Number(params.page);
   const page = Number.isFinite(asked) ? Math.min(Math.max(Math.trunc(asked), 1), 10_000) : 1;
 
+  // Signed in: the account list resolves each vote here. Signed out: the guest
+  // list lives in the browser, so ship the party votes and resolve there.
   const delegation = await loadDelegation();
-  const hasDelegates = (delegation ?? []).some((slug) => slug !== BLANK_PARTY_SLUG);
+  const signedIn = (await auth())?.user != null;
 
   const { items, total } = await listBills({
     query: query || undefined,
@@ -63,10 +68,10 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
   });
   const pages = Math.max(Math.ceil(total / PER_PAGE), 1);
 
+  const ids = items.map((b) => b.id);
   const myVotes =
-    delegation && hasDelegates
-      ? await loadVotesForBills(delegation, items.map((b) => b.id))
-      : null;
+    delegation && hasDelegates(delegation) ? await loadVotesForBills(delegation, ids) : null;
+  const guestVotes = signedIn ? null : await loadVotes(ids);
 
   const link = (next: Record<string, string | number>) => {
     const sp = new URLSearchParams();
@@ -83,6 +88,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="bd-container py-12">
+      {signedIn && <GuestListMerge />}
       <header className="max-w-2xl">
         <div className="bd-rule mb-5" />
         <h1 className="font-serif text-4xl font-semibold">Bills before Congress</h1>
@@ -136,22 +142,19 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
         </div>
       </form>
 
-      {mine && !myVotes ? (
+      {mine && !signedIn ? (
+        <GuestVotesBanner>
+          <SignInButton />
+        </GuestVotesBanner>
+      ) : mine && !myVotes ? (
         <div className="bd-card mt-6 flex flex-wrap items-center gap-4 p-5 text-sm">
           <p className="text-[var(--bd-ink)]">
-            {delegation ? (
-              <>
-                No delegates yet, so every bill is a blank vote.{" "}
-                <Link href="/delegate" className="bd-link">
-                  Build My List
-                </Link>{" "}
-                to see how you voted.
-              </>
-            ) : (
-              <>Sign in to see how your delegates voted on each bill.</>
-            )}
+            No delegates yet, so every bill is a blank vote.{" "}
+            <Link href="/delegate" className="bd-link">
+              Build My List
+            </Link>{" "}
+            to see how you voted.
           </p>
-          {!delegation && <SignInButton />}
         </div>
       ) : null}
 
@@ -237,15 +240,13 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
                 </VoteColumn>
 
                 <VoteColumn heading="Your vote">
-                  {myVotes?.get(bill.id) ? (
+                  {guestVotes ? (
+                    <GuestYourVote votes={guestVotes.get(bill.id) ?? []} clampReason />
+                  ) : myVotes?.get(bill.id) ? (
                     <YourVote entry={myVotes.get(bill.id)!} clampReason />
                   ) : (
                     <p className="text-sm text-[var(--bd-muted)]">
-                      {!delegation
-                        ? "Sign in to see how your delegates voted."
-                        : !hasDelegates
-                          ? "No delegates yet — build My List to vote."
-                          : "Awaiting the delegates."}
+                      No delegates yet — build My List to vote.
                     </p>
                   )}
                 </VoteColumn>

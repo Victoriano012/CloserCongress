@@ -2,12 +2,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { auth } from "@/auth";
 import { billLabel, getBill, type BillRow, type PartyVote } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
 import { loadDelegation } from "@/lib/delegation";
-import { PARTY_BY_SLUG, BLANK_PARTY_SLUG, SAMPLE_LIST, VOTING_PARTIES } from "@/lib/parties";
-import { resolveForDelegation, type Vote } from "@/lib/tally";
+import { PARTY_BY_SLUG, SAMPLE_LIST, VOTING_PARTIES } from "@/lib/parties";
 import { PartyChip } from "@/components/party-chip";
+import { GuestListMerge } from "@/components/guest-list-merge";
+import { GuestYourVoteSection } from "@/components/bills/guest-your-vote-section";
+import { Section, YourVoteSection } from "@/components/bills/your-vote-section";
 import { VoteDistributionBar } from "@/components/bills/vote-distribution-bar";
 import { PartyBreakdownBar, sortContributions, VoteBar } from "@/components/vote-bar";
 
@@ -23,19 +26,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const pct = (n: number, d: number) => (d > 0 ? (n / d) * 100 : 0);
-
-function Section({
-  title, note, children,
-}: { title: string; note?: string; children: React.ReactNode }) {
-  return (
-    <section className="mt-12">
-      <div className="bd-rule mb-4" />
-      <h2 className="font-serif text-2xl font-semibold">{title}</h2>
-      {note && <p className="mt-1 text-sm text-[var(--bd-muted)]">{note}</p>}
-      <div className="mt-5">{children}</div>
-    </section>
-  );
-}
 
 /** What actually happened in Congress, as far as the public record shows. */
 function RealResult({ bill }: { bill: BillRow }) {
@@ -110,10 +100,6 @@ export default async function BillPage({ params }: Props) {
   const { bill, ai, votes, result } = data;
   const label = billLabel(bill);
 
-  const voteMap: Record<string, Vote> = {};
-  for (const v of votes) voteMap[v.party_slug] = v.vote;
-  const reasons = new Map(votes.map((v) => [v.party_slug, v.reason]));
-
   // "yes" before "no", so this list, the bar and the legend all read the same way.
   const spoke = votes
     .filter((v) => v.vote !== "abstain")
@@ -121,15 +107,15 @@ export default async function BillPage({ params }: Props) {
 
   // The reader's own list, walked the same way the simulation walks every
   // citizen's — so they can see which delegate ended up speaking for them. A
-  // signed-out visitor gets the same walk over the sample list instead: this is
-  // the only place on the site where the fall-through happens on a real bill.
-  const delegation = await loadDelegation();
-  const list = delegation ?? SAMPLE_LIST;
-  const mine = votes.length ? resolveForDelegation(list, voteMap) : null;
-  const skipped = mine ? list.slice(0, Math.max(list.indexOf(mine.party), 0)) : [];
+  // signed-out visitor's list lives in their browser, so that walk happens
+  // client-side, over the sample list when they have none: this is the only
+  // place on the site where the fall-through happens on a real bill.
+  const signedIn = (await auth())?.user != null;
+  const delegation = signedIn ? await loadDelegation() : null;
 
   return (
     <div className="bd-container py-12">
+      {signedIn && <GuestListMerge />}
       <Link href="/bills" className="text-sm text-[var(--bd-muted)] hover:text-[var(--bd-blue)]">
         ← All bills
       </Link>
@@ -297,62 +283,14 @@ export default async function BillPage({ params }: Props) {
         </div>
       </Section>
 
-      {/* 3. The reader's own vote — or, signed out, the sample list's. */}
-      {(delegation || votes.length > 0) && (
-        <Section
-          title={delegation ? "Your vote" : "A sample list"}
-          note={
-            delegation
-              ? "My List, walked the way the simulation walks everyone's."
-              : "Three names, walked the way the simulation walks every list."
-          }
-        >
-          <div className="bd-card p-6">
-            {!delegation && (
-              <p className="mb-4 flex flex-wrap items-center gap-2 text-sm text-[var(--bd-muted)]">
-                The list:
-                {list.map((slug) => (
-                  <PartyChip key={slug} slug={slug} />
-                ))}
-              </p>
-            )}
-            {mine && mine.vote !== "abstain" ? (
-              <>
-                <p className="text-lg">
-                  {delegation ? "You voted" : "It voted"}{" "}
-                  <strong style={{ color: mine.vote === "yes" ? "var(--bd-yes)" : "var(--bd-no)" }}>
-                    {mine.vote === "yes" ? "in favour" : "against"}
-                  </strong>
-                  , through <PartyChip slug={mine.party} size="md" />
-                </p>
-                {reasons.get(mine.party) && (
-                  <p className="mt-3 border-l-2 border-[var(--bd-line)] pl-4 text-sm text-[var(--bd-muted)]">
-                    “{reasons.get(mine.party)}”
-                  </p>
-                )}
-                {skipped.length > 0 && (
-                  <p className="mt-4 text-sm text-[var(--bd-muted)]">
-                    {skipped.map((s) => PARTY_BY_SLUG[s]?.name ?? s).join(", ")}
-                    {skipped.length === 1 ? " was" : " were"} ranked above it and stayed
-                    silent.
-                  </p>
-                )}
-              </>
-            ) : votes.length === 0 ? (
-              <p className="text-[var(--bd-muted)]">Awaiting the delegates.</p>
-            ) : (
-              <p className="text-lg">
-                {delegation ? "Your vote was" : "Its vote was"} <strong>blank</strong>. None of
-                the {list.filter((d) => d !== BLANK_PARTY_SLUG).length} delegates had an
-                opinion.
-              </p>
-            )}
-            <Link href="/delegate" className="bd-link mt-4 inline-block text-sm">
-              {delegation ? "Edit My List" : "Build My List"}
-            </Link>
-          </div>
-        </Section>
-      )}
+      {/* 3. The reader's own vote — or, without a list, the sample list's. */}
+      {!signedIn ? (
+        <GuestYourVoteSection votes={votes} />
+      ) : delegation ? (
+        <YourVoteSection list={delegation} votes={votes} own />
+      ) : votes.length > 0 ? (
+        <YourVoteSection list={SAMPLE_LIST} votes={votes} own={false} />
+      ) : null}
 
       {/* Why each party voted the way it did — including when none did. */}
       {votes.length > 0 && (

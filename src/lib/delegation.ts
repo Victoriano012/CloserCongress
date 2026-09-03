@@ -2,38 +2,10 @@ import "server-only";
 
 import { sql } from "@/lib/db";
 import { decryptVault, encryptVault, userKeyFromSub } from "@/lib/crypto";
-import { BLANK_PARTY_SLUG, PARTY_BY_SLUG } from "@/lib/parties";
+import { mergeGuestList, sanitizeDelegation, type Delegation } from "@/lib/my-list";
 import { getGoogleSub } from "@/lib/session";
 
-/** An ordered list of party slugs. Always ends with the blank-vote party. */
-export type Delegation = string[];
-
-/**
- * Coerces untrusted input into a valid delegation:
- * unknown slugs dropped, duplicates removed, and always terminated by the
- * blank vote — a blank vote is terminal, so anything after it is dropped.
- * Any number of parties is allowed; duplicates are the only ceiling.
- */
-export function sanitizeDelegation(input: unknown): Delegation {
-  // Bound the scan, not the list: a server action body can carry a
-  // 250k-element array, and the loop below would walk all of it. Every
-  // party fits well within this, so it never truncates a legitimate list.
-  const raw = Array.isArray(input) ? input.slice(0, 1000) : [];
-  const seen = new Set<string>();
-  const out: string[] = [];
-
-  for (const item of raw) {
-    if (typeof item !== "string") continue;
-    if (!(item in PARTY_BY_SLUG)) continue;
-    if (seen.has(item)) continue;
-    seen.add(item);
-    if (item === BLANK_PARTY_SLUG) break; // terminal: ignore everything after
-    out.push(item);
-  }
-
-  out.push(BLANK_PARTY_SLUG);
-  return out;
-}
+export { sanitizeDelegation, type Delegation };
 
 /** The signed-in user's delegation, or null when signed out or never saved. */
 export async function loadDelegation(): Promise<Delegation | null> {
@@ -80,4 +52,17 @@ export async function deleteDelegation(): Promise<boolean> {
 
   await sql.query("delete from user_vaults where user_key = $1", [userKeyFromSub(sub)]);
   return true;
+}
+
+/**
+ * Folds a guest (localStorage) list into the account on sign-in: uploaded when
+ * the account has nothing saved, discarded otherwise. Returns the account's
+ * list afterwards, or null when signed out.
+ */
+export async function mergeGuestDelegation(guest: unknown): Promise<Delegation | null> {
+  const account = await loadDelegation();
+  const upload = mergeGuestList(account, Array.isArray(guest) ? guest : null);
+  if (upload === null) return account;
+  const result = await saveDelegation(upload);
+  return result.ok ? result.delegation : account;
 }

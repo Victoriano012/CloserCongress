@@ -17,6 +17,8 @@ import {
   deleteDelegationAction,
   saveDelegationAction,
 } from "@/app/actions/delegation";
+import { useGuestListMerge } from "@/components/guest-list-merge";
+import { clearGuestList, writeGuestList } from "@/lib/my-list";
 import {
   AXIS_LABELS,
   BLANK_PARTY_SLUG,
@@ -117,7 +119,11 @@ function PartyLabel({
   );
 }
 
-export function DelegationEditor({ initial }: { initial: string[] }) {
+/**
+ * `guest` keeps the list in this browser's localStorage instead of the account
+ * vault, for visitors who are not signed in. Everything else is identical.
+ */
+export function DelegationEditor({ initial, guest = false }: { initial: string[]; guest?: boolean }) {
   const router = useRouter();
   const [list, setList] = useState<string[]>(() => withoutBlank(initial));
   /** What the server last confirmed, so hydration and no-op edits don't trigger a save. */
@@ -131,9 +137,21 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
   const [pending, startTransition] = useTransition();
   const { ref: listRef, snapshot, animating } = useFlipAnimation<HTMLOListElement>(list);
 
+  // Just signed in with a list built while signed out: adopt whatever the
+  // account ended up with, unless the user has already started editing.
+  useGuestListMerge(guest ? null : (account) => {
+    const merged = withoutBlank(account);
+    setList((current) => (sameList(current, savedRef.current) ? merged : current));
+    savedRef.current = merged;
+  });
+
   // Every change persists on its own, debounced so a burst of moves is one write.
   useEffect(() => {
     if (sameList(list, savedRef.current)) return;
+    if (guest) {
+      savedRef.current = withoutBlank(writeGuestList(window.localStorage, [...list, BLANK_PARTY_SLUG]));
+      return;
+    }
     const timer = setTimeout(async () => {
       const result = await saveDelegationAction([...list, BLANK_PARTY_SLUG]);
       if (result.ok) {
@@ -143,7 +161,7 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
       }
     }, 300);
     return () => clearTimeout(timer);
-  }, [list]);
+  }, [list, guest]);
 
   const chosen = useMemo(
     () => list.map((slug) => PARTY_BY_SLUG[slug]).filter(Boolean),
@@ -220,6 +238,14 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
 
   function onClear() {
     setStatus(null);
+    if (guest) {
+      clearGuestList(window.localStorage);
+      savedRef.current = [];
+      setList([]);
+      setConfirmClear(false);
+      setStatus({ kind: "ok", text: "List deleted." });
+      return;
+    }
     startTransition(async () => {
       const deleted = await deleteDelegationAction();
       setConfirmClear(false);

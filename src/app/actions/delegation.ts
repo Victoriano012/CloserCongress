@@ -2,7 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 
-import { deleteDelegation, saveDelegation, type Delegation } from "@/lib/delegation";
+import {
+  deleteDelegation,
+  mergeGuestDelegation,
+  saveDelegation,
+  type Delegation,
+} from "@/lib/delegation";
 
 export async function saveDelegationAction(
   input: unknown,
@@ -16,4 +21,10 @@ export async function deleteDelegationAction(): Promise<boolean> {
   const deleted = await deleteDelegation();
   if (deleted) revalidatePath("/delegate");
   return deleted;
+}
+
+export async function mergeGuestDelegationAction(guest: unknown): Promise<Delegation | null> {
+  const merged = await mergeGuestDelegation(guest);
+  if (merged) revalidatePath("/delegate");
+  return merged;
 }
