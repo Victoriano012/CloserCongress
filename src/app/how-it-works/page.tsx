@@ -46,7 +46,7 @@ export default function HowItWorksPage() {
           <div id="intro" className="scroll-mt-24">
             <ArticleHeader
               kicker="How it works"
-              title="A new Congress, closer to the people."
+              title="A Congress closer to the people."
             >
               What is wrong with a single ballot every four years, and how Closer Congress lets
               you vote on every real bill instead, whenever you want.
