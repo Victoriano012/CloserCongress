@@ -22,11 +22,11 @@ export default function Home() {
             wordmarkClassName="font-wordmark text-[1.75rem] tracking-tight md:text-[2.75rem]"
           />
         </div>
-        <div className="bd-rule mb-6" />
         <h1 className="font-serif text-3xl font-semibold leading-snug sm:text-4xl lg:text-5xl">
           <span className="block">Don&rsquo;t pick a party every four years.</span>
           <span className="block">Pick your preferences, whenever you want.</span>
         </h1>
+        <div className="bd-rule mt-3 rounded-full" />
       </div>
       <div className="lg:order-2 lg:flex lg:flex-col lg:justify-center lg:py-8">
         <p className="max-w-xl text-lg leading-relaxed text-[var(--bd-muted)] xl:text-xl">

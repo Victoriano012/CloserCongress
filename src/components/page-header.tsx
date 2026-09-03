@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
 /**
- * Every page's header, in one order: title, muted subtitle, then a full-width
- * blue rule separating it from the content. `aside` sits right of the title
- * (under it, right-aligned, on small screens).
+ * Every page's header, in one order: title, short blue accent line, then the
+ * muted subtitle. `aside` sits right of the title (under it, right-aligned, on
+ * small screens).
  */
 export function PageHeader({
   title, subtitle, aside,
@@ -14,10 +14,10 @@ export function PageHeader({
         <h1 className="font-serif text-4xl font-semibold leading-snug sm:text-5xl">{title}</h1>
         {aside && <div className="shrink-0 self-end sm:self-start">{aside}</div>}
       </div>
+      <div className="bd-rule mt-3 rounded-full" />
       {subtitle && (
         <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--bd-muted)]">{subtitle}</p>
       )}
-      <div className="mt-8 border-t-[3px] border-[var(--bd-blue)]" />
     </header>
   );
 }
