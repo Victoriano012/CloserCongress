@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS = [
-  { id: "intro", label: "Pick your preferences" },
+  { id: "intro", label: "A new way to run Congress" },
   { id: "problems", label: "Two problems with Congress today" },
   { id: "solution", label: "How Closer Congress solves both" },
   { id: "building-my-list", label: "Building My List" },
@@ -46,10 +46,10 @@ export default function HowItWorksPage() {
           <div id="intro" className="scroll-mt-24">
             <ArticleHeader
               kicker="How it works"
-              title="Don’t pick a party every four years. Pick your preferences, whenever you want."
+              title="A new way to run Congress, built to give the people their vote back."
             >
-              This page explains what is wrong with a single ballot every four years, and how
-              Closer Congress lets you vote on every real bill instead.
+              What is wrong with a single ballot every four years, and how Closer Congress lets
+              you vote on every real bill instead, whenever you want.
             </ArticleHeader>
           </div>
 
