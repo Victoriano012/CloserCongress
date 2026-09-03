@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { SAMPLE_LIST } from "@/lib/parties";
 import { DelegationDiagram } from "@/components/delegation-diagram";
 import { Logo } from "@/components/Logo";
-import { PageHeader } from "@/components/page-header";
 
 export const metadata: Metadata = {
   description:
@@ -13,38 +12,32 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <section className="bd-container py-12">
-      <div role="img" aria-label="Closer Congress" className="mb-10">
-        <Logo
-          size={40}
-          wordmark
-          className="gap-3 text-[var(--bd-navy)] md:gap-4 md:[&>svg]:h-[60px] md:[&>svg]:w-[60px]"
-          wordmarkClassName="font-wordmark text-[1.75rem] tracking-tight md:text-[2.75rem]"
-        />
+    <section className="bd-container grid gap-x-12 gap-y-10 pb-16 pt-10 lg:grid-cols-[1.05fr_1fr] lg:pb-24 lg:pt-12">
+      <div className="lg:col-span-2">
+        <div role="img" aria-label="Closer Congress" className="mb-10 lg:mb-14">
+          <Logo
+            size={40}
+            wordmark
+            className="gap-3 text-[var(--bd-navy)] md:gap-4 md:[&>svg]:h-[60px] md:[&>svg]:w-[60px]"
+            wordmarkClassName="font-wordmark text-[1.75rem] tracking-tight md:text-[2.75rem]"
+          />
+        </div>
+        <div className="bd-rule mb-6" />
+        <h1 className="font-serif text-3xl font-semibold leading-snug sm:text-4xl lg:text-5xl">
+          <span className="block">Don&rsquo;t pick a party every four years.</span>
+          <span className="block">Pick your preferences, whenever you want.</span>
+        </h1>
       </div>
-      <PageHeader
-        title={
-          <>
-            <span className="block">Don&rsquo;t pick a party every four years.</span>
-            <span className="block">Pick your preferences, whenever you want.</span>
-          </>
-        }
-        subtitle={
-          <>
-            <span className="block">
-              Rank single-issue delegates. Each is silent outside its subject, so the first
-              with an opinion on a bill casts your vote.
-            </span>
-            <span className="mt-4 block">
-              Change your votes whenever you like. Your latest saved list replaces the
-              previous one.
-            </span>
-          </>
-        }
-      />
-
-      <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1.05fr_1fr] lg:items-center">
-        <div className="flex flex-wrap gap-3">
+      <div className="lg:flex lg:flex-col lg:justify-center lg:py-8">
+        <p className="max-w-xl text-lg leading-relaxed text-[var(--bd-muted)] xl:text-xl">
+          Rank single-issue delegates. Each is silent outside its subject, so the first
+          with an opinion on a bill casts your vote.
+        </p>
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--bd-muted)] xl:text-xl">
+          Change your votes whenever you like. Your latest saved list replaces the previous
+          one.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3 lg:mt-12">
           <Link
             href="/delegate"
             className="rounded-md bg-blue-700 px-5 py-3 font-medium text-white hover:bg-blue-800"
@@ -58,7 +51,9 @@ export default function Home() {
             See the bills
           </Link>
         </div>
+      </div>
 
+      <div className="self-start">
         <DelegationDiagram
           caption="My List, walked from the top"
           bill="A bill recognising a religious holiday"
