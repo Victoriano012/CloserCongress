@@ -13,7 +13,7 @@ import { VoteBar } from "@/components/vote-bar";
 
 export const metadata: Metadata = {
   description:
-    "Real US bills, voted by an electorate that delegates to an ordered list of single-issue parties. The first one with an opinion speaks for you.",
+    "Don't pick a party every four years. Rank single-issue parties by preference, change them whenever you want, and the first with an opinion votes real US bills for you.",
 };
 
 /** Nothing here reads the session or the request, so the page can be cached. */
@@ -43,15 +43,16 @@ export default async function Home() {
   return (
     <>
       <section className="border-b border-[var(--bd-line)] bg-white">
-        <div className="bd-container grid gap-12 py-16 lg:grid-cols-[1.05fr_1fr] lg:py-24">
-          <div>
+        <div className="bd-container grid gap-x-12 gap-y-10 py-16 lg:grid-cols-[1.05fr_1fr] lg:py-24">
+          <div className="lg:col-span-2">
             <div className="bd-rule mb-6" />
-            <h1 className="font-serif text-4xl font-semibold leading-[1.1] sm:text-5xl">
-              Don&rsquo;t pick a party.
-              <br />
-              Pick an order.
+            <h1 className="font-serif text-3xl font-semibold leading-[1.1] sm:text-4xl lg:text-5xl">
+              <span className="block">Don&rsquo;t pick a party every four years.</span>
+              <span className="block">Pick your preferences, whenever you want.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--bd-muted)]">
+          </div>
+          <div>
+            <p className="max-w-xl text-lg leading-relaxed text-[var(--bd-muted)]">
               Rank single-issue delegates. Each is silent outside its subject, so the first
               with an opinion on a bill casts your vote.
             </p>
