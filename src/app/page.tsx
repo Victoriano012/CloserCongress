@@ -57,10 +57,7 @@ export default async function Home() {
               with an opinion on a bill casts your vote.
             </p>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-[var(--bd-muted)]">
-              <strong className="block font-semibold text-[var(--bd-navy)]">
-                Change your vote at any time.
-              </strong>
-              Change My List whenever you like. Your latest saved list replaces the previous
+              Change your votes whenever you like. Your latest saved list replaces the previous
               one.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
