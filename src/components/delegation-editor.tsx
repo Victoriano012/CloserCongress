@@ -11,7 +11,7 @@
  */
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import {
   deleteDelegationAction,
@@ -120,7 +120,8 @@ function PartyLabel({
 export function DelegationEditor({ initial }: { initial: string[] }) {
   const router = useRouter();
   const [list, setList] = useState<string[]>(() => withoutBlank(initial));
-  const [saved, setSaved] = useState<string[]>(() => withoutBlank(initial));
+  /** What the server last confirmed, so hydration and no-op edits don't trigger a save. */
+  const savedRef = useRef<string[]>(withoutBlank(initial));
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
   const [announcement, setAnnouncement] = useState("");
@@ -130,7 +131,19 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
   const [pending, startTransition] = useTransition();
   const { ref: listRef, snapshot, animating } = useFlipAnimation<HTMLOListElement>(list);
 
-  const dirty = !sameList(list, saved);
+  // Every change persists on its own, debounced so a burst of moves is one write.
+  useEffect(() => {
+    if (sameList(list, savedRef.current)) return;
+    const timer = setTimeout(async () => {
+      const result = await saveDelegationAction([...list, BLANK_PARTY_SLUG]);
+      if (result.ok) {
+        savedRef.current = withoutBlank(result.delegation);
+      } else {
+        setStatus({ kind: "error", text: result.error });
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [list]);
 
   const chosen = useMemo(
     () => list.map((slug) => PARTY_BY_SLUG[slug]).filter(Boolean),
@@ -205,29 +218,14 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
     );
   }
 
-  function onSave() {
-    setStatus(null);
-    startTransition(async () => {
-      const result = await saveDelegationAction([...list, BLANK_PARTY_SLUG]);
-      if (result.ok) {
-        const stored = withoutBlank(result.delegation);
-        setList(stored);
-        setSaved(stored);
-        setStatus({ kind: "ok", text: "Saved. It does not move the simulated result." });
-      } else {
-        setStatus({ kind: "error", text: result.error });
-      }
-    });
-  }
-
   function onClear() {
     setStatus(null);
     startTransition(async () => {
       const deleted = await deleteDelegationAction();
       setConfirmClear(false);
       if (deleted) {
+        savedRef.current = [];
         setList([]);
-        setSaved([]);
         setStatus({ kind: "ok", text: "List deleted." });
       } else {
         setStatus({ kind: "error", text: "Could not delete. Are you still signed in?" });
@@ -406,15 +404,6 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-1">
-            <button
-              type="button"
-              onClick={onSave}
-              disabled={pending || !dirty}
-              className={`rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-[var(--bd-muted)] ${FOCUS}`}
-            >
-              {pending ? "Saving…" : dirty ? "Save changes" : "Saved"}
-            </button>
-
             {confirmClear ? (
               <span className="flex items-center gap-2 text-sm">
                 <span className="text-[var(--bd-muted)]">Delete your saved list?</span>
@@ -443,10 +432,6 @@ export function DelegationEditor({ initial }: { initial: string[] }) {
                 Clear my list
               </button>
             )}
-
-            {dirty && !pending ? (
-              <span className="text-sm text-[var(--bd-muted)]">Unsaved changes.</span>
-            ) : null}
           </div>
 
           <p
