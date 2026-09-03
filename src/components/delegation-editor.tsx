@@ -12,6 +12,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { flushSync } from "react-dom";
 
 import {
   deleteDelegationAction,
@@ -80,6 +81,22 @@ function Indicator({ active }: { active: boolean }) {
   );
 }
 
+/**
+ * Runs a list change without letting `anchor` move on screen. The browser's own
+ * scroll anchoring keys off whatever sits at the top of the viewport, and in the
+ * two-column layout that is often a My List row: removing a row above it makes
+ * the browser scroll the whole page up, dragging the party card the user just
+ * clicked along with it. So commit synchronously, then undo whatever drift the
+ * clicked card picked up.
+ */
+function keepInPlace(anchor: Element | null, update: () => void) {
+  const top = anchor?.getBoundingClientRect().top;
+  flushSync(update);
+  if (anchor && top !== undefined) {
+    window.scrollBy({ top: anchor.getBoundingClientRect().top - top, behavior: "instant" });
+  }
+}
+
 /** True when a click landed on one of the row's buttons rather than the row itself. */
 function onControl(event: React.MouseEvent): boolean {
   return event.target instanceof Element && event.target.closest("button") !== null;
@@ -136,6 +153,8 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
   const [dropAt, setDropAt] = useState<number | null>(null);
   const [pending, startTransition] = useTransition();
   const { ref: listRef, snapshot, animating } = useFlipAnimation<HTMLOListElement>(list);
+  /** Removing a row from the list itself should leave everything above it where it is. */
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   // Just signed in with a list built while signed out: adopt whatever the
   // account ended up with, unless the user has already started editing.
@@ -220,19 +239,24 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
     refocus(slug, dir);
   }
 
-  function add(slug: string) {
+  /** `anchor` is the card the user clicked; it stays put while the list changes. */
+  function add(slug: string, anchor: Element | null) {
     if (list.includes(slug)) return;
-    apply(
-      [...list, slug],
-      `${PARTY_BY_SLUG[slug]?.name ?? slug} added at position ${list.length + 1}.`,
+    keepInPlace(anchor, () =>
+      apply(
+        [...list, slug],
+        `${PARTY_BY_SLUG[slug]?.name ?? slug} added at position ${list.length + 1}.`,
+      ),
     );
   }
 
-  function remove(slug: string) {
+  function remove(slug: string, anchor: Element | null) {
     if (!list.includes(slug)) return;
-    apply(
-      list.filter((s) => s !== slug),
-      `${PARTY_BY_SLUG[slug]?.name ?? slug} removed from My List.`,
+    keepInPlace(anchor, () =>
+      apply(
+        list.filter((s) => s !== slug),
+        `${PARTY_BY_SLUG[slug]?.name ?? slug} removed from My List.`,
+      ),
     );
   }
 
@@ -290,7 +314,7 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
         {/* ---------------------------------------------------------- LEFT */}
         <section aria-labelledby="your-list-heading" className="flex flex-col gap-4">
           <div>
-            <h2 id="your-list-heading" className="font-serif text-xl font-semibold">
+            <h2 ref={headingRef} id="your-list-heading" className="font-serif text-xl font-semibold">
               My list
             </h2>
             <div className="bd-rule mt-2" />
@@ -387,7 +411,7 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
                     </button>
                     <button
                       type="button"
-                      onClick={() => remove(party.slug)}
+                      onClick={() => remove(party.slug, headingRef.current)}
                       aria-label={`Remove ${party.name} from My List`}
                       className={`grid h-8 w-8 place-items-center rounded-md border border-[var(--bd-line)] text-[var(--bd-no)] hover:bg-red-50 ${FOCUS}`}
                     >
@@ -528,7 +552,9 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
                               </span>
                               <button
                                 type="button"
-                                onClick={() => remove(party.slug)}
+                                onClick={(event) =>
+                                  remove(party.slug, event.currentTarget.closest("li"))
+                                }
                                 aria-label={`Remove ${party.name} from My List`}
                                 className={`rounded-md border border-[var(--bd-line)] px-3 py-1.5 text-sm font-medium text-[var(--bd-no)] hover:bg-red-50 ${FOCUS}`}
                               >
@@ -538,7 +564,9 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
                           ) : (
                             <button
                               type="button"
-                              onClick={() => add(party.slug)}
+                              onClick={(event) =>
+                                add(party.slug, event.currentTarget.closest("li"))
+                              }
                               aria-label={`Add ${party.name} to My List`}
                               className={`shrink-0 rounded-md border border-blue-200 px-3 py-1.5 text-sm font-medium text-blue-800 hover:bg-blue-50 ${FOCUS}`}
                             >
