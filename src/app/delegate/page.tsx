@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     "Build an ordered list of single-issue delegates. The first one with an opinion on a bill casts your vote.",
 };
 
-/** Sign-in button plus a note that it is optional. Stacked under the heading on mobile, right-aligned beside it on desktop. */
+/** Sign-in button with a note underneath that it is optional. Right-aligned both under the heading on mobile and beside it on desktop. */
 function SignInAside() {
   return (
-    <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-right">
-      <p className="text-xs leading-snug text-[var(--bd-muted)]">
+    <div className="flex flex-col items-end gap-1">
+      <SignInButton />
+      <p className="text-right text-xs leading-snug text-[var(--bd-muted)]">
         To save your list across devices
       </p>
-      <SignInButton />
     </div>
   );
 }
