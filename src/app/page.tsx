@@ -28,16 +28,16 @@ export default function Home() {
           <span className="block">Pick your preferences, whenever you want.</span>
         </h1>
       </div>
-      <div>
-        <p className="max-w-xl text-lg leading-relaxed text-[var(--bd-muted)]">
+      <div className="lg:flex lg:flex-col lg:justify-center lg:py-8">
+        <p className="max-w-xl text-lg leading-relaxed text-[var(--bd-muted)] xl:text-xl">
           Rank single-issue delegates. Each is silent outside its subject, so the first
           with an opinion on a bill casts your vote.
         </p>
-        <p className="mt-4 max-w-xl text-lg leading-relaxed text-[var(--bd-muted)]">
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--bd-muted)] xl:text-xl">
           Change your votes whenever you like. Your latest saved list replaces the previous
           one.
         </p>
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap gap-3 lg:mt-12">
           <Link
             href="/delegate"
             className="rounded-md bg-blue-700 px-5 py-3 font-medium text-white hover:bg-blue-800"
