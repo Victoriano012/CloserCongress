@@ -9,6 +9,7 @@ import { SAMPLE_LIST, VOTING_PARTIES } from "@/lib/parties";
 import electorateStats from "../../data/electorate-stats.json";
 import { shortDate } from "@/lib/dates";
 import { DelegationDiagram } from "@/components/delegation-diagram";
+import { Logo } from "@/components/Logo";
 import { VoteBar } from "@/components/vote-bar";
 
 export const metadata: Metadata = {
@@ -43,8 +44,16 @@ export default async function Home() {
   return (
     <>
       <section className="border-b border-[var(--bd-line)] bg-white">
-        <div className="bd-container grid gap-x-12 gap-y-10 py-16 lg:grid-cols-[1.05fr_1fr] lg:py-24">
+        <div className="bd-container grid gap-x-12 gap-y-10 pb-16 pt-10 lg:grid-cols-[1.05fr_1fr] lg:pb-24 lg:pt-12">
           <div className="lg:col-span-2">
+            <div role="img" aria-label="Closer Congress" className="mb-10 lg:mb-14">
+              <Logo
+                size={40}
+                wordmark
+                className="gap-3 text-[var(--bd-navy)] md:gap-4 md:[&>svg]:h-[60px] md:[&>svg]:w-[60px]"
+                wordmarkClassName="font-wordmark text-[1.75rem] leading-none tracking-tight md:text-[2.75rem]"
+              />
+            </div>
             <div className="bd-rule mb-6" />
             <h1 className="font-serif text-3xl font-semibold leading-[1.1] sm:text-4xl lg:text-5xl">
               <span className="block">Don&rsquo;t pick a party every four years.</span>
