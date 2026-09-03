@@ -46,7 +46,7 @@ export default function HowItWorksPage() {
           <div id="intro" className="scroll-mt-24">
             <ArticleHeader
               kicker="How it works"
-              title="A new way to run Congress, built to give the people their vote back."
+              title="A new way to run Congress."
             >
               What is wrong with a single ballot every four years, and how Closer Congress lets
               you vote on every real bill instead, whenever you want.
@@ -204,9 +204,8 @@ export default function HowItWorksPage() {
 
             <Section id="changing" title="Changing your mind">
               <p>
-                Edit My List and the change applies immediately, to every bill already shown
-                and to every bill that arrives afterwards. Nothing is locked in, and there is
-                no election to wait for.
+                Edit My List and the change applies immediately to every bill that arrives
+                from then on. Nothing is locked in, and there is no election to wait for.
               </p>
             </Section>
 
