@@ -1,4 +1,4 @@
-# Closer Democracy — Build Plan
+# Closer Congress — Build Plan
 
 A demonstration of **liquid, issue-scoped democracy**: citizens vote on real US federal
 legislation directly, or delegate to an *ordered list* of single-issue parties. A party

@@ -17,11 +17,11 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--bd-line)] bg-white/90 backdrop-blur">
       <div className="bd-container flex h-16 items-center gap-4">
-        <Link href="/" aria-label="Closer Democracy home" className="min-w-0">
+        <Link href="/" aria-label="Closer Congress home" className="min-w-0">
           <Logo
             size={32}
-            wordmark="Closer Democracy"
-            title="Closer Democracy pantheon logo"
+            wordmark="Closer Congress"
+            title="Closer Congress ballot logo"
             className="text-[var(--bd-navy)]"
             wordmarkClassName="font-wordmark text-xl leading-none tracking-tight md:text-[1.625rem]"
           />

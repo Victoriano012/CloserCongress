@@ -2,7 +2,7 @@ export type LogoProps = {
   /** The square mark size in CSS pixels. */
   size?: number;
   className?: string;
-  /** `true` uses the default BetterDemocracy wordmark; a string supplies a custom one. */
+  /** `true` uses the default Closer Congress wordmark; a string supplies a custom one. */
   wordmark?: boolean | string;
   /** Extra classes for the wordmark text (font, size, tracking). */
   wordmarkClassName?: string;
@@ -14,9 +14,9 @@ export function Logo({
   className = "",
   wordmark = false,
   wordmarkClassName = "font-serif text-lg",
-  title = "BetterDemocracy logo",
+  title = "Closer Congress logo",
 }: LogoProps) {
-  const wordmarkText = wordmark === true ? "BetterDemocracy" : wordmark || null;
+  const wordmarkText = wordmark === true ? "Closer Congress" : wordmark || null;
 
   return (
     <span className={`inline-flex min-w-0 items-center gap-2.5 ${className}`}>

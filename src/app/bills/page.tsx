@@ -213,7 +213,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
                 </VoteColumn>
 
                 <VoteColumn
-                  heading="In Closer Democracy"
+                  heading="In Closer Congress"
                   verdict={
                     bill.yes_weight === null || bill.no_weight === null ? (
                       <span className="font-normal text-[var(--bd-muted)]">Awaiting the delegates</span>

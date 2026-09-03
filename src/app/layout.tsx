@@ -18,11 +18,11 @@ const wordmark = Fraunces({
 export const metadata: Metadata = {
   metadataBase: new URL("https://closerdemocracy.vercel.app"),
   manifest: "/manifest.webmanifest",
-  title: "Closer Democracy",
+  title: "Closer Congress",
   description:
     "Lend your vote on real bills before Congress to an ordered list of single-issue parties. The first one with an opinion casts it.",
   openGraph: {
-    title: "Closer Democracy",
+    title: "Closer Congress",
     description:
       "Real US bills, an electorate that delegates issue by issue, and a side-by-side comparison with what Congress actually did.",
     type: "website",

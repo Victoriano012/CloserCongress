@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "BetterDemocracy",
-    short_name: "BetterDem",
+    name: "Closer Congress",
+    short_name: "CloserCong",
     description:
       "Delegate your vote on real bills to an ordered list of single-issue parties.",
     start_url: "/",
