@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import stats from "../../../data/electorate-stats.json";
-import { ArticleHeader, Section, Toc } from "@/components/article";
+import { Section, Toc } from "@/components/article";
+import { PageHeader } from "@/components/page-header";
 import { PARTIES, PARTY_BY_SLUG } from "@/lib/parties";
 import {
   AXES,
@@ -83,21 +84,23 @@ function Figure({ value, label }: { value: string; label: string }) {
 
 export default function MethodologyPage() {
   return (
-    <div className="bd-container py-14 sm:py-20">
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-14">
-        <article className="max-w-[68ch]">
-          <ArticleHeader
-            kicker="Methodology"
-            title="Every number on this site, and where it came from."
-          >
+    <div className="bd-container py-12">
+      <PageHeader
+        title="Every number on this site, and where it came from."
+        subtitle={
+          <>
             Data sources, the model that casts each party&rsquo;s vote, the synthetic
             electorate, and where the simulation is wrong. Numbers with no published source
             are flagged <Estimated />.
-          </ArticleHeader>
+          </>
+        }
+      />
 
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-14">
+        <article className="max-w-[68ch]">
           <Toc sections={SECTIONS} numbered />
 
-          <div className="mt-14 space-y-16">
+          <div className="space-y-16">
             {/* ------------------------------------------------------------ bills */}
             <Section id="bills" eyebrow="1" title="Where the bills come from">
               <p>Nothing about the legislation is invented. Three public, keyless sources:</p>

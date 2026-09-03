@@ -5,6 +5,7 @@ import { SignInButton, SignOutButton } from "@/components/auth-buttons";
 import { DelegationEditor } from "@/components/delegation-editor";
 import { GuestDelegationEditor } from "@/components/guest-delegation-editor";
 import { ListRecord } from "@/components/list-record";
+import { PageHeader } from "@/components/page-header";
 import { loadDelegation } from "@/lib/delegation";
 import { BLANK_PARTY_SLUG } from "@/lib/parties";
 
@@ -33,41 +34,37 @@ export default async function DelegatePage() {
   const stored = signedIn ? await loadDelegation() : null;
 
   return (
-    <div className="bd-container flex flex-col gap-8 py-12">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="font-serif text-3xl font-semibold">My list</h1>
-          <div className="bd-rule mt-3" />
-          <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)] lg:whitespace-nowrap">
-            A bill walks down this list until it reaches a party with an opinion, and that
-            party casts your vote.
-          </p>
-        </div>
-        {signedIn ? <SignOutButton /> : <SignInAside />}
-      </div>
+    <div className="bd-container py-12">
+      <PageHeader
+        title="My list"
+        subtitle="A bill walks down this list until it reaches a party with an opinion, and that party casts your vote."
+        aside={signedIn ? <SignOutButton /> : <SignInAside />}
+      />
 
-      {signedIn ? (
-        <DelegationEditor initial={stored ?? [BLANK_PARTY_SLUG]} />
-      ) : (
-        <GuestDelegationEditor />
-      )}
-
-      {stored ? <ListRecord delegation={stored} /> : null}
-
-      <p className="max-w-2xl text-xs leading-relaxed text-[var(--bd-muted)]">
+      <div className="flex flex-col gap-8">
         {signedIn ? (
-          <>
-            Encrypted under a key derived from your Google account id, which is never stored.
-            Not end-to-end: this server reads My List to render this page.
-          </>
+          <DelegationEditor initial={stored ?? [BLANK_PARTY_SLUG]} />
         ) : (
-          <>
-            Saved in this browser only. If you sign in, My List is encrypted under a key
-            derived from your Google account id, which is never stored. Not end-to-end: this
-            server reads My List to render this page.
-          </>
+          <GuestDelegationEditor />
         )}
-      </p>
+
+        {stored ? <ListRecord delegation={stored} /> : null}
+
+        <p className="max-w-2xl text-xs leading-relaxed text-[var(--bd-muted)]">
+          {signedIn ? (
+            <>
+              Encrypted under a key derived from your Google account id, which is never stored.
+              Not end-to-end: this server reads My List to render this page.
+            </>
+          ) : (
+            <>
+              Saved in this browser only. If you sign in, My List is encrypted under a key
+              derived from your Google account id, which is never stored. Not end-to-end: this
+              server reads My List to render this page.
+            </>
+          )}
+        </p>
+      </div>
     </div>
   );
 }

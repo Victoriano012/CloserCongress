@@ -61,7 +61,7 @@ export function Toc({
     );
   }
   return (
-    <nav aria-label="On this page" className="bd-card mt-10 px-5 py-4 lg:hidden">
+    <nav aria-label="On this page" className="bd-card mb-12 px-5 py-4 lg:hidden">
       <Eyebrow>On this page</Eyebrow>
       <ol className="mt-3 space-y-1.5 text-sm">
         {sections.map((s, i) => (
@@ -76,22 +76,5 @@ export function Toc({
         ))}
       </ol>
     </nav>
-  );
-}
-
-export function ArticleHeader({
-  kicker, title, children,
-}: { kicker: string; title: string; children: ReactNode }) {
-  return (
-    <header>
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--bd-blue)]">
-        {kicker}
-      </p>
-      <h1 className="mt-3 font-serif text-4xl font-semibold leading-snug sm:text-5xl">
-        {title}
-      </h1>
-      <p className="mt-6 text-lg leading-8 text-[var(--bd-muted)]">{children}</p>
-      <div className="bd-rule mt-8" />
-    </header>
   );
 }

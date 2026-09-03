@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import { GuestVotesBanner, GuestYourVote } from "@/components/bills/guest-your-vote";
 import { GuestListMerge } from "@/components/guest-list-merge";
+import { PageHeader } from "@/components/page-header";
 import { VoteDistributionBar } from "@/components/bills/vote-distribution-bar";
 import { YourVote } from "@/components/your-vote";
 import { billLabel, listBills } from "@/lib/bills";
@@ -89,15 +90,12 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
   return (
     <div className="bd-container py-12">
       {signedIn && <GuestListMerge />}
-      <header className="max-w-2xl">
-        <div className="bd-rule mb-5" />
-        <h1 className="font-serif text-4xl font-semibold">Bills before Congress</h1>
-        <p className="mt-3 text-[var(--bd-muted)]">
-          Real legislation Congress has passed or defeated, updated daily, put to ten thousand simulated citizens.
-        </p>
-      </header>
+      <PageHeader
+        title="Bills before Congress"
+        subtitle="Real legislation Congress has passed or defeated, updated daily, put to ten thousand simulated citizens."
+      />
 
-      <form method="get" className="mt-8 flex flex-wrap items-center gap-3">
+      <form method="get" className="flex flex-wrap items-center gap-3">
         <input
           type="search"
           name="q"

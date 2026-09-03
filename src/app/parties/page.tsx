@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/page-header";
 import {
   PARTIES,
   PARTY_BY_SLUG,
@@ -99,17 +100,12 @@ export default function PartiesPage() {
 
   return (
     <div className="bd-container py-12">
-      <header className="max-w-3xl">
-        <h1 className="font-serif text-4xl font-semibold">The parties</h1>
-        <div className="bd-rule mt-4" />
-        <p className="mt-6 text-[15px] leading-relaxed text-[var(--bd-muted)]">
-          Each party votes only on bills inside its subject and abstains on the rest, handing
-          your vote to the next name on My List. Open a party to see what it stands for and
-          how it has voted.
-        </p>
-      </header>
+      <PageHeader
+        title="The parties"
+        subtitle="Each party votes only on bills inside its subject and abstains on the rest, handing your vote to the next name on My List. Open a party to see what it stands for and how it has voted."
+      />
 
-      <div className="mt-14 space-y-14">
+      <div className="space-y-14">
         {axes.map((axis) => (
           <section key={axis}>
             <h2 className="font-serif text-2xl font-semibold">{AXIS_LABELS[axis]}</h2>

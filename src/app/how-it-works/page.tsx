@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { ArticleHeader, Section, Toc } from "@/components/article";
+import { Section, Toc } from "@/components/article";
 import { DelegationDiagram } from "@/components/delegation-diagram";
+import { PageHeader } from "@/components/page-header";
 import { SAMPLE_LIST } from "@/lib/parties";
 
 export const metadata: Metadata = {
@@ -40,22 +41,19 @@ function Card({ title, takeaway, children }: { title: string; takeaway: string; 
 
 export default function HowItWorksPage() {
   return (
-    <div className="bd-container py-14 sm:py-20">
+    <div className="bd-container py-12">
+      <div id="intro" className="scroll-mt-24">
+        <PageHeader
+          title="A Congress closer to the people."
+          subtitle="What is wrong with a single ballot every four years, and how Closer Congress lets you vote on every real bill instead, whenever you want."
+        />
+      </div>
+
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-14">
         <article className="max-w-[68ch]">
-          <div id="intro" className="scroll-mt-24">
-            <ArticleHeader
-              kicker="How it works"
-              title="A Congress closer to the people."
-            >
-              What is wrong with a single ballot every four years, and how Closer Congress lets
-              you vote on every real bill instead, whenever you want.
-            </ArticleHeader>
-          </div>
-
           <Toc sections={SECTIONS} />
 
-          <div className="mt-14 space-y-16">
+          <div className="space-y-16">
             <Section id="problems" title="Two problems with Congress today">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Card
