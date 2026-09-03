@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { secretEquals } from "@/lib/crypto";
 import { runIngest } from "@/lib/ingest";
+import { sqlIngestStore } from "@/lib/ingest-store";
 
 // Scheduled in vercel.json as "0 8 * * *". Vercel crons run in UTC and JSON
 // has no comments, so the conversion lives here: 08:00 UTC is 04:00 US Eastern
@@ -26,6 +27,7 @@ export async function GET(request: Request) {
     // Leave headroom under maxDuration so a slow govinfo stops cleanly and
     // reports a partial run rather than being killed mid-flight.
     const summary = await runIngest({
+      store: sqlIngestStore,
       days: 7,
       congress: 119,
       limit: 200,

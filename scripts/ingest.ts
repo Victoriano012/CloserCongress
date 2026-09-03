@@ -1,5 +1,6 @@
 import "./_env";
 import { runIngest } from "../src/lib/ingest";
+import { sqlIngestStore } from "../src/lib/ingest-store";
 
 function flag(name: string, fallback: number): number {
   const i = process.argv.indexOf(`--${name}`);
@@ -16,6 +17,7 @@ async function main() {
 
   const started = Date.now();
   const s = await runIngest({
+    store: sqlIngestStore,
     days,
     congress,
     limit,
@@ -31,6 +33,10 @@ async function main() {
   console.log(
     `${s.checked} in-progress bills re-checked, ${s.refreshed} refreshed, ` +
       `${s.statusChanged} changed outcome, ${s.abandoned} abandoned`,
+  );
+  console.log(
+    `${s.positionsFilled} resolved bills got party positions, ` +
+      `${s.positionsUnavailable} have no roll call, ${s.positionsMissing.length} still missing`,
   );
   if (s.unknownStatuses.length) {
     console.log(`unanticipated GovTrack statuses: ${s.unknownStatuses.join(", ")}`);

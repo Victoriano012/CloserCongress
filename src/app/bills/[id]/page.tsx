@@ -83,6 +83,10 @@ function RealResult({ bill }: { bill: BillRow }) {
             </a>
           )}
         </div>
+      ) : bill.real_outcome !== "pending" && !bill.positions_unavailable ? (
+        <p className="mt-5 text-sm text-[var(--bd-muted)]">
+          Roll-call details are still being fetched. Check back after the nightly sync.
+        </p>
       ) : (
         <p className="mt-5 text-sm text-[var(--bd-muted)]">
           No roll-call vote. Most bills pass by voice or never reach the floor.

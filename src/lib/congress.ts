@@ -85,6 +85,12 @@ export type IngestedBill = {
   realNotVoting: number | null;
   realVoteUrl: string | null;
   realPartyBreakdown: PartyTally[] | null;
+  /**
+   * True when Congress settled the bill without a roll call (voice vote,
+   * unanimous consent), so no party positions will ever exist. Lets the UI tell
+   * "never voted on by roll call" apart from "sync has not fetched it yet".
+   */
+  positionsUnavailable: boolean;
 };
 
 /* -------------------------------------------------------------- http utils */
@@ -538,6 +544,7 @@ export async function hydrateBill(d: DiscoveredBill): Promise<IngestedBill> {
     realNotVoting: null,
     realVoteUrl: null,
     realPartyBreakdown: null,
+    positionsUnavailable: false,
   };
 
   let bill: XmlNode;
@@ -570,30 +577,82 @@ export async function hydrateBill(d: DiscoveredBill): Promise<IngestedBill> {
   const votes = topLevelRecordedVotes(bill);
   if (votes.length) {
     const rv = votes[0];
-    const isSenate = /senate/i.test(rv.chamber);
     try {
-      const v = isSenate
-        ? await fetchSenateVote(rv.congress, rv.sessionNumber, rv.rollNumber)
-        : await fetchHouseVote(rv.url);
-      out.realVoteChamber = v.chamber;
-      out.realVoteDate = v.date ?? toDate(rv.date);
-      out.realYea = v.yea;
-      out.realNay = v.nay;
-      out.realPresent = v.present;
-      out.realNotVoting = v.notVoting;
-      out.realVoteUrl = v.url;
-      out.realPartyBreakdown = v.partyBreakdown.length ? v.partyBreakdown : null;
+      Object.assign(out, voteColumns(await fetchRollCall(rv)));
     } catch {
-      // A missing roll-call file must not sink the whole bill.
-      out.realVoteChamber = isSenate ? "senate" : "house";
+      // A missing roll-call file must not sink the whole bill. The positions
+      // pass in `runIngest` picks the bill up again later in the same run.
+      out.realVoteChamber = /senate/i.test(rv.chamber) ? "senate" : "house";
       out.realVoteDate = toDate(rv.date);
       out.realVoteUrl = rv.url;
     }
-  } else if (out.realOutcome === "passed") {
-    out.realStage = `${out.realStage ?? "Passed"} (no recorded vote)`;
+  } else {
+    if (out.realOutcome === "passed") {
+      out.realStage = `${out.realStage ?? "Passed"} (no recorded vote)`;
+    }
+    if (out.realOutcome !== "pending" && !lagsBehind(bill, d.latestActionDate)) {
+      out.positionsUnavailable = true;
+    }
   }
 
   return out;
+}
+
+/**
+ * govinfo publishes BILLSTATUS on its own schedule, so the file can trail
+ * GovTrack by a day. A resolved bill whose file has not caught up may still be
+ * missing its final roll call: do not conclude "no recorded vote" from it.
+ */
+function lagsBehind(bill: XmlNode, govtrackDate: string | null): boolean {
+  const fileDate = toDate(bill.latestAction?.actionDate);
+  return govtrackDate !== null && fileDate !== null && fileDate < govtrackDate;
+}
+
+async function fetchRollCall(rv: RecordedVote): Promise<VoteResult> {
+  const v = /senate/i.test(rv.chamber)
+    ? await fetchSenateVote(rv.congress, rv.sessionNumber, rv.rollNumber)
+    : await fetchHouseVote(rv.url);
+  return { ...v, date: v.date ?? toDate(rv.date) };
+}
+
+/** The `real_*` vote columns of a bill row, from one roll call. */
+export function voteColumns(v: VoteResult) {
+  return {
+    realVoteChamber: v.chamber,
+    realVoteDate: v.date,
+    realYea: v.yea,
+    realNay: v.nay,
+    realPresent: v.present,
+    realNotVoting: v.notVoting,
+    realVoteUrl: v.url,
+    realPartyBreakdown: v.partyBreakdown.length ? v.partyBreakdown : null,
+  };
+}
+
+export type BillRef = {
+  id: string;
+  congress: number;
+  billType: string;
+  number: number;
+  /** GovTrack's current_status_date, used to detect a stale BILLSTATUS file. */
+  latestActionDate: string | null;
+};
+
+/**
+ * Party positions for a bill we already hold, from its latest roll call. Null
+ * when Congress recorded no vote on it. Throws when govinfo or the roll-call
+ * source fails (after `fetchWithRetry`'s backoff), or when BILLSTATUS has not
+ * caught up with GovTrack yet — both mean "try again", not "no positions".
+ */
+export async function fetchBillPositions(ref: BillRef): Promise<VoteResult | null> {
+  const doc = await fetchXml(billStatusUrl(ref.congress, ref.billType, ref.number));
+  const bill = (doc as XmlNode)?.billStatus?.bill;
+  if (!bill) throw new Error(`BILLSTATUS for ${ref.id} has no <bill>`);
+  if (lagsBehind(bill, ref.latestActionDate)) {
+    throw new Error(`BILLSTATUS for ${ref.id} lags GovTrack (${ref.latestActionDate})`);
+  }
+  const votes = topLevelRecordedVotes(bill);
+  return votes.length ? fetchRollCall(votes[0]) : null;
 }
 
 /* -------------------------------------------------------------------- votes */

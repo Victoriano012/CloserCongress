@@ -1,16 +1,42 @@
 /**
  * Shared ingest run used by both `scripts/ingest.ts` and the Vercel cron route.
+ * Pure orchestration: persistence goes through an `IngestStore` (Postgres in
+ * production, in-memory in tests).
  */
-import { sql } from "@/lib/db";
 import {
   discoverRecentBills,
+  fetchBillPositions,
   fetchBillStatus,
   hydrateBill,
   mapLimit,
   mapStatus,
   unknownStatuses,
+  type BillRef,
   type IngestedBill,
+  type VoteResult,
 } from "@/lib/congress";
+
+export type PendingRow = {
+  id: string;
+  congress: number;
+  bill_type: string;
+  number: number;
+  real_outcome: string;
+  real_stage: string | null;
+};
+
+export type IngestStore = {
+  /** Resolves true when the row was newly inserted rather than updated. */
+  upsert(bill: IngestedBill): Promise<boolean>;
+  /** Stored in-progress bills, least recently touched first. */
+  listPending(congress: number): Promise<PendingRow[]>;
+  /** Bump `updated_at` so a re-checked bill moves to the back of the queue. */
+  touch(id: string): Promise<void>;
+  /** Resolved bills with no party breakdown that are not known to lack a roll call. */
+  listMissingPositions(congress: number): Promise<BillRef[]>;
+  savePositions(id: string, vote: VoteResult): Promise<void>;
+  markPositionsUnavailable(id: string): Promise<void>;
+};
 
 export type IngestSummary = {
   discovered: number;
@@ -27,67 +53,18 @@ export type IngestSummary = {
   /** Of those, how many changed outcome (pending → passed/failed). */
   statusChanged: number;
   statusChanges: string[];
+  /** Resolved bills that lacked party positions and got them this run. */
+  positionsFilled: number;
+  /** Resolved bills found to have no roll call at all (voice vote etc). */
+  positionsUnavailable: number;
+  /** Resolved bills still without party positions at the end of the run. */
+  positionsMissing: string[];
   unknownStatuses: string[];
   errorSamples: string[];
 };
 
-const UPSERT = `
-insert into bills (
-  id, congress, bill_type, number, title, chamber,
-  sponsor_name, sponsor_party, sponsor_state,
-  introduced_date, latest_action_date, latest_action_text,
-  official_summary, policy_area, congress_url, text_url, pdf_url,
-  real_outcome, real_stage, real_vote_chamber, real_vote_date,
-  real_yea, real_nay, real_present, real_not_voting, real_vote_url,
-  real_party_breakdown
-) values (
-  $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
-  $18,$19,$20,$21,$22,$23,$24,$25,$26,$27::jsonb
-)
-on conflict (id) do update set
-  congress = excluded.congress,
-  bill_type = excluded.bill_type,
-  number = excluded.number,
-  title = excluded.title,
-  chamber = excluded.chamber,
-  sponsor_name = excluded.sponsor_name,
-  sponsor_party = excluded.sponsor_party,
-  sponsor_state = excluded.sponsor_state,
-  introduced_date = excluded.introduced_date,
-  latest_action_date = excluded.latest_action_date,
-  latest_action_text = excluded.latest_action_text,
-  official_summary = excluded.official_summary,
-  policy_area = excluded.policy_area,
-  congress_url = excluded.congress_url,
-  text_url = excluded.text_url,
-  pdf_url = excluded.pdf_url,
-  real_outcome = excluded.real_outcome,
-  real_stage = excluded.real_stage,
-  real_vote_chamber = excluded.real_vote_chamber,
-  real_vote_date = excluded.real_vote_date,
-  real_yea = excluded.real_yea,
-  real_nay = excluded.real_nay,
-  real_present = excluded.real_present,
-  real_not_voting = excluded.real_not_voting,
-  real_vote_url = excluded.real_vote_url,
-  real_party_breakdown = excluded.real_party_breakdown,
-  updated_at = now()
-returning (xmax = 0) as inserted`;
-
-async function upsert(b: IngestedBill): Promise<boolean> {
-  const rows = (await sql.query(UPSERT, [
-    b.id, b.congress, b.billType, b.number, b.title, b.chamber,
-    b.sponsorName, b.sponsorParty, b.sponsorState,
-    b.introducedDate, b.latestActionDate, b.latestActionText,
-    b.officialSummary, b.policyArea, b.congressUrl, b.textUrl, b.pdfUrl,
-    b.realOutcome, b.realStage, b.realVoteChamber, b.realVoteDate,
-    b.realYea, b.realNay, b.realPresent, b.realNotVoting, b.realVoteUrl,
-    b.realPartyBreakdown ? JSON.stringify(b.realPartyBreakdown) : null,
-  ])) as unknown as { inserted: boolean }[];
-  return rows[0]?.inserted === true;
-}
-
 export async function runIngest(opts: {
+  store: IngestStore;
   days?: number;
   congress?: number;
   limit?: number;
@@ -95,13 +72,15 @@ export async function runIngest(opts: {
   deadline?: number;
   onProgress?: (done: number, total: number) => void;
 }): Promise<IngestSummary> {
+  const { store } = opts;
+  const congress = opts.congress ?? 119;
   const days = opts.days ?? 7;
   const since = new Date(Date.now() - days * 86_400_000);
 
   let skipped = 0;
   const discovered = await discoverRecentBills({
     since,
-    congress: opts.congress,
+    congress,
     limit: opts.limit,
     onFiltered: (n) => {
       skipped = n;
@@ -130,7 +109,7 @@ export async function runIngest(opts: {
     }
     try {
       const bill = await hydrateBill(d);
-      if (await upsert(bill)) inserted++;
+      if (await store.upsert(bill)) inserted++;
       else updated++;
     } catch (e) {
       recordError(d.id, e);
@@ -146,15 +125,7 @@ export async function runIngest(opts: {
   // status actually moved. Least recently touched bills go first, so a run that
   // hits its deadline resumes where the previous one left off.
   const handled = new Set(discovered.map((d) => d.id));
-  const pending = (
-    (await sql.query(
-      `select id, congress, bill_type, number, real_outcome, real_stage
-         from bills
-        where real_outcome = 'pending' and congress = $1
-        order by updated_at asc`,
-      [opts.congress ?? 119],
-    )) as unknown as PendingRow[]
-  ).filter((r) => !handled.has(r.id));
+  const pending = (await store.listPending(congress)).filter((r) => !handled.has(r.id));
 
   let checked = 0;
   let refreshed = 0;
@@ -172,11 +143,11 @@ export async function runIngest(opts: {
       if (!d) return;
       const outcome = mapStatus(d.currentStatus);
       if (outcome === row.real_outcome && d.currentStatusLabel === row.real_stage) {
-        await sql.query(`update bills set updated_at = now() where id = $1`, [row.id]);
+        await store.touch(row.id);
         return;
       }
       const bill = await hydrateBill(d);
-      await upsert(bill);
+      await store.upsert(bill);
       refreshed++;
       if (bill.realOutcome !== row.real_outcome) {
         statusChanged++;
@@ -195,6 +166,50 @@ export async function runIngest(opts: {
   );
   for (const s of statusChanges) console.log(`  ${s}`);
 
+  // Third pass: every resolved bill must end up with party positions or an
+  // explicit "no roll call" mark. Hydration above swallows roll-call fetch
+  // failures so one bad file cannot sink a bill; this is where those bills, and
+  // any left over from earlier runs, get their positions. Fetches go through
+  // `fetchWithRetry`'s backoff, and anything still failing is reported so it is
+  // visible in the logs rather than silently absent from the site.
+  const missing = await store.listMissingPositions(congress);
+  let positionsFilled = 0;
+  let positionsUnavailable = 0;
+  const positionsMissing: string[] = [];
+
+  await mapLimit(missing, 4, async (ref) => {
+    if (pastDeadline()) {
+      abandoned++;
+      positionsMissing.push(ref.id);
+      return;
+    }
+    try {
+      const vote = await fetchBillPositions(ref);
+      if (vote) {
+        await store.savePositions(ref.id, vote);
+        if (vote.partyBreakdown.length) positionsFilled++;
+        else positionsMissing.push(ref.id);
+      } else {
+        await store.markPositionsUnavailable(ref.id);
+        positionsUnavailable++;
+      }
+    } catch (e) {
+      recordError(ref.id, e);
+      positionsMissing.push(ref.id);
+    }
+  });
+
+  console.log(
+    `ingest: ${missing.length} resolved bills lacked party positions, ` +
+      `${positionsFilled} filled, ${positionsUnavailable} have no roll call`,
+  );
+  if (positionsMissing.length) {
+    console.warn(
+      `ingest: ${positionsMissing.length} resolved bills still missing party positions: ` +
+        positionsMissing.join(", "),
+    );
+  }
+
   return {
     discovered: discovered.length,
     inserted,
@@ -206,16 +221,10 @@ export async function runIngest(opts: {
     refreshed,
     statusChanged,
     statusChanges,
+    positionsFilled,
+    positionsUnavailable,
+    positionsMissing,
     unknownStatuses: [...unknownStatuses],
     errorSamples,
   };
 }
-
-type PendingRow = {
-  id: string;
-  congress: number;
-  bill_type: string;
-  number: number;
-  real_outcome: string;
-  real_stage: string | null;
-};

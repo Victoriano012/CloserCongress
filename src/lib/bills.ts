@@ -44,6 +44,8 @@ export interface BillRow {
   real_not_voting: number | null;
   real_vote_url: string | null;
   real_party_breakdown: RealPartyTally[] | null;
+  /** True when the bill was settled without a roll call, so no breakdown will ever exist. */
+  positions_unavailable: boolean;
 }
 
 export interface BillAi {

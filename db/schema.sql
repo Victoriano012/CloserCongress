@@ -42,6 +42,9 @@ create table if not exists bills (
   real_not_voting     integer,
   real_vote_url       text,
   real_party_breakdown jsonb,
+  -- true once the sync has confirmed the bill was settled without a roll call
+  -- (voice vote, unanimous consent), so a null breakdown is final, not pending
+  positions_unavailable boolean not null default false,
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now()
 );
@@ -86,6 +89,7 @@ create table if not exists bill_results (
 -- `create table if not exists` above is a no-op on an existing database, so
 -- columns added after the first deploy need an explicit alter.
 alter table bill_results add column if not exists votes_hash text not null default '';
+alter table bills add column if not exists positions_unavailable boolean not null default false;
 
 -- Real human users. Deliberately contains no identity and no key material:
 -- `user_key` is a salted hash of the Google subject and `ciphertext` is
