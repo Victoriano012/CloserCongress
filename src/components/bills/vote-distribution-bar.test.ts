@@ -52,7 +52,13 @@ test("renders an img role with the summary, and the empty state", () => {
   const html = renderToStaticMarkup(createElement(VoteDistributionBar, { yes: 7, no: 3 }));
   assert.match(html, /role="img"/);
   assert.match(html, /aria-label="10 votes: 7 in favour \(70\.0%\), 3 against \(30\.0%\)"/);
-  assert.match(html, /10 votes/);
+  // Counts live only in the aria-label unless the legend is asked for.
+  assert.doesNotMatch(html, />10 votes</);
+
+  const withLegend = renderToStaticMarkup(
+    createElement(VoteDistributionBar, { yes: 7, no: 3, legend: true }),
+  );
+  assert.match(withLegend, />10 votes</);
 
   const empty = renderToStaticMarkup(createElement(VoteDistributionBar, { yes: 0, no: 0 }));
   assert.match(empty, /No votes yet/);

@@ -6,7 +6,7 @@
  * it when the green crosses the line. Colour alone is not relied on — the red
  * and green of the design system are close for deutan readers — so segments
  * are also separated by a gap, ordered fixedly, labelled inside when they have
- * the room, and spelled out in the legend.
+ * the room, and spelled out in the aria-label (and the optional legend).
  */
 
 export type VoteDistributionBarProps = {
@@ -14,8 +14,10 @@ export type VoteDistributionBarProps = {
   no: number;
   abstain?: number;
   label?: string;
-  /** Override the legend wording, e.g. "not voting" for a roll call. */
+  /** Override the wording, e.g. "not voting" for a roll call. */
   words?: Partial<Record<"yes" | "no" | "abstain", string>>;
+  /** Spell out the counts under the bar. Off by default; the aria-label always has them. */
+  legend?: boolean;
 };
 
 type Key = "yes" | "no" | "abstain";
@@ -87,7 +89,7 @@ export function describeVotes({ yes, no, abstain = 0, label, words }: VoteDistri
 }
 
 export function VoteDistributionBar(props: VoteDistributionBarProps) {
-  const { yes, no, abstain = 0, label, words } = props;
+  const { yes, no, abstain = 0, label, words, legend = false } = props;
   const word = { ...WORD, ...words };
   const total = yes + no + abstain;
   const segments = voteSegments(props);
@@ -135,7 +137,7 @@ export function VoteDistributionBar(props: VoteDistributionBarProps) {
 
       {total === 0 ? (
         <p className="mt-2 text-sm text-[var(--bd-muted)]">No votes yet</p>
-      ) : (
+      ) : legend && (
         <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
           {segments.map((s) => (
             <span key={s.key} className="flex items-center gap-1.5">

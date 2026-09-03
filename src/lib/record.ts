@@ -21,8 +21,6 @@ export type ResolvedVote = {
   classified: boolean;
   party: string;
   vote: Vote;
-  /** Delegates ahead of the one that spoke — all of them abstained. */
-  silentAbove: number;
   reason: string | null;
 };
 
@@ -68,13 +66,11 @@ function resolveVote(delegation: Delegation, rows: VoteRow[]): ResolvedVote {
   for (const row of rows) if (isVote(row.vote)) map[row.party_slug] = row.vote;
 
   const outcome = resolveForDelegation(delegation, map);
-  const rank = delegation.indexOf(outcome.party);
 
   return {
     classified: rows.length > 0,
     party: outcome.party,
     vote: outcome.vote,
-    silentAbove: rank >= 0 ? rank : delegation.length - 1,
     reason: rows.find((row) => row.party_slug === outcome.party)?.reason ?? null,
   };
 }

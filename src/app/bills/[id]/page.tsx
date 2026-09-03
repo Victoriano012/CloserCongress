@@ -252,7 +252,7 @@ export default async function BillPage({ params }: Props) {
                 </p>
 
                 <div className="mt-5">
-                  <VoteDistributionBar yes={result.yes} no={result.no} abstain={result.blank} />
+                  <VoteDistributionBar yes={result.yes} no={result.no} abstain={result.blank} legend />
                 </div>
 
                 <h3 className="mt-6 text-xs font-semibold uppercase tracking-wider text-[var(--bd-muted)]">
