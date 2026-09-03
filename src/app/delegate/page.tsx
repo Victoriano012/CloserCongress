@@ -15,27 +15,13 @@ export const metadata: Metadata = {
     "Build an ordered list of single-issue delegates. The first one with an opinion on a bill casts your vote.",
 };
 
-function SignedOut() {
+/** Sign-in button plus a note that it is optional. Stacked under the heading on mobile, right-aligned beside it on desktop. */
+function SignInAside() {
   return (
-    <div className="bd-container flex flex-col gap-8 py-12">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-3xl font-semibold">My list</h1>
-          <div className="bd-rule mt-3" />
-          <p className="mt-5 text-base leading-relaxed text-[var(--bd-ink)] lg:whitespace-nowrap">
-            A bill walks down this list until it reaches a party with an opinion, and that
-            party casts your vote.
-          </p>
-        </div>
-        <SignInButton />
-      </div>
-
-      <GuestDelegationEditor />
-
-      <p className="max-w-2xl text-xs leading-relaxed text-[var(--bd-muted)]">
-        Saved in this browser only. Sign in to keep My List across devices: it is then
-        encrypted under a key derived from your Google account id, which is never stored.
-        Not end-to-end: this server reads My List to render this page.
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:flex-row-reverse sm:justify-end sm:text-right">
+      <SignInButton />
+      <p className="max-w-[17rem] text-xs leading-snug text-[var(--bd-muted)]">
+        Sign in only if you want your list saved across devices — it works fine without.
       </p>
     </div>
   );
@@ -43,14 +29,12 @@ function SignedOut() {
 
 export default async function DelegatePage() {
   const session = await auth();
-  if (!session?.user) return <SignedOut />;
-
-  const stored = await loadDelegation();
-  const delegation = stored ?? [BLANK_PARTY_SLUG];
+  const signedIn = Boolean(session?.user);
+  const stored = signedIn ? await loadDelegation() : null;
 
   return (
     <div className="bd-container flex flex-col gap-8 py-12">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="font-serif text-3xl font-semibold">My list</h1>
           <div className="bd-rule mt-3" />
@@ -59,16 +43,30 @@ export default async function DelegatePage() {
             party casts your vote.
           </p>
         </div>
-        <SignOutButton />
+        {signedIn ? <SignOutButton /> : <SignInAside />}
       </div>
 
-      <DelegationEditor initial={delegation} />
+      {signedIn ? (
+        <DelegationEditor initial={stored ?? [BLANK_PARTY_SLUG]} />
+      ) : (
+        <GuestDelegationEditor />
+      )}
 
       {stored ? <ListRecord delegation={stored} /> : null}
 
       <p className="max-w-2xl text-xs leading-relaxed text-[var(--bd-muted)]">
-        Encrypted under a key derived from your Google account id, which is never stored.
-        Not end-to-end: this server reads My List to render this page.
+        {signedIn ? (
+          <>
+            Encrypted under a key derived from your Google account id, which is never stored.
+            Not end-to-end: this server reads My List to render this page.
+          </>
+        ) : (
+          <>
+            Saved in this browser only. If you sign in, My List is encrypted under a key
+            derived from your Google account id, which is never stored. Not end-to-end: this
+            server reads My List to render this page.
+          </>
+        )}
       </p>
     </div>
   );
