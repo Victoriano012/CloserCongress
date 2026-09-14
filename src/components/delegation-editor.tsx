@@ -203,7 +203,7 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
   const position = new Map(list.map((slug, i) => [slug, i + 1]));
 
   function open(slug: string) {
-    router.push(`/parties/${slug}`);
+    router.push(`/parties/${slug}?from=delegate`);
   }
 
   function apply(next: string[], message: string) {

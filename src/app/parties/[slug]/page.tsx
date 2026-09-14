@@ -1,10 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { billLabel } from "@/lib/bills";
 import { shortDate } from "@/lib/dates";
 import { query } from "@/lib/db";
 import { PARTIES, PARTY_BY_SLUG } from "@/lib/parties";
+import { PartyBackLink } from "@/components/party-back-link";
 import { VoteTag } from "@/components/vote-tag";
 import type { Vote } from "@/lib/tally";
 
@@ -116,9 +118,15 @@ export default async function PartyPage({ params }: Props) {
 
   return (
     <div className="bd-container py-12">
-      <Link href="/parties" className="bd-link text-sm">
-        ← All parties
-      </Link>
+      <Suspense
+        fallback={
+          <Link href="/parties" className="bd-link text-sm">
+            ← All parties
+          </Link>
+        }
+      >
+        <PartyBackLink />
+      </Suspense>
 
       <header
         className="bd-card mt-5 border-l-4 p-7"
