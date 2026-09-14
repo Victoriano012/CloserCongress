@@ -97,16 +97,7 @@ function keepInPlace(anchor: Element | null, update: () => void) {
   }
 }
 
-/** True when a click landed on one of the row's buttons rather than the row itself. */
-function onControl(event: React.MouseEvent): boolean {
-  return event.target instanceof Element && event.target.closest("button") !== null;
-}
-
-/**
- * Logo and name. Focusable so Enter opens the party page, mirroring the
- * double-click on the surrounding card. Touch screens get no double-click
- * (double-tap zooms instead), so there a single tap on the name opens it.
- */
+/** Logo and name. A click, tap or Enter opens the party page. */
 function PartyLabel({
   party,
   onOpen,
@@ -126,14 +117,12 @@ function PartyLabel({
           onOpen();
         }
       }}
-      onClick={() => {
-        if (window.matchMedia("(pointer: coarse)").matches) onOpen();
-      }}
-      className={`min-w-0 flex-1 rounded-md ${FOCUS}`}
+      onClick={onOpen}
+      className={`min-w-0 flex-1 cursor-pointer rounded-md ${FOCUS}`}
     >
       <p className="text-sm font-medium leading-snug">
         <span aria-hidden>{party.emoji}</span> {party.name}
-        <span className="sr-only">. Press Enter to open this party&apos;s page.</span>
+        <span className="sr-only">. Opens this party&apos;s page.</span>
       </p>
       {children}
     </div>
@@ -356,9 +345,6 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
                     setDragIndex(null);
                     setDropAt(null);
                   }}
-                  onDoubleClick={(event) => {
-                    if (!onControl(event)) open(party.slug);
-                  }}
                   className={`bd-card flex select-none items-start gap-3 border-l-4 p-3 ${
                     dragIndex === index ? "opacity-50" : ""
                   }`}
@@ -539,9 +525,6 @@ export function DelegationEditor({ initial, guest = false }: { initial: string[]
                       return (
                         <li
                           key={party.slug}
-                          onDoubleClick={(event) => {
-                            if (!onControl(event)) open(party.slug);
-                          }}
                           className={`bd-card flex select-none items-center gap-3 border-l-4 p-3 ${
                             at ? "bg-blue-50/60" : ""
                           }`}
