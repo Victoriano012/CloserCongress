@@ -104,7 +104,8 @@ function onControl(event: React.MouseEvent): boolean {
 
 /**
  * Logo and name. Focusable so Enter opens the party page, mirroring the
- * double-click on the surrounding card.
+ * double-click on the surrounding card. Touch screens get no double-click
+ * (double-tap zooms instead), so there a single tap on the name opens it.
  */
 function PartyLabel({
   party,
@@ -124,6 +125,9 @@ function PartyLabel({
           event.preventDefault();
           onOpen();
         }
+      }}
+      onClick={() => {
+        if (window.matchMedia("(pointer: coarse)").matches) onOpen();
       }}
       className={`min-w-0 flex-1 rounded-md ${FOCUS}`}
     >
